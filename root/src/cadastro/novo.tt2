@@ -1,0 +1,48 @@
+<h1>Cadastro de cliente</h1>
+
+<p><a href="[% Catalyst.uri_for('lista') %]">Voltar à lista</a></p>
+
+<form action="[% Catalyst.uri_for(acao) %]" method="POST">
+
+<table>
+	<tr>
+		<th colspan="2">Dados pessoais</th>
+	</tr>
+
+	<tr>
+		<td>Nome completo:</td>
+		<td><input type="text" name="nome" size="50" value="[% cliente.nome %]"></td>
+	</tr>
+
+	<tr>
+		<th colspan="2">Dados da conexão</th>
+	</tr>
+
+	<tr>
+		<td>Login:</td>
+		<td><input type="text" name="login" size="10" value="[% cliente.login %]" [% IF acao == 'editar_do' %]readonly="true"[% END %]></td>
+	</tr>
+	<tr>
+		<td>Senha:</td>
+		<td><input type="password" name="pwd1" size="10" value="[% cliente.senha %]"></td>
+	</tr>
+	<tr>
+		<td>Repita a senha:</td>
+		<td><input type="password" name="pwd2" size="10" value="[% cliente.senha %]"></td>
+	</tr>
+	<tr>
+		<td>Plano:</td>
+		<td>
+			<select name="plano">
+				<option value="1" [% IF cliente.plano == 1 %]selected[% END %]>Básico - 150 Kbps</option>
+				<option value="2" [% IF cliente.plano == 2 %]selected[% END %]>Avançado - 300 Kbps</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="OK"></td>
+	</tr>
+</table>
+
+</form>

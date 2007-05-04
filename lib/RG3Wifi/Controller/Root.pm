@@ -27,10 +27,29 @@ RG3Wifi::Controller::Root - Root Controller for RG3Wifi
 =cut
 
 sub default : Private {
-    my ( $self, $c ) = @_;
+	my ($self, $c) = @_;
+}
 
-    # Hello World
-    $c->response->body( $c->welcome_message );
+=head2 auto
+
+Check if there is a user and, if not, forward to login page
+
+=cut
+
+sub auto : Private {
+	my ($self, $c) = @_;
+	
+	if ($c->controller eq $c->controller('Login')) {
+		return 1;
+	}
+	
+	if (!$c->user_exists) {
+		$c->log->debug('***Root::auto User not found, forwarding to /login');
+		$c->response->redirect($c->uri_for('/login'));
+		return 0;
+	}
+	
+	return 1;
 }
 
 =head2 end

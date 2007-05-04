@@ -1,0 +1,18 @@
+<h1>Clientes RG3</h1>
+
+<p><a href="[% Catalyst.uri_for('novo') %]">Cadastrar cliente</a></p>
+
+<table>
+	<tr>
+		<th>Nome</th>
+		<th>Login</th>
+	</tr>
+	
+	[% FOREACH cliente IN clientes %]
+	<tr>
+		<td><a href="[% Catalyst.uri_for('editar/') _ cliente.id %]">[% cliente.nome %]</a></td>
+		<td>[% cliente.login %]</td>
+	</tr>
+	[% END %]
+	
+</table>

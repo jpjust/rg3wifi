@@ -1,2 +1,14 @@
 ---
 name: RG3Wifi
+authentication:
+ dbic:
+  user_class: RG3WifiDB::Usuarios
+  user_field: login
+  password_field: senha
+
+authorization:
+ dbic:
+  role_class: RG3WifiDB::Grupos
+  role_field: nome
+  role_rel: usuarios
+  user_role_user_field: uid

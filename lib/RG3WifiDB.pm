@@ -19,7 +19,8 @@ use base qw/DBIx::Class::Schema/;
 # load from multiple namespaces.
 __PACKAGE__->load_classes({
 	RG3WifiDB => [qw/
-		Clientes
+		Usuarios
+		Grupos
 		radcheck
 		radreply
 		usergroup

@@ -7,8 +7,6 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
 __PACKAGE__->table('usergroup');
 # Set columns in table
-__PACKAGE__->add_columns(qw/id UserName GroupName/);
-# Set the primary key for the table
-__PACKAGE__->set_primary_key(qw/id/);
+__PACKAGE__->add_columns(qw/UserName GroupName priority/);
 
 1;
