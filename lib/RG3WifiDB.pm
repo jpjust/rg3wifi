@@ -21,6 +21,7 @@ __PACKAGE__->load_classes({
 	RG3WifiDB => [qw/
 		Usuarios
 		Grupos
+		Planos
 		radcheck
 		radreply
 		usergroup

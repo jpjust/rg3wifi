@@ -3,6 +3,7 @@
 <p><a href="[% Catalyst.uri_for('lista') %]">Voltar à lista</a></p>
 
 <form action="[% Catalyst.uri_for(acao) %]" method="POST">
+<input type="hidden" name="id" value="[% cliente.id %]">
 
 <table>
 	<tr>
@@ -34,10 +35,15 @@
 		<td>Plano:</td>
 		<td>
 			<select name="plano">
-				<option value="1" [% IF cliente.plano == 1 %]selected[% END %]>Básico - 150 Kbps</option>
-				<option value="2" [% IF cliente.plano == 2 %]selected[% END %]>Avançado - 300 Kbps</option>
+				[% FOREACH plano IN planos %]
+				<option value="[% plano.id %]" [% IF cliente.id_plano == plano.id %]selected[% END %]>[% plano.nome %]</option>
+				[% END %]
 			</select>
 		</td>
+	</tr>
+	<tr>
+		<td>Cliente bloqueado?</td>
+		<td><input type="checkbox" name="bloqueado" value="1" [% IF cliente.bloqueado == 1 %]checked[% END %]">Sim</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>

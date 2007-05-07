@@ -2,16 +2,18 @@
 
 <p><a href="[% Catalyst.uri_for('novo') %]">Cadastrar cliente</a></p>
 
-<table>
+<table width="100%">
 	<tr>
-		<th>Nome</th>
 		<th>Login</th>
+		<th>Nome</th>
+		<th>IP</th>
 	</tr>
 	
 	[% FOREACH cliente IN clientes %]
-	<tr>
-		<td><a href="[% Catalyst.uri_for('editar/') _ cliente.id %]">[% cliente.nome %]</a></td>
+	<tr [% IF cliente.bloqueado == 1 %]bgcolor="#FFAAAA"[% END %]>
 		<td>[% cliente.login %]</td>
+		<td><a href="[% Catalyst.uri_for('editar/') _ cliente.id %]">[% cliente.nome %]</a></td>
+		<td>[% cliente.ip %]</td>
 	</tr>
 	[% END %]
 	

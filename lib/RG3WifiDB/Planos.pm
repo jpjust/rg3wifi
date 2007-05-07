@@ -1,25 +1,25 @@
-package RG3WifiDB::Usuarios;
+package RG3WifiDB::Planos;
 
 use base qw/DBIx::Class/;  
 
 # Load required DBIC stuff
 __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
-__PACKAGE__->table('rg3_usuarios');
+__PACKAGE__->table('rg3_planos');
 # Set columns in table
-__PACKAGE__->add_columns(qw/uid id_grupo id_plano login senha bloqueado nome ip/);
+__PACKAGE__->add_columns(qw/id nome/);
 # Set the primary key for the table
-__PACKAGE__->set_primary_key(qw/uid/);
+__PACKAGE__->set_primary_key(qw/id/);
 
 #
 # Set relationships:
 #
 
-# belongs_to():
+# has_many():
 #   args:
 #     1) Name of relationship, DBIC will create accessor with this name
 #     2) Name of the model class referenced by this relationship
-#     3) Column name in *this* table
-__PACKAGE__->belongs_to(grupo => 'RG3WifiDB::Grupos', 'id_grupo');
+#     3) Column name in *foreign* table
+__PACKAGE__->has_many(usuarios => 'RG3WifiDB::Usuarios', 'id_plano');
 
 1;

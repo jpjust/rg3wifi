@@ -8,5 +8,7 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 __PACKAGE__->table('usergroup');
 # Set columns in table
 __PACKAGE__->add_columns(qw/UserName GroupName priority/);
+# Set the primary key for the table
+__PACKAGE__->set_primary_key(qw/UserName/);	# Xunxu pro delete() funcionar (não deletam sem chave primária)
 
 1;
