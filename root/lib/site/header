@@ -1,3 +1,10 @@
 <!-- BEGIN site/header -->
-<h1 class="title">[% template.title or site.title %]</h1>
+<div id="header">[% template.title or site.title %]</div>
+
+[% IF Catalyst.user_exists %]
+<div id="menu" align="right">
+	<a href="[% Catalyst.uri_for('/cadastro') %]">Cadastro de clientes</a> ::
+	<a href="[% Catalyst.uri_for('/logout') %]">Sair ([% Catalyst.user %])</a>
+</div>
+[% END %]
 <!-- END site/header -->

@@ -1,9 +1,10 @@
-<h1>Cadastro de cliente</h1>
+<h2>Cadastro de cliente</h2>
 
 <p><a href="[% Catalyst.uri_for('lista') %]">Voltar à lista</a></p>
 
-<form action="[% Catalyst.uri_for(acao) %]" method="POST">
-<input type="hidden" name="id" value="[% cliente.id %]">
+<form action="[% Catalyst.uri_for('cadastro_do') %]" method="POST">
+<input type="hidden" name="uid" value="[% cliente.uid %]">
+<input type="hidden" name="acao" value="[% acao %]">
 
 <table>
 	<tr>
@@ -13,6 +14,38 @@
 	<tr>
 		<td>Nome completo:</td>
 		<td><input type="text" name="nome" size="50" value="[% cliente.nome %]"></td>
+	</tr>
+	<tr>
+		<td>RG:</td>
+		<td><input type="text" name="rg" size="20" value="[% cliente.rg %]"></td>
+	</tr>
+	<tr>
+		<td>CPF/CNPJ:</td>
+		<td><input type="text" name="doc" size="20" value="[% cliente.doc %]"></td>
+	</tr>
+	<tr>
+		<td>Data de nascimento:</td>
+		<td><input type="text" name="data_nascimento" size="10" value="[% cliente.data_nascimento %]"></td>
+	</tr>
+	<tr>
+		<td>Endereço:</td>
+		<td><input type="text" name="endereco" size="50" value="[% cliente.endereco %]"></td>
+	</tr>
+	<tr>
+		<td>Bairro:</td>
+		<td><input type="text" name="bairro" size="30" value="[% cliente.bairro %]"></td>
+	</tr>
+	<tr>
+		<td>CEP:</td>
+		<td><input type="text" name="cep" size="10" value="[% cliente.cep %]"></td>
+	</tr>
+	<tr>
+		<td>Telefone:</td>
+		<td><input type="text" name="telefone" size="10" value="[% cliente.telefone %]"></td>
+	</tr>
+	<tr>
+		<td>Observações:</td>
+		<td><textarea name="observacao" cols="50" rows="5">[% cliente.observacao %]</textarea></td>
 	</tr>
 
 	<tr>

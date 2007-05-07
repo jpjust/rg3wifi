@@ -1,5 +1,7 @@
 <form action="[% Catalyst.uri_for('/login') %]" method="POST">
 
+<h2>Login</h2>
+
 <table>
 	<tr>
 		<td>Login:</td>

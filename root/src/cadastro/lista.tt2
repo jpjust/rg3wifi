@@ -1,6 +1,8 @@
-<h1>Clientes RG3</h1>
+<h2>Clientes RG3.Net</h2>
 
 <p><a href="[% Catalyst.uri_for('novo') %]">Cadastrar cliente</a></p>
+
+<p>Para alterar o cadastro ou bloquear um cliente, clique no seu nome e faça as mudanças necessárias no formulário que aparece.</p>
 
 <table width="100%">
 	<tr>
@@ -10,7 +12,7 @@
 	</tr>
 	
 	[% FOREACH cliente IN clientes %]
-	<tr [% IF cliente.bloqueado == 1 %]bgcolor="#FFAAAA"[% END %]>
+	<tr class="lista" [% IF cliente.bloqueado == 1 %]bgcolor="#FFAAAA"[% END %]>
 		<td>[% cliente.login %]</td>
 		<td><a href="[% Catalyst.uri_for('editar/') _ cliente.id %]">[% cliente.nome %]</a></td>
 		<td>[% cliente.ip %]</td>
