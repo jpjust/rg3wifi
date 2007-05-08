@@ -48,8 +48,15 @@ __PACKAGE__->config( name => 'RG3Wifi' );
 __PACKAGE__->setup;
 
 # Authorization::ACL Rules
-# Operador
-__PACKAGE__->deny_access_unless("/cadastro", [qw/operador/]);
+# Cadastro (geral)
+__PACKAGE__->allow_access_if("/cadastro", [qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro", [qw/operador/]);
+__PACKAGE__->deny_access("/cadastro");
+
+# Cadastro (exclusão)
+__PACKAGE__->allow_access_if("/cadastro/excluir", [qw/admin/]);
+__PACKAGE__->deny_access("/cadastro/excluir");
+
 
 =head1 NAME
 

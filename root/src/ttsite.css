@@ -60,6 +60,10 @@ input {
 	font-size: 10pt;
 }
 
+img {
+	border: none;
+}
+
 #menu {
 	padding: 0px;
 	font-size: 10pt;

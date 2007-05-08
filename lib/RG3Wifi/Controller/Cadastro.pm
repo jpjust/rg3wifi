@@ -26,6 +26,18 @@ sub index : Private {
 	$c->forward('lista');
 }
 
+=head2 access_denied
+
+Handle Catalyst::Plugin::Authorization::ACL access denied exceptions
+
+=cut
+
+sub access_denied : Private {
+	my ($self, $c) = @_;
+	$c->stash->{error_msg} = 'Você não tem permissão para acessar este recurso.';
+	$c->forward('lista');
+}
+
 =head2 user_add
 
 Adiciona/atualiza um usuário na configuração do PPPoE.
@@ -138,6 +150,7 @@ Abre página de cadastro de cliente.
 sub novo : Local {
 	my ($self, $c) = @_;
 	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
+	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
 	$c->stash->{acao} = 'novo';
 	$c->stash->{template} = 'cadastro/novo.tt2';
 }
@@ -150,8 +163,19 @@ Exibe página para edição do cliente.
 
 sub editar : Local {
 	my ($self, $c, $uid) = @_;
-	$c->stash->{cliente} = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
+
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
+
+	# Verifica permissões
+	if (($cliente->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
+		$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
+		$c->stash->{template} = 'erro.tt2';
+		return;
+	}
+
+	$c->stash->{cliente} = $cliente; 
 	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
+	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
 	$c->stash->{acao} = 'editar';
 	$c->stash->{template} = 'cadastro/novo.tt2';
 }
@@ -195,10 +219,10 @@ sub cadastro_do : Local {
 		# Cria novo usuário
 		if ($c->request->params->{acao} eq 'novo') {
 			$cliente = $c->model('RG3WifiDB::Usuarios')->create($dados);
-			$cliente->update({
-				id_grupo	=> 3,
-				ip			=> $ip,
-			});
+			$cliente->update({ip => $ip});
+			if ($c->check_any_user_role('admin')) {
+				$cliente->update({id_grupo => $c->request->params->{grupo}});
+			}
 		}
 		# Edita usuário já cadastrado
 		elsif ($c->request->params->{acao} eq 'editar') {
@@ -208,8 +232,21 @@ sub cadastro_do : Local {
 				$c->stash->{template} = 'erro.tt2';
 				return;
 			}
+
+			# Verifica permissões
+			if (($cliente->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
+				$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
+				$c->stash->{template} = 'erro.tt2';
+				return;
+			}
+			
+			# Mudança de plano, obtém novo IP de acordo com o novo plano
+			if ($cliente->id_plano != $c->request->params->{plano}) { $cliente->update({ip => $ip}); }
 			
 			$cliente->update($dados);
+			if ($c->check_any_user_role('admin')) {
+				$cliente->update({id_grupo => $c->request->params->{grupo}});
+			}
 		}
 	};
 	
@@ -242,7 +279,7 @@ Exclui um usuário do sistema.
 
 =cut
 
-sub excluir : Private {
+sub excluir : Local {
 	my ($self, $c, $uid) = @_;
 	
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
@@ -254,7 +291,7 @@ sub excluir : Private {
 	
 	# Exclui o cliente
 	&user_del($c, $cliente->login);
-	$cliente->delete_all();
+	$cliente->delete();
 	
 	# Exibe mensagem de sucesso
 	$c->stash->{status_msg} = 'Cliente excluído com sucesso.';

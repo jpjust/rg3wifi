@@ -29,12 +29,20 @@ sub index : Private {
 	
 	if ($username && $password) {
 		if ($c->login($username, $password)) {
-			$c->response->redirect($c->uri_for('/cadastro/lista'));
-			return;
+			# Verifica permissões
+			if (!$c->check_any_user_role(qw/admin operador/)) {
+				$c->stash->{error_msg} = 'Você não tem permissão para acessar este recurso!';
+				$c->stash->{template} = 'erro.tt2';
+				$c->logout;
+			} else {
+				$c->response->redirect($c->uri_for('/cadastro/lista'));
+				return;
+			}
 		} else {
 			$c->stash->{error_msg} = "Usuário e/ou senha inválidos.";
 		}
 	}
+	
 	$c->stash->{template} = 'login.tt2';
 }
 
