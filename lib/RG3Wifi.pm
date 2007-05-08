@@ -23,6 +23,8 @@ use Catalyst qw/
 	Authentication
 	Authentication::Store::DBIC
 	Authentication::Credential::Password
+	Authorization::Roles
+	Authorization::ACL
 	
 	Session
 	Session::Store::FastMmap
@@ -45,6 +47,9 @@ __PACKAGE__->config( name => 'RG3Wifi' );
 # Start the application
 __PACKAGE__->setup;
 
+# Authorization::ACL Rules
+# Operador
+__PACKAGE__->deny_access_unless("/cadastro", [qw/operador/]);
 
 =head1 NAME
 
