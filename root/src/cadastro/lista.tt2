@@ -9,6 +9,7 @@
 		<th>Login</th>
 		<th>Nome</th>
 		<th>IP</th>
+		<th>Ações</th>
 	</tr>
 	
 	[% FOREACH cliente IN clientes %]
@@ -16,6 +17,7 @@
 		<td>[% cliente.login %]</td>
 		<td><a href="[% Catalyst.uri_for('editar/') _ cliente.id %]">[% cliente.nome %]</a></td>
 		<td>[% cliente.ip %]</td>
+		<td><a href="[% Catalyst.uri_for('excluir/') _ cliente.id %]">Excluir</a></td>
 	</tr>
 	[% END %]
 	

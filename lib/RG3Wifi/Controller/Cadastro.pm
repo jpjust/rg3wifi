@@ -236,6 +236,31 @@ sub cadastro_do : Local {
 	}
 }
 
+=head2 excluir
+
+Exclui um usuário do sistema.
+
+=cut
+
+sub excluir : Private {
+	my ($self, $c, $uid) = @_;
+	
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
+	if (!$cliente) {
+		$c->stash->{error_msg} = 'Cliente não encontrado!';
+		$c->stash->{template} = 'erro.tt2';
+		return;
+	}
+	
+	# Exclui o cliente
+	&user_del($c, $cliente->login);
+	$cliente->delete_all();
+	
+	# Exibe mensagem de sucesso
+	$c->stash->{status_msg} = 'Cliente excluído com sucesso.';
+	$c->forward('lista');
+}
+
 =head1 AUTHOR
 
 Joao Paulo Just,,,

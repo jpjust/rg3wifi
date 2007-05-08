@@ -45,7 +45,7 @@
 	</tr>
 	<tr>
 		<td>Observações:</td>
-		<td><textarea name="observacao" cols="50" rows="5">[% cliente.observacao %]</textarea></td>
+		<td><textarea name="observacao" cols="50" rows="5">[% cliente.observacao %]</textarea><i>(opcional)</i></td>
 	</tr>
 
 	<tr>
