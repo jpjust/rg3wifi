@@ -6,7 +6,7 @@ use base 'Catalyst::Model::DBIC::Schema';
 __PACKAGE__->config(
     schema_class => 'RG3WifiDB',
     connect_info => [
-        'dbi:mysql:database=radius;host=justsoft.no-ip.info;port=10090',
+        'dbi:mysql:database=radius;host=peixoto',
         'radius',
         'radpwd',
         { AutoCommit => 1 },
