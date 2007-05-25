@@ -94,7 +94,7 @@
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td><input type="submit" value="OK"></td>
+		<td><input type="submit" name="botao" value="OK"></td>
 	</tr>
 </table>
 

@@ -11,6 +11,9 @@ __PACKAGE__->add_columns(qw/uid id_grupo id_plano data_adesao login senha bloque
 # Set the primary key for the table
 __PACKAGE__->set_primary_key(qw/uid/);
 
+# Add some attributes
+__PACKAGE__->resultset_attributes({order_by => 'nome'});
+
 #
 # Set relationships:
 #
