@@ -1,0 +1,63 @@
+<h2>Rádios, fabricantes e modelos</h2>
+
+<p><a href="[% Catalyst.uri_for('novo_rad') %]"><img src="/static/images/add.png" align="top">Cadastrar rádio</a> ::
+<a href="[% Catalyst.uri_for('novo_fab') %]"><img src="/static/images/add.png" align="top">Cadastrar fabricante</a> ::
+<a href="[% Catalyst.uri_for('novo_mod') %]"><img src="/static/images/add.png" align="top">Cadastrar modelo</a></p>
+
+<h3>Lista de rádios</h3>
+
+<table width="100%">
+	<tr>
+		<th>Localização</th>
+		<th>IP</th>
+		<th>Fabricante</th>
+		<th>Modelo</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH radio IN radios %]
+	<tr class="lista">
+		<td>[% radio.localizacao %]</td>
+		<td>[% radio.ip %]</td>
+		<td>[% radio.fabricante.nome %]</td>
+		<td>[% radio.modelo.nome %]</td>
+		<td>&nbsp;</td>
+	</tr>
+	[% END %]
+</table>
+
+
+<h3>Lista de fabricantes</h3>
+
+<table width="100%">
+	<tr>
+		<th>Nome</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH fabricante IN fabricantes %]
+	<tr class="lista">
+		<td>[% fabricante.nome %]</td>
+		<td>&nbsp;</td>
+	</tr>
+	[% END %]
+</table>
+
+
+<h3>Lista de modelos</h3>
+
+<table width="100%">
+	<tr>
+		<th>Fabricante</th>
+		<th>Modelo</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH modelo IN modelos %]
+	<tr class="lista">
+		<td>[% modelo.fabricante.nome %]</td>
+		<td>[% modelo.nome %]</td>
+		<td>&nbsp;</td>
+	</tr>
+	[% END %]
+</table>

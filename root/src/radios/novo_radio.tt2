@@ -1,0 +1,97 @@
+<h2>Cadastro de rádio</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<form action="[% Catalyst.uri_for('cadastro_rad_do') %]" method="POST">
+<input type="hidden" name="id" value="[% radio.id %]">
+<input type="hidden" name="acao" value="[% acao %]">
+
+<table>
+	<tr>
+		<th colspan="2">Dados da compra (campos obrigatórios)</th>
+	</tr>
+	<tr>
+		<td>Modelo:</td>
+		<td>
+			<select name="modelo">
+				[% FOREACH modelo IN modelos %]
+				<option value="[% modelo.id %]" [% IF radio.id_modelo == modelo.id %]selected[% END %]>[% modelo.fabricante.nome %] [% modelo.nome %]</option>
+				[% END %]
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Data da compra:</td>
+		<td><input type="text" name="data_compra" size="15" value="[% radio.data_compra %]"></td>
+	</tr>
+	<tr>
+		<td>Valor da compra (incluir valor do pigtail):</td>
+		<td>R$ <input type="text" name="valor_compra" size="15" value="[% radio.valor_compra %]"></td>
+	</tr>
+	<tr>
+		<td>Custo (valor da compra + frete rateado):</td>
+		<td>R$ <input type="text" name="custo" size="15" value="[% radio.custo %]"></td>
+	</tr>
+
+	<tr>
+		<th colspan="2">Dados técnicos</th>
+	</tr>
+	<tr>
+		<td>Data de instalação:</td>
+		<td><input type="text" name="data_instalacao" size="15" value="[% radio.data_instalacao %]"></td>
+	</tr>
+	<tr>
+		<td>Função do rádio:</td>
+		<td>
+			<select name="tipo">
+				[% FOREACH tipo IN tipos %]
+				<option value="[% tipo.id %]" [% IF radio.id_tipo == tipo.id %]selected[% END %]>[% tipo.nome %]</option>
+				[% END %]
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Base do rádio (para rádios estações):</td>
+		<td>
+			<select name="base">
+				[% FOREACH base IN bases %]
+				<option value="[% base.id %]" [% IF radio.id_base == base.id %]selected[% END %]>[% base.ip %]: [% base.localizacao %]</option>
+				[% END %]
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Localização:</td>
+		<td><input type="text" name="localizacao" size="50" value="[% radio.localizacao %]"></td>
+	</tr>
+	<tr>
+		<td>Banda de operação:</td>
+		<td>
+			<select name="banda">
+				[% FOREACH banda IN bandas %]
+				<option value="[% banda.id %]" [% IF radio.id_banda == banda.id %]selected[% END %]>[% banda.nome %]</option>
+				[% END %]
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Tamanho do preâmbulo:</td>
+		<td>
+			<select name="preambulo">
+				[% FOREACH preambulo IN preambulos %]
+				<option value="[% preambulo.id %]" [% IF radio.id_preambulo == preambulo.id %]selected[% END %]>[% preambulo.nome %]</option>
+				[% END %]
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Endereço IP:</td>
+		<td><input type="text" name="ip" size="20" value="[% radio.ip %]"></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" name="btn_submit"> <input type="reset" name="btn_reset"> </td>
+	</tr>
+</table>
+
+</form>

@@ -1,0 +1,30 @@
+<h2>Cadastro de modelo</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<form action="[% Catalyst.uri_for('cadastro_mod_do') %]" method="POST">
+<input type="hidden" name="id" value="[% modelo.id %]">
+<input type="hidden" name="acao" value="[% acao %]">
+
+<table>
+	<tr>
+		<td>Fabricante:</td>
+		<td>
+			<select name="fabricante">
+				[% FOREACH fabricante IN fabricantes %]
+				<option value="[% fabricante.id %]" [% IF modelo.id_fabricante == fabricante.id %]selected[% END %]>[% fabricante.nome %]</option>
+				[% END %]
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Nome:</td>
+		<td><input type="text" name="nome" size="50" value="[% modelo.nome %]"></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" name="btn_submit"> <input type="reset" name="btn_reset"> </td>
+	</tr>
+</table>
+
+</form>

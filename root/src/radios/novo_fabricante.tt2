@@ -1,0 +1,20 @@
+<h2>Cadastro de fabricante</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<form action="[% Catalyst.uri_for('cadastro_fab_do') %]" method="POST">
+<input type="hidden" name="id" value="[% fabricante.id %]">
+<input type="hidden" name="acao" value="[% acao %]">
+
+<table>
+	<tr>
+		<td>Nome:</td>
+		<td><input type="text" name="nome" size="50" value="[% fabricante.nome %]"></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" name="btn_submit"> <input type="reset" name="btn_reset"> </td>
+	</tr>
+</table>
+
+</form>
