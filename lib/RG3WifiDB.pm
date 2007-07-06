@@ -22,6 +22,12 @@ __PACKAGE__->load_classes({
 		Usuarios
 		Grupos
 		Planos
+		Fabricantes
+		Modelos
+		Radios
+		RadiosTipo
+		RadiosBanda
+		RadiosPreambulo
 		radcheck
 		radreply
 		usergroup

@@ -13,7 +13,7 @@ use Pod::Usage;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-my $debug             = 0;
+my $debug             = 1;
 my $fork              = 0;
 my $help              = 0;
 my $host              = undef;
