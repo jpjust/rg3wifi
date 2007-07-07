@@ -2,7 +2,7 @@
 
 <p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
-<form action="[% Catalyst.uri_for('cadastro_mod_do') %]" method="POST">
+<form action="[% Catalyst.uri_for('novo_mod_do') %]" method="POST">
 <input type="hidden" name="id" value="[% modelo.id %]">
 <input type="hidden" name="acao" value="[% acao %]">
 

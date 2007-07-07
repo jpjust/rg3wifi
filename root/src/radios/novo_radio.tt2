@@ -2,7 +2,7 @@
 
 <p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
-<form action="[% Catalyst.uri_for('cadastro_rad_do') %]" method="POST">
+<form action="[% Catalyst.uri_for('novo_rad_do') %]" method="POST">
 <input type="hidden" name="id" value="[% radio.id %]">
 <input type="hidden" name="acao" value="[% acao %]">
 
@@ -54,6 +54,7 @@
 		<td>Base do rádio (para rádios estações):</td>
 		<td>
 			<select name="base">
+				<option value="0" [% IF radio.id_base == 0 %]selected[% END %]>-- sem base --</option>
 				[% FOREACH base IN bases %]
 				<option value="[% base.id %]" [% IF radio.id_base == base.id %]selected[% END %]>[% base.ip %]: [% base.localizacao %]</option>
 				[% END %]
@@ -85,8 +86,16 @@
 		</td>
 	</tr>
 	<tr>
+		<td>Endereço MAC:</td>
+		<td><input type="text" name="mac" size="20" value="[% radio.mac %]"></td>
+	</tr>
+	<tr>
 		<td>Endereço IP:</td>
 		<td><input type="text" name="ip" size="20" value="[% radio.ip %]"></td>
+	</tr>
+	<tr>
+		<td>ESSID:</td>
+		<td><input type="text" name="essid" size="50" value="[% radio.essid %]"></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
