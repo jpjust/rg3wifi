@@ -1,3 +1,5 @@
+[% PROCESS site/macros %]
+
 <h2>Cadastro de rádio</h2>
 
 <p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
@@ -22,7 +24,19 @@
 	</tr>
 	<tr>
 		<td>Data da compra:</td>
-		<td><input type="text" name="data_compra" size="15" value="[% radio.data_compra %]"></td>
+		<td>
+			<input type="text" name="data_compra" id="data_compra" size="8" value="[% data2normal(radio.data_compra) || datahoje %]">
+			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+			<script type="text/javascript">
+				Calendar.setup(
+					{
+						inputField  : "data_compra",// ID of the input field
+						ifFormat    : "%d/%m/%Y",	// the date format
+						button      : "t_rec"		// ID of the button
+					}
+				);
+			</script>
+		</td>
 	</tr>
 	<tr>
 		<td>Valor da compra (incluir valor do pigtail):</td>
@@ -38,7 +52,19 @@
 	</tr>
 	<tr>
 		<td>Data de instalação:</td>
-		<td><input type="text" name="data_instalacao" size="15" value="[% radio.data_instalacao %]"></td>
+		<td>
+			<input type="text" name="data_instalacao" id="data_instalacao" size="8" value="[% data2normal(radio.data_instalacao) || datahoje %]">
+			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+			<script type="text/javascript">
+				Calendar.setup(
+					{
+						inputField  : "data_instalacao",// ID of the input field
+						ifFormat    : "%d/%m/%Y",	// the date format
+						button      : "t_rec"		// ID of the button
+					}
+				);
+			</script>
+		</td>
 	</tr>
 	<tr>
 		<td>Função do rádio:</td>
@@ -51,12 +77,16 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Base do rádio (para rádios estações):</td>
+		<td>ESSID (base apenas):</td>
+		<td><input type="text" name="essid" size="20" value="[% radio.essid %]"></td>
+	</tr>
+	<tr>
+		<td>Base do rádio (estação apenas):</td>
 		<td>
 			<select name="base">
 				<option value="0" [% IF radio.id_base == 0 %]selected[% END %]>-- sem base --</option>
 				[% FOREACH base IN bases %]
-				<option value="[% base.id %]" [% IF radio.id_base == base.id %]selected[% END %]>[% base.ip %]: [% base.localizacao %]</option>
+				<option value="[% base.id %]" [% IF radio.id_base == base.id %]selected[% END %]>[% base.essid %]</option>
 				[% END %]
 			</select>
 		</td>
@@ -92,10 +122,6 @@
 	<tr>
 		<td>Endereço IP:</td>
 		<td><input type="text" name="ip" size="20" value="[% radio.ip %]"></td>
-	</tr>
-	<tr>
-		<td>ESSID:</td>
-		<td><input type="text" name="essid" size="50" value="[% radio.essid %]"></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>

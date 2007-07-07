@@ -1,6 +1,6 @@
 <h2>Cadastro de fabricante</h2>
 
-<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+<p><a href="[% Catalyst.uri_for('lista_mods') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
 <form action="[% Catalyst.uri_for('novo_fab_do') %]" method="POST">
 <input type="hidden" name="id" value="[% fabricante.id %]">

@@ -12,7 +12,8 @@ __PACKAGE__->config({
     PRE_PROCESS  => 'config/main',
     WRAPPER      => 'site/wrapper',
     ERROR        => 'error.tt2',
-    TIMER        => 0
+    TIMER        => 0,
+    EVAL_PERL    => 1
 });
 
 =head1 NAME

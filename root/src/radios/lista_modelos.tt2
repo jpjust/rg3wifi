@@ -1,0 +1,42 @@
+[% PROCESS site/macros %]
+
+<h2>Lista de fabricantes</h2>
+
+<p><a href="[% Catalyst.uri_for('novo_fab') %]"><img src="/static/images/add.png" align="top">Cadastrar fabricante</a></p>
+
+<table width="100%">
+	<tr>
+		<th>Nome</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH fabricante IN fabricantes %]
+	<tr class="lista">
+		<td><a href="[% Catalyst.uri_for('editar_fab/') _ fabricante.id %]">[% fabricante.nome %]</a></td>
+		<td>&nbsp;</td>
+	</tr>
+	[% END %]
+</table>
+
+<br><br>
+<hr>
+
+<h2>Lista de modelos</h2>
+
+<p><a href="[% Catalyst.uri_for('novo_mod') %]"><img src="/static/images/add.png" align="top">Cadastrar modelo</a></p>
+
+<table width="100%">
+	<tr>
+		<th>Fabricante</th>
+		<th>Modelo</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH modelo IN modelos %]
+	<tr class="lista">
+		<td>[% modelo.fabricante.nome %]</td>
+		<td><a href="[% Catalyst.uri_for('editar_mod/') _ modelo.id %]">[% modelo.nome %]</a></td>
+		<td>&nbsp;</td>
+	</tr>
+	[% END %]
+</table>

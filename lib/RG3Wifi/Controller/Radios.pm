@@ -34,10 +34,22 @@ Lista os rádios cadastrados.
 
 sub lista : Local {
 	my ($self, $c) = @_;
-	$c->stash->{bases} = [$c->model('RG3WifiDB::Radios')->search({id_tipo => 1})];
+	$c->stash->{bases} = [$c->model('RG3WifiDB::Radios')->search({id_tipo => 2})];
+	$c->stash->{radiosloja} = [$c->model('RG3WifiDB::Radios')->search({id_tipo => 1})];
+	$c->stash->{template} = 'radios/lista_radios.tt2';
+}
+
+=head2 lista_mods
+
+Lista os fabricantes e modelos cadastrados.
+
+=cut
+
+sub lista_mods : Local {
+	my ($self, $c) = @_;
 	$c->stash->{fabricantes} = [$c->model('RG3WifiDB::Fabricantes')->all];
 	$c->stash->{modelos} = [$c->model('RG3WifiDB::Modelos')->all];
-	$c->stash->{template} = 'radios/lista.tt2';
+	$c->stash->{template} = 'radios/lista_modelos.tt2';
 }
 
 =head2 novo_fab
@@ -71,9 +83,8 @@ Exibe formulário de cadastro de rádios.
 
 sub novo_rad : Local {
 	my ($self, $c) = @_;
-	$c->stash->{fabricantes} = [$c->model('RG3WifiDB::Fabricantes')->all];
 	$c->stash->{modelos} = [$c->model('RG3WifiDB::Modelos')->all];
-	$c->stash->{bases} = [$c->model('RG3WifiDB::Radios')->search({id_tipo => 1})];
+	$c->stash->{bases} = [$c->model('RG3WifiDB::Radios')->search({id_tipo => 2})];
 	$c->stash->{tipos} = [$c->model('RG3WifiDB::RadiosTipo')->all];
 	$c->stash->{bandas} = [$c->model('RG3WifiDB::RadiosBanda')->all];
 	$c->stash->{preambulos} = [$c->model('RG3WifiDB::RadiosPreambulo')->all];
@@ -169,19 +180,19 @@ sub novo_rad_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = ({
-		id_modelo		=> $p->{modelo}			|| undef,
-		id_base			=> $p->{base}			|| undef,
-		id_tipo			=> $p->{tipo}			|| undef,
-		mac				=> $p->{mac}			|| undef,
-		data_compra		=> $p->{data_compra}	|| undef,
-		data_instalacao	=> $p->{data_instalacao}|| undef,
-		valor_compra	=> $p->{valor_compra}	|| undef,
-		custo			=> $p->{custo}			|| undef,
-		localizacao		=> $p->{localizacao}	|| undef,
-		id_banda		=> $p->{banda}			|| undef,
-		id_preambulo	=> $p->{preambulo}		|| undef,
-		ip				=> $p->{ip}				|| undef,
-		essid			=> $p->{essid}			|| undef,
+		id_modelo		=> $p->{modelo}								|| undef,
+		id_base			=> $p->{base}								|| undef,
+		id_tipo			=> $p->{tipo}								|| undef,
+		mac				=> $p->{mac}								|| undef,
+		data_compra		=> &RG3Wifi::data2sql($p->{data_compra})	|| undef,
+		data_instalacao	=> &RG3Wifi::data2sql($p->{data_instalacao})|| undef,
+		valor_compra	=> $p->{valor_compra}						|| 0,
+		custo			=> $p->{custo}								|| 0,
+		localizacao		=> $p->{localizacao}						|| undef,
+		id_banda		=> $p->{banda}								|| undef,
+		id_preambulo	=> $p->{preambulo}							|| undef,
+		ip				=> $p->{ip}									|| undef,
+		essid			=> $p->{essid}								|| undef,
 	});
 	
 	eval {

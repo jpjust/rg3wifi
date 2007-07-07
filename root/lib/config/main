@@ -12,7 +12,7 @@
 
    # define a data structure to hold sitewide data
    site = {
-     title     => 'RG3.Net :: Cadastro de clientes',
+     title     => 'Gerenciamento RG3.Net',
      copyright => '2007 Justsoft Informática Ltda.',
    };
 

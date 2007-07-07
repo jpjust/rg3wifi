@@ -31,7 +31,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 # Configure the application. 
 #
@@ -57,6 +57,73 @@ __PACKAGE__->deny_access("/cadastro");
 __PACKAGE__->allow_access_if("/cadastro/excluir", [qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/excluir");
 
+# Rádios (geral)
+__PACKAGE__->allow_access_if("/radios", [qw/admin/]);
+__PACKAGE__->allow_access_if("/radios", [qw/operador/]);
+__PACKAGE__->deny_access("/radios");
+
+
+=head2 data2normal
+
+Converte data de formato SQL para normal
+
+=cut
+
+sub data2normal : Public {
+	if ($_[0]) {
+		my ($ano, $mes, $dia) = split('-', $_[0]);
+		return "$dia/$mes/$ano";
+	} else {
+		return undef;
+	}
+}
+
+=head2 data2sql
+
+Converte data de formato normal para SQL
+
+=cut
+
+sub data2sql : Public {
+	if ($_[0]) {
+		my ($dia, $mes, $ano) = split('/', $_[0]);
+		return "$ano-$mes-$dia";
+	} else {
+		return undef;
+	}
+}
+
+=head2 formatadoc
+
+Retorna o número do documento (CPF/CNPJ) formatado com pontos e hífen.
+
+=cut
+
+sub formatadoc : Public {
+	my ($doc) = @_;
+	
+	# Formata CPF
+	if (length($doc) == 11) {
+		my $a = substr($doc, 0, 3);
+		my $b = substr($doc, 3, 3);
+		my $c = substr($doc, 6, 3);
+		my $d = substr($doc, 9, 2);
+		return "$a.$b.$c-$d";
+	}
+	# Formata CNPJ
+	elsif (length($doc) == 14) {
+		my $a = substr($doc, 0, 2);
+		my $b = substr($doc, 2, 3);
+		my $c = substr($doc, 5, 3);
+		my $d = substr($doc, 8, 4);
+		my $e = substr($doc, 12, 2);
+		return "$a.$b.$c/$d-$e";
+	}
+	# Número de tamanho inválido
+	else {
+		return $doc;
+	}
+}
 
 =head1 NAME
 

@@ -1,0 +1,36 @@
+[% # Retorna a data atual %]
+[% MACRO datahoje PERL %]
+	my (@data) = localtime();
+	print abs($data[3]) . '/' . abs($data[4] + 1) . '/' . abs($data[5] + 1900); 
+[% END %]
+
+[% # Formatação de data %]
+[% MACRO data2normal(datasql) PERL %]
+	print RG3Wifi::data2normal($stash->get('datasql'));
+[% END %]
+
+[% # Formatação de documentos (CPF/CNPJ) %]
+[% MACRO formatadoc(doc) PERL %]
+	print RG3Wifi::formatadoc($stash->get('doc'));
+[% END %]
+
+[% # Formatação de valor monetário %]
+[% MACRO moeda(valor) BLOCK %]
+	R$ [% valor FILTER format('%.2f') FILTER replace('\.', ',') %]
+[% END %]
+
+[% # Formatação de valor em porcentagem %]
+[% MACRO porcent(valor) BLOCK %]
+	[% valor FILTER format('%.1f') FILTER replace('\.', ',') %] %
+[% END %]
+
+[% ### JavaScripts %]
+<script type="text/javascript">
+// Caixa de diálogo de exclusão
+function askdel(item, action) {
+	var ask = confirm('Tem certeza que deseja excluir ' + item + '?');
+	if (ask == true) {
+		window.location = action;
+	}
+}
+</script>
