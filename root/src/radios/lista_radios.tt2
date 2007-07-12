@@ -10,7 +10,7 @@
 
 <br><br>
 
-<h3>[% base.essid %], [% base.ip %], <a href="[% Catalyst.uri_for('editar_rad/') _ base.id %]">[% base.mac %]</a></h3>
+<h3>[% base.essid %], <a href="http://[% base.ip %]" target="_blank">[% base.ip %]</a>, <a href="[% Catalyst.uri_for('editar_rad/') _ base.id %]">[% base.mac %]</a></h3>
 
 <h4>Banda: [% base.banda.nome %]<br>
 Preâmbulo: [% base.preambulo.nome %]</h4>
@@ -29,7 +29,7 @@ Preâmbulo: [% base.preambulo.nome %]</h4>
 	[% FOREACH radio IN base.estacoes %]
 	<tr class="lista">
 		<td>[% radio.localizacao %]</td>
-		<td>[% radio.ip %]</td>
+		<td><a href="http://[% radio.ip %]" target="_blank">[% radio.ip %]</a></td>
 		<td><a href="[% Catalyst.uri_for('editar_rad/') _ radio.id %]">[% radio.mac %]</a></td>
 		<td>[% radio.banda.nome %]</td>
 		<td>[% radio.preambulo.nome %]</td>
