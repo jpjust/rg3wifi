@@ -22,6 +22,9 @@ __PACKAGE__->load_classes({
 		Usuarios
 		Grupos
 		Planos
+		Chamados
+		ChamadosEstado
+		ChamadosTipo
 		Fabricantes
 		Modelos
 		Radios

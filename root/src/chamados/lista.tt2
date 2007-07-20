@@ -1,0 +1,66 @@
+<h2>Lista de chamados abertos</h2>
+
+<p><a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Abrir novo chamado</a></p>
+
+<h3>Suporte</h3>
+
+<table width="100%">
+	<tr>
+		<th>Cliente</th>
+		<th>Endereço</th>
+		<th>Data</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH suporte IN suportes %]
+	<tr class="lista">
+		<td>[% suporte.cliente %]</td>
+		<td>[% suporte.endereco %]</td>
+		<td>[% suporte.data %]</td>
+		<td>&nbsp;</td>
+	</tr>
+	[% END %]
+	
+</table>
+
+<h3>Instalação</h3>
+
+<table width="100%">
+	<tr>
+		<th>Cliente</th>
+		<th>Endereço</th>
+		<th>Data</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH instalacao IN instalacoes %]
+	<tr class="lista">
+		<td>[% instalacao.cliente %]</td>
+		<td>[% instalacao.endereco %]</td>
+		<td>[% instalacao.data %]</td>
+		<td>&nbsp;</td>
+	</tr>
+	[% END %]
+	
+</table>
+
+<h3>Estudo de viabilidade</h3>
+
+<table width="100%">
+	<tr>
+		<th>Cliente</th>
+		<th>Endereço</th>
+		<th>Data</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH estudo IN estudos %]
+	<tr class="lista">
+		<td>[% estudo.cliente %]</td>
+		<td>[% estudo.endereco %]</td>
+		<td>[% estudo.data %]</td>
+		<td>&nbsp;</td>
+	</tr>
+	[% END %]
+	
+</table>

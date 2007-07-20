@@ -1,0 +1,88 @@
+<h2>Abertura de chamado</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<form action="[% Catalyst.uri_for('novo_do') %]" method="POST">
+<input type="hidden" name="id" value="[% chamado.id %]">
+<input type="hidden" name="acao" value="[% acao %]">
+
+<table>
+	<tr>
+		<td>Tipo de chamado:</td>
+		<td>
+			<select name="tipo">
+				[% FOREACH tipo IN tipos %]
+				<option value="[% tipo.id %]" [% IF chamado.id_tipo == tipo.id %]selected[% END %]>[% tipo.nome %]</option>
+				[% END %]
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Cliente:</td>
+		<td><input type="text" name="cliente" size="50" value="[% chamado.cliente %]"></td>
+	</tr>
+	<tr>
+		<td>Endereço:</td>
+		<td><input type="text" name="endereco" size="100" value="[% chamado.endereco %]"></td>
+	</tr>
+	<tr>
+		<td>Telefone (opcional):</td>
+		<td><input type="text" name="cliente" size="15" value="[% chamado.telefone %]"></td>
+	</tr>
+	<tr>
+		<td>Data do chamado:</td>
+		<td>
+			<input type="text" name="data_chamado" id="data_chamado" size="8" value="[% data2normal(chamado.data_chamado) || datahoje %]">
+			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+			<script type="text/javascript">
+				Calendar.setup(
+					{
+						inputField  : "data_chamado",// ID of the input field
+						ifFormat    : "%d/%m/%Y",	 // the date format
+						button      : "t_rec"		 // ID of the button
+					}
+				);
+			</script>
+		</td>
+	</tr>
+	<tr>
+		<td>Data de conclusão:</td>
+		<td>
+			<input type="text" name="data_conclusao" id="data_conclusao" size="8" value="[% data2normal(chamado.data_conclusao) || datahoje %]">
+			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+			<script type="text/javascript">
+				Calendar.setup(
+					{
+						inputField  : "data_conclusao",// ID of the input field
+						ifFormat    : "%d/%m/%Y",	   // the date format
+						button      : "t_rec"		   // ID of the button
+					}
+				);
+			</script>
+		</td>
+	</tr>
+	<tr>
+		<td>Motivo do chamado:</td>
+		<td>
+			[% IF acao == 'novo' %]
+				<textarea cols="50" rows="5" name="motivo">[% chamado.motivo %]</textarea>
+			[% ELSE %]
+				[% chamado.motivo %]
+			[% END %]
+		</td>
+	</tr>
+	
+	[% IF acao == 'editar' %] 
+	<tr>
+		<td>Observações finais:</td>
+		<td><textarea cols="50" rows="5" name="observacoes">[% chamado.observacoes %]</textarea></td>
+	</tr>
+	[% END %]
+	
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" name="btn_submit"> <input type="reset" name="btn_reset"> </td>
+	</tr>
+</table>
+
+</form>
