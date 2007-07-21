@@ -34,9 +34,27 @@ Lista os chamados abertos.
 
 sub lista : Local {
 	my ($self, $c) = @_;
-	$c->stash->{suportes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 1, id_estado => 1})];
-	$c->stash->{estudos} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 2, id_estado => 1})];
-	$c->stash->{instalacoes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 3, id_estado => 1})];
+	my $estado = $c->model('RG3WifiDB::ChamadosEstado')->search({id => 1})->first;
+	$c->stash->{suportes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 1, id_estado => $estado->id})];
+	$c->stash->{estudos} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 2, id_estado => $estado->id})];
+	$c->stash->{instalacoes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 3, id_estado => $estado->id})];
+	$c->stash->{estado} = $estado;
+	$c->stash->{template} = 'chamados/lista.tt2';
+}
+
+=head2 lista_ok
+
+Lista os chamados finalizados.
+
+=cut
+
+sub lista_ok : Local {
+	my ($self, $c) = @_;
+	my $estado = $c->model('RG3WifiDB::ChamadosEstado')->search({id => 2})->first;
+	$c->stash->{suportes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 1, id_estado => $estado->id})];
+	$c->stash->{estudos} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 2, id_estado => $estado->id})];
+	$c->stash->{instalacoes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 3, id_estado => $estado->id})];
+	$c->stash->{estado} = $estado;
 	$c->stash->{template} = 'chamados/lista.tt2';
 }
 
@@ -50,6 +68,82 @@ sub novo : Local {
 	my ($self, $c) = @_;
 	$c->stash->{tipos} = [$c->model('RG3WifiDB::ChamadosTipo')->all];
 	$c->stash->{acao} = 'novo';
+	$c->stash->{estado} = 1;
+	$c->stash->{template} = 'chamados/novo.tt2';
+}
+
+=head2 novo_do
+
+Efetua o cadastro de um novo chamado.
+
+=cut
+
+sub novo_do : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Efetua o cadastro
+	my $dados = ({
+		id_tipo			=> $p->{tipo}								|| undef,
+		id_estado		=> $p->{estado}								|| undef,
+		cliente			=> $p->{cliente}							|| undef,
+		data_chamado	=> &RG3Wifi::data2sql($p->{data_chamado})	|| undef,
+		data_conclusao	=> &RG3Wifi::data2sql($p->{data_conclusao})	|| undef,
+		endereco		=> $p->{endereco}							|| undef,
+		telefone		=> $p->{telefone}							|| undef,
+		motivo			=> $p->{motivo}								|| undef,
+		observacoes		=> $p->{observacoes}						|| undef,
+	});
+	
+	eval {
+		if ($p->{acao} eq 'novo') {
+			my $chamado = $c->model('RG3WifiDB::Chamados')->create($dados);
+		} else {
+			my $chamado = $c->model('RG3WifiDB::Chamados')->search({id => $p->{id}})->first;
+			$chamado->update($dados);
+		}
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao cadastrar/editar chamado: ' . $@;
+		$c->stash->{template} = 'erro.tt2';
+		return;
+	}
+	
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Chamado cadastrado/editado com sucesso.';
+	$c->forward('lista');
+}
+
+=head2 editar
+
+Exibe formulário de edição de chamado.
+
+=cut
+
+sub editar : Local {
+	my ($self, $c, $id) = @_;
+	$c->stash->{tipos} = [$c->model('RG3WifiDB::ChamadosTipo')->all];
+	$c->stash->{chamado} = $c->model('RG3WifiDB::Chamados')->search({id => $id})->first;
+	$c->stash->{acao} = 'editar';
+	$c->stash->{estado} = 1;
+	$c->stash->{template} = 'chamados/novo.tt2';
+}
+
+=head2 finalizar
+
+Exibe formulário de finalização de chamado.
+
+=cut
+
+sub finalizar : Local {
+	my ($self, $c, $id) = @_;
+	$c->stash->{tipos} = [$c->model('RG3WifiDB::ChamadosTipo')->all];
+	$c->stash->{chamado} = $c->model('RG3WifiDB::Chamados')->search({id => $id})->first;
+	$c->stash->{acao} = 'finalizar';
+	$c->stash->{estado} = 2;
 	$c->stash->{template} = 'chamados/novo.tt2';
 }
 

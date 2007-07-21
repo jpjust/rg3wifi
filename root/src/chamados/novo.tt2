@@ -1,10 +1,15 @@
+[% PROCESS site/macros %]
+
 <h2>Abertura de chamado</h2>
 
 <p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
+<p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
+
 <form action="[% Catalyst.uri_for('novo_do') %]" method="POST">
 <input type="hidden" name="id" value="[% chamado.id %]">
 <input type="hidden" name="acao" value="[% acao %]">
+<input type="hidden" name="estado" value="[% estado %]">
 
 <table>
 	<tr>
@@ -15,70 +20,69 @@
 				<option value="[% tipo.id %]" [% IF chamado.id_tipo == tipo.id %]selected[% END %]>[% tipo.nome %]</option>
 				[% END %]
 			</select>
+			<img src="/static/images/star.png">
 		</td>
 	</tr>
 	<tr>
 		<td>Cliente:</td>
-		<td><input type="text" name="cliente" size="50" value="[% chamado.cliente %]"></td>
+		<td><input type="text" name="cliente" size="50" value="[% chamado.cliente %]"><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Endereço:</td>
-		<td><input type="text" name="endereco" size="100" value="[% chamado.endereco %]"></td>
+		<td><input type="text" name="endereco" size="50" value="[% chamado.endereco %]"><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
-		<td>Telefone (opcional):</td>
-		<td><input type="text" name="cliente" size="15" value="[% chamado.telefone %]"></td>
+		<td>Telefone:</td>
+		<td><input type="text" name="telefone" size="15" value="[% chamado.telefone %]"></td>
 	</tr>
 	<tr>
 		<td>Data do chamado:</td>
 		<td>
-			<input type="text" name="data_chamado" id="data_chamado" size="8" value="[% data2normal(chamado.data_chamado) || datahoje %]">
+			<input type="text" name="data_chamado" id="data_chamado" size="15" value="[% data2normal(chamado.data_chamado) || dhorahoje %]">
 			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
 			<script type="text/javascript">
 				Calendar.setup(
 					{
 						inputField  : "data_chamado",// ID of the input field
-						ifFormat    : "%d/%m/%Y",	 // the date format
-						button      : "t_rec"		 // ID of the button
+						ifFormat    : "%d/%m/%Y %H:%M",	 // the date format
+						button      : "t_rec",		 // ID of the button
+						showsTime	: true
 					}
 				);
 			</script>
+			<img src="/static/images/star.png">
 		</td>
 	</tr>
 	<tr>
-		<td>Data de conclusão:</td>
+		<td>Motivo do chamado:</td>
+		<td><textarea cols="50" rows="5" name="motivo">[% chamado.motivo %]</textarea><img src="/static/images/star.png"></td>
+	</tr>
+
+	[% IF acao == 'finalizar' %]
+	<tr>
+		<td>Data da conclusão:</td>
 		<td>
-			<input type="text" name="data_conclusao" id="data_conclusao" size="8" value="[% data2normal(chamado.data_conclusao) || datahoje %]">
+			<input type="text" name="data_conclusao" id="data_conclusao" size="15" value="[% data2normal(chamado.data_conclusao) || dhorahoje %]">
 			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
 			<script type="text/javascript">
 				Calendar.setup(
 					{
 						inputField  : "data_conclusao",// ID of the input field
-						ifFormat    : "%d/%m/%Y",	   // the date format
+						ifFormat    : "%d/%m/%Y %H:%M",	   // the date format
 						button      : "t_rec"		   // ID of the button
+						showsTime	: true
 					}
 				);
 			</script>
+			<img src="/static/images/star.png">
 		</td>
 	</tr>
 	<tr>
-		<td>Motivo do chamado:</td>
-		<td>
-			[% IF acao == 'novo' %]
-				<textarea cols="50" rows="5" name="motivo">[% chamado.motivo %]</textarea>
-			[% ELSE %]
-				[% chamado.motivo %]
-			[% END %]
-		</td>
-	</tr>
-	
-	[% IF acao == 'editar' %] 
-	<tr>
-		<td>Observações finais:</td>
+		<td>Observações adicionais:</td>
 		<td><textarea cols="50" rows="5" name="observacoes">[% chamado.observacoes %]</textarea></td>
 	</tr>
 	[% END %]
-	
+
 	<tr>
 		<td>&nbsp;</td>
 		<td><input type="submit" name="btn_submit"> <input type="reset" name="btn_reset"> </td>

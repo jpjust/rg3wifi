@@ -125,7 +125,7 @@ sub novo_fab_do : Local {
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Fabricante cadastrado com sucesso.';
-	$c->forward('novo_fab');
+	$c->forward('lista');
 }
 
 =head2 novo_mod_do
@@ -163,7 +163,7 @@ sub novo_mod_do : Local {
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Modelo cadastrado com sucesso.';
-	$c->forward('novo_mod');
+	$c->forward('lista');
 }
 
 =head2 novo_rad_do
@@ -212,7 +212,7 @@ sub novo_rad_do : Local {
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Rádio cadastrado com sucesso.';
-	$c->forward('novo_rad');
+	$c->forward('lista');
 }
 
 =head2 editar_fab

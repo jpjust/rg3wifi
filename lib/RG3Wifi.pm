@@ -70,9 +70,12 @@ Converte data de formato SQL para normal
 =cut
 
 sub data2normal : Public {
-	if ($_[0]) {
+	if (length($_[0]) == 10) {
 		my ($ano, $mes, $dia) = split('-', $_[0]);
 		return "$dia/$mes/$ano";
+	} elsif (length($_[0]) > 10) {
+		my ($ano, $mes, $dia, $hora, $minuto) = split(/[^0-9]/, $_[0]);
+		return "$dia/$mes/$ano $hora:$minuto";
 	} else {
 		return undef;
 	}
@@ -85,9 +88,14 @@ Converte data de formato normal para SQL
 =cut
 
 sub data2sql : Public {
-	if ($_[0]) {
+	if (length($_[0]) == 10) {
 		my ($dia, $mes, $ano) = split('/', $_[0]);
 		return "$ano-$mes-$dia";
+	} elsif (length($_[0]) > 10) {
+		my ($dia, $mes, $ano, $hora, $minuto) = split(/[^0-9]/, $_[0]);
+		$mes = '0' . $mes if ($mes < 10);
+		$dia = '0' . $dia if ($dia < 10);
+		return "$ano-$mes-$dia $hora:$minuto:00";
 	} else {
 		return undef;
 	}

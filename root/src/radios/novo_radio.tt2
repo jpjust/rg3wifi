@@ -4,6 +4,8 @@
 
 <p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
+<p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
+
 <form action="[% Catalyst.uri_for('novo_rad_do') %]" method="POST">
 <input type="hidden" name="id" value="[% radio.id %]">
 <input type="hidden" name="acao" value="[% acao %]">
@@ -20,6 +22,7 @@
 				<option value="[% modelo.id %]" [% IF radio.id_modelo == modelo.id %]selected[% END %]>[% modelo.fabricante.nome %] [% modelo.nome %]</option>
 				[% END %]
 			</select>
+			<img src="/static/images/star.png">
 		</td>
 	</tr>
 	<tr>
@@ -36,15 +39,16 @@
 					}
 				);
 			</script>
+			<img src="/static/images/star.png">
 		</td>
 	</tr>
 	<tr>
 		<td>Valor da compra (incluir valor do pigtail):</td>
-		<td>R$ <input type="text" name="valor_compra" size="15" value="[% radio.valor_compra %]"></td>
+		<td>R$ <input type="text" name="valor_compra" size="15" value="[% radio.valor_compra %]"><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Custo (valor da compra + frete rateado):</td>
-		<td>R$ <input type="text" name="custo" size="15" value="[% radio.custo %]"></td>
+		<td>R$ <input type="text" name="custo" size="15" value="[% radio.custo %]"><img src="/static/images/star.png"></td>
 	</tr>
 
 	<tr>
@@ -64,6 +68,7 @@
 					}
 				);
 			</script>
+			<img src="/static/images/star.png">
 		</td>
 	</tr>
 	<tr>
@@ -74,6 +79,7 @@
 				<option value="[% tipo.id %]" [% IF radio.id_tipo == tipo.id %]selected[% END %]>[% tipo.nome %]</option>
 				[% END %]
 			</select>
+			<img src="/static/images/star.png">
 		</td>
 	</tr>
 	<tr>
@@ -117,7 +123,7 @@
 	</tr>
 	<tr>
 		<td>Endereço MAC:</td>
-		<td><input type="text" name="mac" size="20" value="[% radio.mac %]"></td>
+		<td><input type="text" name="mac" size="20" value="[% radio.mac %]"><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Endereço IP:</td>

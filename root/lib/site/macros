@@ -1,12 +1,29 @@
 [% # Retorna a data atual %]
 [% MACRO datahoje PERL %]
 	my (@data) = localtime();
-	print abs($data[3]) . '/' . abs($data[4] + 1) . '/' . abs($data[5] + 1900); 
+	print abs($data[3]) . '/' . abs($data[4] + 1) . '/' . abs($data[5] + 1900);
+[% END %]
+
+[% # Retorna a hora atual %]
+[% MACRO horahoje PERL %]
+	my (@data) = localtime();
+	print abs($data[2]) . ':' . abs($data[1]);
+[% END %]
+
+[% # Retorna a data e hora atuais %]
+[% MACRO dhorahoje PERL %]
+	my (@data) = localtime();
+	print abs($data[3]) . '/' . abs($data[4] + 1) . '/' . abs($data[5] + 1900) . ' ' . abs($data[2]) . ':' . abs($data[1]);
 [% END %]
 
 [% # Formatação de data %]
 [% MACRO data2normal(datasql) PERL %]
 	print RG3Wifi::data2normal($stash->get('datasql'));
+[% END %]
+
+[% # Formatação de data %]
+[% MACRO data2sql(datanormal) PERL %]
+	print RG3Wifi::data2sql($stash->get('datanormal'));
 [% END %]
 
 [% # Formatação de documentos (CPF/CNPJ) %]

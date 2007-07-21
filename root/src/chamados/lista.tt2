@@ -1,6 +1,15 @@
-<h2>Lista de chamados abertos</h2>
+[% PROCESS site/macros %]
 
-<p><a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Abrir novo chamado</a></p>
+<h2>Lista de chamados ([% estado.nome %])</h2>
+
+<p>
+	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Abrir novo chamado</a> ::
+	[% IF estado.id == 2 %]
+	<a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/add.png" align="top">Ver chamados abertos</a>
+	[% ELSE %]
+	<a href="[% Catalyst.uri_for('lista_ok') %]"><img src="/static/images/add.png" align="top">Ver chamados finalizados</a>
+	[% END %]
+</p>
 
 <h3>Suporte</h3>
 
@@ -9,19 +18,26 @@
 		<th>Cliente</th>
 		<th>Endereço</th>
 		<th>Data</th>
-		<th>Ações</th>
+		[% IF estado.id == 1 %]<th>Ações</th>[% END %]
 	</tr>
 	
 	[% FOREACH suporte IN suportes %]
 	<tr class="lista">
 		<td>[% suporte.cliente %]</td>
 		<td>[% suporte.endereco %]</td>
-		<td>[% suporte.data %]</td>
-		<td>&nbsp;</td>
+		<td>[% data2normal(suporte.data_chamado) %]</td>
+		[% IF estado.id == 1 %]
+		<td>
+			<a href="[% Catalyst.uri_for('editar/') _ suporte.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
+			<a href="[% Catalyst.uri_for('finalizar/') _ suporte.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
+		</td>
+		[% END %]
 	</tr>
 	[% END %]
 	
 </table>
+
+<hr>
 
 <h3>Instalação</h3>
 
@@ -30,19 +46,26 @@
 		<th>Cliente</th>
 		<th>Endereço</th>
 		<th>Data</th>
-		<th>Ações</th>
+		[% IF estado.id == 1 %]<th>Ações</th>[% END %]
 	</tr>
 	
 	[% FOREACH instalacao IN instalacoes %]
 	<tr class="lista">
 		<td>[% instalacao.cliente %]</td>
 		<td>[% instalacao.endereco %]</td>
-		<td>[% instalacao.data %]</td>
-		<td>&nbsp;</td>
+		<td>[% instalacao.data_chamado %]</td>
+		[% IF estado.id == 1 %]
+		<td>
+			<a href="[% Catalyst.uri_for('editar/') _ instalacao.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
+			<a href="[% Catalyst.uri_for('finalizar/') _ instalacao.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
+		</td>
+		[% END %]
 	</tr>
 	[% END %]
 	
 </table>
+
+<hr>
 
 <h3>Estudo de viabilidade</h3>
 
@@ -51,16 +74,21 @@
 		<th>Cliente</th>
 		<th>Endereço</th>
 		<th>Data</th>
-		<th>Ações</th>
+		[% IF estado.id == 1 %]<th>Ações</th>[% END %]
 	</tr>
 	
 	[% FOREACH estudo IN estudos %]
 	<tr class="lista">
 		<td>[% estudo.cliente %]</td>
 		<td>[% estudo.endereco %]</td>
-		<td>[% estudo.data %]</td>
-		<td>&nbsp;</td>
+		<td>[% estudo.data_chamado %]</td>
+		[% IF estado.id == 1 %]
+		<td>
+			<a href="[% Catalyst.uri_for('editar/') _ estudo.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
+			<a href="[% Catalyst.uri_for('finalizar/') _ estudo.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
+		</td>
+		[% END %]
 	</tr>
 	[% END %]
-	
+
 </table>
