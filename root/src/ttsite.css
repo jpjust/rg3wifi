@@ -113,6 +113,15 @@ img {
 	padding: 10px;
 }
 
+#mytextbox {
+	background-color: #ffffff;
+	color: black;
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
+	padding: 10px;
+}
+
 .message {
 	color: #00aa00;
 }

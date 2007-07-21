@@ -1,8 +1,26 @@
 [% PROCESS site/macros %]
 
-<h2>Lista de fabricantes</h2>
+<script type="text/javascript">
+// Habilita caixa
+function habilita_caixa(nome) {
+	var mydiv = document.getElementsByName(nome);
+	
+	if (mydiv[0].style.display == '') {
+		mydiv[0].style.display = 'none';
+	} else {
+		mydiv[0].style.display = '';
+	}
+}
+</script>
 
-<p><a href="[% Catalyst.uri_for('novo_fab') %]"><img src="/static/images/add.png" align="top">Cadastrar fabricante</a></p>
+<h2>Fabricantes e modelos</h2>
+
+<p><a href="[% Catalyst.uri_for('novo_fab') %]"><img src="/static/images/add.png" align="top">Cadastrar fabricante</a> ::
+<a href="[% Catalyst.uri_for('novo_mod') %]"><img src="/static/images/add.png" align="top">Cadastrar modelo</a></p>
+
+<h3><a href="javascript:habilita_caixa('box_fabricantes');">Fabricantes</a></h3>
+
+<div id="mytextbox" style="display: none;" name="box_fabricantes">
 
 <table width="100%">
 	<tr>
@@ -12,18 +30,20 @@
 	
 	[% FOREACH fabricante IN fabricantes %]
 	<tr class="lista">
-		<td><a href="[% Catalyst.uri_for('editar_fab/') _ fabricante.id %]">[% fabricante.nome %]</a></td>
-		<td>&nbsp;</td>
+		<td>[% fabricante.nome %]</td>
+		<td>
+			<a href="[% Catalyst.uri_for('editar_fab/') _ fabricante.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir_fab/') _ fabricante.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+		</td>
 	</tr>
 	[% END %]
 </table>
 
-<br><br>
-<hr>
+</div>
 
-<h2>Lista de modelos</h2>
+<h3><a href="javascript:habilita_caixa('box_modelos');">Modelos</a></h3>
 
-<p><a href="[% Catalyst.uri_for('novo_mod') %]"><img src="/static/images/add.png" align="top">Cadastrar modelo</a></p>
+<div id="mytextbox" style="display: none;" name="box_modelos">
 
 <table width="100%">
 	<tr>
@@ -35,8 +55,13 @@
 	[% FOREACH modelo IN modelos %]
 	<tr class="lista">
 		<td>[% modelo.fabricante.nome %]</td>
-		<td><a href="[% Catalyst.uri_for('editar_mod/') _ modelo.id %]">[% modelo.nome %]</a></td>
-		<td>&nbsp;</td>
+		<td>[% modelo.nome %]</td>
+		<td>
+			<a href="[% Catalyst.uri_for('editar_mod/') _ modelo.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir_mod/') _ modelo.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+		</td>
 	</tr>
 	[% END %]
 </table>
+
+</div>

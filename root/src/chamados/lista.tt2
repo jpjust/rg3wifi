@@ -1,5 +1,18 @@
 [% PROCESS site/macros %]
 
+<script type="text/javascript">
+// Habilita caixa
+function habilita_caixa(nome) {
+	var mydiv = document.getElementsByName(nome);
+	
+	if (mydiv[0].style.display == '') {
+		mydiv[0].style.display = 'none';
+	} else {
+		mydiv[0].style.display = '';
+	}
+}
+</script>
+
 <h2>Lista de chamados ([% estado.nome %])</h2>
 
 <p>
@@ -11,7 +24,9 @@
 	[% END %]
 </p>
 
-<h3>Suporte</h3>
+<h3><a href="javascript:habilita_caixa('box_suporte');">Suporte</a></h3>
+
+<div id="mytextbox" style="display: none;" name="box_suporte">
 
 <table width="100%">
 	<tr>
@@ -30,6 +45,7 @@
 		<td>
 			<a href="[% Catalyst.uri_for('editar/') _ suporte.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
 			<a href="[% Catalyst.uri_for('finalizar/') _ suporte.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir/') _ suporte.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 		[% END %]
 	</tr>
@@ -37,9 +53,11 @@
 	
 </table>
 
-<hr>
+</div>
 
-<h3>Instalação</h3>
+<h3><a href="javascript:habilita_caixa('box_instalacao');">Instalação</a></h3>
+
+<div id="mytextbox" style="display: none;" name="box_instalacao">
 
 <table width="100%">
 	<tr>
@@ -53,11 +71,12 @@
 	<tr class="lista">
 		<td>[% instalacao.cliente %]</td>
 		<td>[% instalacao.endereco %]</td>
-		<td>[% instalacao.data_chamado %]</td>
+		<td>[% data2normal(instalacao.data_chamado) %]</td>
 		[% IF estado.id == 1 %]
 		<td>
 			<a href="[% Catalyst.uri_for('editar/') _ instalacao.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
 			<a href="[% Catalyst.uri_for('finalizar/') _ instalacao.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir/') _ instalacao.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 		[% END %]
 	</tr>
@@ -65,9 +84,11 @@
 	
 </table>
 
-<hr>
+</div>
 
-<h3>Estudo de viabilidade</h3>
+<h3><a href="javascript:habilita_caixa('box_estudo');">Estudo de viabilidade</a></h3>
+
+<div id="mytextbox" style="display: none;" name="box_estudo">
 
 <table width="100%">
 	<tr>
@@ -81,14 +102,17 @@
 	<tr class="lista">
 		<td>[% estudo.cliente %]</td>
 		<td>[% estudo.endereco %]</td>
-		<td>[% estudo.data_chamado %]</td>
+		<td>[% data2normal(estudo.data_chamado) %]</td>
 		[% IF estado.id == 1 %]
 		<td>
 			<a href="[% Catalyst.uri_for('editar/') _ estudo.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
 			<a href="[% Catalyst.uri_for('finalizar/') _ estudo.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir/') _ estudo.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 		[% END %]
 	</tr>
 	[% END %]
 
 </table>
+
+</div>

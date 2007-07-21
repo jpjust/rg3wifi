@@ -16,10 +16,13 @@
 	[% FOREACH cliente IN clientes %]
 	<tr class="lista" [% IF cliente.bloqueado == 1 %]bgcolor="#FFAAAA"[% END %]>
 		<td>[% cliente.login %]</td>
-		<td><a href="[% Catalyst.uri_for('editar/') _ cliente.id %]">[% cliente.nome %]</a></td>
+		<td>[% cliente.nome %]</td>
 		<td>[% cliente.ip %]</td>
 		<td>[% cliente.grupo.nome %]</td>
-		<td>[% IF Catalyst.check_any_user_role('admin') %]<a href="[% Catalyst.uri_for('excluir/') _ cliente.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]</td>
+		<td>
+			<a href="[% Catalyst.uri_for('editar/') _ cliente.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir/') _ cliente.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+		</td>
 	</tr>
 	[% END %]
 	

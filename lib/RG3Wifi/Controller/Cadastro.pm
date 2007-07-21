@@ -207,7 +207,7 @@ sub cadastro_do : Local {
 		nome			=> $c->request->params->{nome}				|| undef,
 		rg				=> $c->request->params->{rg}				|| undef,
 		doc				=> $c->request->params->{doc}				|| undef,
-		data_nascimento	=> $c->request->params->{data_nascimento}	|| undef,
+		data_nascimento	=> &RG3Wifi::data2sql($c->request->params->{data_nascimento})	|| undef,
 		endereco		=> $c->request->params->{endereco}			|| undef,
 		bairro			=> $c->request->params->{bairro}			|| undef,
 		cep				=> $c->request->params->{cep}				|| undef,
@@ -266,11 +266,7 @@ sub cadastro_do : Local {
 	
 	# Envia mensagem de sucesso
 	$c->stash->{status_msg} = 'Cliente cadastrado/alterado com sucesso!';
-	if ($c->request->params->{acao} eq 'novo') {
-		$c->forward('novo');
-	} else {
-		$c->forward('lista');
-	}
+	$c->forward('lista');
 }
 
 =head2 excluir

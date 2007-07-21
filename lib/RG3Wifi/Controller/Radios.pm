@@ -125,7 +125,7 @@ sub novo_fab_do : Local {
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Fabricante cadastrado com sucesso.';
-	$c->forward('lista');
+	$c->forward('lista_mods');
 }
 
 =head2 novo_mod_do
@@ -163,7 +163,7 @@ sub novo_mod_do : Local {
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Modelo cadastrado com sucesso.';
-	$c->forward('lista');
+	$c->forward('lista_mods');
 }
 
 =head2 novo_rad_do
@@ -194,6 +194,18 @@ sub novo_rad_do : Local {
 		ip				=> $p->{ip}									|| undef,
 		essid			=> $p->{essid}								|| undef,
 	});
+	
+	# Rádio não instalado e rádio base
+	if ($dados->{id_tipo} == 1) {
+		$dados->{id_base} = undef;
+		$dados->{data_instalacao} = undef;
+		$dados->{localizacao} = undef;
+		$dados->{essid} = undef;
+	} elsif ($dados->{id_tipo} == 2) {
+		$dados->{id_base} = undef;
+	} else {
+		$dados->{essid} = undef;
+	}
 	
 	eval {
 		if ($p->{'acao'} eq 'editar') {
