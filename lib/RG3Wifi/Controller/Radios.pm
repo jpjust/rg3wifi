@@ -227,6 +227,66 @@ sub novo_rad_do : Local {
 	$c->forward('lista');
 }
 
+=head2 excluir_fab
+
+Exclui um fabricante.
+
+=cut
+
+sub excluir_fab : Local {
+	my ($self, $c, $id) = @_;
+	
+	my $fabricante = $c->model('RG3WifiDB::Fabricantes')->search({id => $id})->first;
+	if ($fabricante) {
+		$fabricante->delete();
+		$c->stash->{status_msg} = 'Fabricante excluído!';
+	} else {
+		$c->stash->{error_msg} = 'Fabricante não encontrado!';
+	}
+	
+	$c->forward('lista_mods');
+}
+
+=head2 excluir_mod
+
+Exclui um modelo.
+
+=cut
+
+sub excluir_mod : Local {
+	my ($self, $c, $id) = @_;
+	
+	my $modelo = $c->model('RG3WifiDB::Modelos')->search({id => $id})->first;
+	if ($modelo) {
+		$modelo->delete();
+		$c->stash->{status_msg} = 'Modelo excluído!';
+	} else {
+		$c->stash->{error_msg} = 'Modelo não encontrado!';
+	}
+	
+	$c->forward('lista_mods');
+}
+
+=head2 excluir_rad
+
+Exclui um rádio.
+
+=cut
+
+sub excluir_rad : Local {
+	my ($self, $c, $id) = @_;
+	
+	my $radio = $c->model('RG3WifiDB::Radios')->search({id => $id})->first;
+	if ($radio) {
+		$radio->delete();
+		$c->stash->{status_msg} = 'Rádio excluído!';
+	} else {
+		$c->stash->{error_msg} = 'Rádio não encontrado!';
+	}
+	
+	$c->forward('lista');
+}
+
 =head2 editar_fab
 
 Exibe formulário para editar fabricante.

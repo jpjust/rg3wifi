@@ -4,6 +4,10 @@
 
 <p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
+[% IF val.has_missing() %]
+	<p class="missing_p">Alguns campos obrigatórios estão faltando.</p>
+[% END %]
+
 <p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
 
 <form action="[% Catalyst.uri_for('novo_do') %]" method="POST">
@@ -25,11 +29,11 @@
 	</tr>
 	<tr>
 		<td>Cliente:</td>
-		<td><input type="text" name="cliente" size="50" value="[% chamado.cliente %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="cliente" size="50" value="[% chamado.cliente %]" [% IF val.missing('cliente') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Endereço:</td>
-		<td><input type="text" name="endereco" size="50" value="[% chamado.endereco %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="endereco" size="50" value="[% chamado.endereco %]" [% IF val.missing('endereco') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Telefone:</td>
@@ -38,7 +42,7 @@
 	<tr>
 		<td>Data do chamado:</td>
 		<td>
-			<input type="text" name="data_chamado" id="data_chamado" size="15" value="[% data2normal(chamado.data_chamado) || dhorahoje %]">
+			<input type="text" name="data_chamado" id="data_chamado" size="15" value="[% data2normal(chamado.data_chamado) || dhorahoje %]" [% IF val.missing('data_chamado') %]class="missing"[% END %]>
 			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
 			<script type="text/javascript">
 				Calendar.setup(
@@ -55,7 +59,7 @@
 	</tr>
 	<tr>
 		<td>Motivo do chamado:</td>
-		<td><textarea cols="50" rows="5" name="motivo">[% chamado.motivo %]</textarea><img src="/static/images/star.png"></td>
+		<td><textarea cols="50" rows="5" name="motivo" [% IF val.missing('motivo') %]class="missing"[% END %]>[% chamado.motivo %]</textarea><img src="/static/images/star.png"></td>
 	</tr>
 
 	[% IF acao == 'finalizar' %]

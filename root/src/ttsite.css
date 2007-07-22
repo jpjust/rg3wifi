@@ -122,6 +122,15 @@ img {
 	padding: 10px;
 }
 
+.missing_p {
+	color: #aa0000;
+	font-weight: bold;
+}
+
+.missing {
+	background-color: #ff9999;
+}
+
 .message {
 	color: #00aa00;
 }

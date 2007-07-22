@@ -1,2 +1,7 @@
-- Criar actions para exclusão de fabricantes, modelos,
-  rádios e chamados.
+- Criar validações para as actions de exclusão de fabricantes,
+  modelos, rádios e chamados (começou nos chamados).
+
+- Fazer impressão de chamados e dos dados dos clientes.
+  Uma idéia é fazer uma página onde pode ser escolhidos
+  os clientes para impressão (impressão de vários clientes
+  simultaneamente).

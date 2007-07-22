@@ -3,6 +3,7 @@ package RG3Wifi::Controller::Chamados;
 use strict;
 use warnings;
 use base 'Catalyst::Controller';
+use Data::FormValidator;
 
 =head1 NAME
 
@@ -86,6 +87,7 @@ sub novo_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = ({
+		id				=> $p->{id}									|| undef,
 		id_tipo			=> $p->{tipo}								|| undef,
 		id_estado		=> $p->{estado}								|| undef,
 		cliente			=> $p->{cliente}							|| undef,
@@ -97,13 +99,22 @@ sub novo_do : Local {
 		observacoes		=> $p->{observacoes}						|| undef,
 	});
 	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$dados,
+		{required => [qw(id_tipo id_estado cliente data_chamado endereco motivo)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{chamado} = $dados;
+		$c->forward('novo');
+		return;
+	}
+
+	# Atualiza o banco
 	eval {
-		if ($p->{acao} eq 'novo') {
-			my $chamado = $c->model('RG3WifiDB::Chamados')->create($dados);
-		} else {
-			my $chamado = $c->model('RG3WifiDB::Chamados')->search({id => $p->{id}})->first;
-			$chamado->update($dados);
-		}
+		my $chamado = $c->model('RG3WifiDB::Chamados')->update_or_create($dados);
 	};
 	
 	if ($@) {
@@ -114,6 +125,26 @@ sub novo_do : Local {
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Chamado cadastrado/editado com sucesso.';
+	$c->forward('lista');
+}
+
+=head2 excluir
+
+Exclui um chamado.
+
+=cut
+
+sub excluir : Local {
+	my ($self, $c, $id) = @_;
+	
+	my $chamado = $c->model('RG3WifiDB::Chamados')->search({id => $id})->first;
+	if ($chamado) {
+		$chamado->delete();
+		$c->stash->{status_msg} = 'Chamado excluído!';
+	} else {
+		$c->stash->{error_msg} = 'Chamado não encontrado!';
+	}
+	
 	$c->forward('lista');
 }
 

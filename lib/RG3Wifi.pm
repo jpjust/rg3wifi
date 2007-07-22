@@ -90,13 +90,13 @@ Converte data de formato normal para SQL
 sub data2sql : Public {
 	if (length($_[0]) == 10) {
 		my ($dia, $mes, $ano) = split('/', $_[0]);
-		$mes = '0' . $mes if ($mes < 10);
-		$dia = '0' . $dia if ($dia < 10);
+		$mes = '0' . abs($mes) if ($mes < 10);
+		$dia = '0' . abs($dia) if ($dia < 10);
 		return "$ano-$mes-$dia";
 	} elsif (length($_[0]) > 10) {
 		my ($dia, $mes, $ano, $hora, $minuto) = split(/[^0-9]/, $_[0]);
-		$mes = '0' . $mes if ($mes < 10);
-		$dia = '0' . $dia if ($dia < 10);
+		$mes = '0' . abs($mes) if ($mes < 10);
+		$dia = '0' . abs($dia) if ($dia < 10);
 		return "$ano-$mes-$dia $hora:$minuto:00";
 	} else {
 		return undef;
