@@ -66,7 +66,7 @@
 	<tr>
 		<td>Data da conclusão:</td>
 		<td>
-			<input type="text" name="data_conclusao" id="data_conclusao" size="15" value="[% data2normal(chamado.data_conclusao) || dhorahoje %]">
+			<input type="text" name="data_conclusao" id="data_conclusao" size="15" value="[% data2normal(chamado.data_conclusao) || dhorahoje %]" [% IF val.missing('data_conclusao') %]class="missing"[% END %]>
 			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
 			<script type="text/javascript">
 				Calendar.setup(
@@ -89,7 +89,7 @@
 
 	<tr>
 		<td>&nbsp;</td>
-		<td><input type="submit" name="btn_submit"> <input type="reset" name="btn_reset"> </td>
+		<td><input type="submit" name="btn_submit" value="OK"></td>
 	</tr>
 </table>
 

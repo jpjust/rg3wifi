@@ -1,3 +1,4 @@
+[% ##### MACROS EASYCAT ##### %]
 [% # Retorna a data atual %]
 [% MACRO datahoje PERL %]
 	my (@data) = localtime();
@@ -18,17 +19,17 @@
 
 [% # Formatação de data %]
 [% MACRO data2normal(datasql) PERL %]
-	print RG3Wifi::data2normal($stash->get('datasql'));
+	print EasyCat::data2normal($stash->get('datasql'));
 [% END %]
 
 [% # Formatação de data %]
 [% MACRO data2sql(datanormal) PERL %]
-	print RG3Wifi::data2sql($stash->get('datanormal'));
+	print EasyCat::data2sql($stash->get('datanormal'));
 [% END %]
 
 [% # Formatação de documentos (CPF/CNPJ) %]
 [% MACRO formatadoc(doc) PERL %]
-	print RG3Wifi::formatadoc($stash->get('doc'));
+	print EasyCat::formatadoc($stash->get('doc'));
 [% END %]
 
 [% # Formatação de valor monetário %]
@@ -43,11 +44,24 @@
 
 [% ### JavaScripts %]
 <script type="text/javascript">
-// Caixa de diálogo de exclusão
-function askdel(item, action) {
-	var ask = confirm('Tem certeza que deseja excluir ' + item + '?');
+// Caixa de diálogo de confirmação
+function askuser(message, action) {
+	var ask = confirm(message);
 	if (ask == true) {
 		window.location = action;
+	}
+}
+</script>
+
+<script type="text/javascript">
+// Habilita caixa
+function showbox(name) {
+	var mydiv = document.getElementsByName(name);
+	
+	if (mydiv[0].style.display == '') {
+		mydiv[0].style.display = 'none';
+	} else {
+		mydiv[0].style.display = '';
 	}
 }
 </script>

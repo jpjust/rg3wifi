@@ -3,6 +3,7 @@ package RG3Wifi::Controller::Chamados;
 use strict;
 use warnings;
 use base 'Catalyst::Controller';
+use EasyCat;
 use Data::FormValidator;
 
 =head1 NAME
@@ -35,27 +36,9 @@ Lista os chamados abertos.
 
 sub lista : Local {
 	my ($self, $c) = @_;
-	my $estado = $c->model('RG3WifiDB::ChamadosEstado')->search({id => 1})->first;
-	$c->stash->{suportes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 1, id_estado => $estado->id})];
-	$c->stash->{estudos} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 2, id_estado => $estado->id})];
-	$c->stash->{instalacoes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 3, id_estado => $estado->id})];
-	$c->stash->{estado} = $estado;
-	$c->stash->{template} = 'chamados/lista.tt2';
-}
-
-=head2 lista_ok
-
-Lista os chamados finalizados.
-
-=cut
-
-sub lista_ok : Local {
-	my ($self, $c) = @_;
-	my $estado = $c->model('RG3WifiDB::ChamadosEstado')->search({id => 2})->first;
-	$c->stash->{suportes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 1, id_estado => $estado->id})];
-	$c->stash->{estudos} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 2, id_estado => $estado->id})];
-	$c->stash->{instalacoes} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => 3, id_estado => $estado->id})];
-	$c->stash->{estado} = $estado;
+	$c->stash->{estados} = [$c->model('RG3WifiDB::ChamadosEstado')->all];
+	$c->stash->{tipos} = [$c->model('RG3WifiDB::ChamadosTipo')->all];
+	$c->stash->{estado_atual} = $c->request->params->{estado} || 1;
 	$c->stash->{template} = 'chamados/lista.tt2';
 }
 
@@ -91,8 +74,8 @@ sub novo_do : Local {
 		id_tipo			=> $p->{tipo}								|| undef,
 		id_estado		=> $p->{estado}								|| undef,
 		cliente			=> $p->{cliente}							|| undef,
-		data_chamado	=> &RG3Wifi::data2sql($p->{data_chamado})	|| undef,
-		data_conclusao	=> &RG3Wifi::data2sql($p->{data_conclusao})	|| undef,
+		data_chamado	=> &EasyCat::data2sql($p->{data_chamado})	|| undef,
+		data_conclusao	=> &EasyCat::data2sql($p->{data_conclusao})	|| undef,
 		endereco		=> $p->{endereco}							|| undef,
 		telefone		=> $p->{telefone}							|| undef,
 		motivo			=> $p->{motivo}								|| undef,
@@ -114,7 +97,7 @@ sub novo_do : Local {
 
 	# Atualiza o banco
 	eval {
-		my $chamado = $c->model('RG3WifiDB::Chamados')->update_or_create($dados);
+		$c->model('RG3WifiDB::Chamados')->update_or_create($dados);
 	};
 	
 	if ($@) {
@@ -136,15 +119,8 @@ Exclui um chamado.
 
 sub excluir : Local {
 	my ($self, $c, $id) = @_;
-	
-	my $chamado = $c->model('RG3WifiDB::Chamados')->search({id => $id})->first;
-	if ($chamado) {
-		$chamado->delete();
-		$c->stash->{status_msg} = 'Chamado excluído!';
-	} else {
-		$c->stash->{error_msg} = 'Chamado não encontrado!';
-	}
-	
+	$c->model('RG3WifiDB::Chamados')->search({id => $id})->delete_all();
+	$c->stash->{status_msg} = 'Chamado excluído!';
 	$c->forward('lista');
 }
 
@@ -159,7 +135,7 @@ sub editar : Local {
 	$c->stash->{tipos} = [$c->model('RG3WifiDB::ChamadosTipo')->all];
 	$c->stash->{chamado} = $c->model('RG3WifiDB::Chamados')->search({id => $id})->first;
 	$c->stash->{acao} = 'editar';
-	$c->stash->{estado} = 1;
+	$c->stash->{estado} = $c->stash->{chamado}->id_estado;
 	$c->stash->{template} = 'chamados/novo.tt2';
 }
 

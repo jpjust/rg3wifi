@@ -1,51 +1,49 @@
 [% PROCESS site/macros %]
 
-<script type="text/javascript">
-// Habilita caixa
-function habilita_caixa(nome) {
-	var mydiv = document.getElementsByName(nome);
-	
-	if (mydiv[0].style.display == '') {
-		mydiv[0].style.display = 'none';
-	} else {
-		mydiv[0].style.display = '';
-	}
-}
-</script>
+<h2>Lista de chamados</h2>
 
-<h2>Lista de chamados ([% estado.nome %])</h2>
+<div>
+<span align="left">
+	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Abrir novo chamado</a>
+</span>
+<span style="right: 10; position: absolute;">
+	<form action="[% Catalyst.uri_for('lista') %]" method="POST">
+	Listar chamados:
+	<select name="estado">
+		[% FOREACH estado IN estados %]
+		<option value="[% estado.id %]" [% IF estado.id == estado_atual %]selected[% END %]>[% estado.nome %]</option>
+		[% END %]
+	</select>
+	<input type="submit" value="Selecionar">
+	</form>
+</span>
+</div>
 
-<p>
-	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Abrir novo chamado</a> ::
-	[% IF estado.id == 2 %]
-	<a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/add.png" align="top">Ver chamados abertos</a>
-	[% ELSE %]
-	<a href="[% Catalyst.uri_for('lista_ok') %]"><img src="/static/images/add.png" align="top">Ver chamados finalizados</a>
-	[% END %]
-</p>
+[% FOREACH tipo IN tipos %]
 
-<h3><a href="javascript:habilita_caixa('box_suporte');">Suporte</a></h3>
+<h3><a href="javascript:showbox('box_[% tipo.nome %]');">[% tipo.nome %]</a></h3>
 
-<div id="mytextbox" style="display: none;" name="box_suporte">
+<div id="mytextbox" style="display: none;" name="box_[% tipo.nome %]">
 
 <table width="100%">
 	<tr>
 		<th>Cliente</th>
 		<th>Endereço</th>
 		<th>Data</th>
-		[% IF estado.id == 1 %]<th>Ações</th>[% END %]
+		[% IF estado_atual == 1 %]<th>Ações</th>[% END %]
 	</tr>
 	
-	[% FOREACH suporte IN suportes %]
+	[% FOREACH chamado IN tipo.chamados %]
+	[% NEXT IF chamado.id_estado != estado_atual %]
 	<tr class="lista">
-		<td>[% suporte.cliente %]</td>
-		<td>[% suporte.endereco %]</td>
-		<td>[% data2normal(suporte.data_chamado) %]</td>
-		[% IF estado.id == 1 %]
+		<td>[% chamado.cliente %]</td>
+		<td>[% chamado.endereco %]</td>
+		<td>[% data2normal(chamado.data_chamado) %]</td>
+		[% IF estado_atual == 1 %]
 		<td>
-			<a href="[% Catalyst.uri_for('editar/') _ suporte.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
-			<a href="[% Catalyst.uri_for('finalizar/') _ suporte.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir/') _ suporte.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+			<a href="[% Catalyst.uri_for('editar/') _ chamado.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
+			<a href="[% Catalyst.uri_for('finalizar/') _ chamado.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:askuser('Tem certeza que deseja excluir o chamado?', '[% Catalyst.uri_for('excluir/') _ chamado.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 		[% END %]
 	</tr>
@@ -55,64 +53,4 @@ function habilita_caixa(nome) {
 
 </div>
 
-<h3><a href="javascript:habilita_caixa('box_instalacao');">Instalação</a></h3>
-
-<div id="mytextbox" style="display: none;" name="box_instalacao">
-
-<table width="100%">
-	<tr>
-		<th>Cliente</th>
-		<th>Endereço</th>
-		<th>Data</th>
-		[% IF estado.id == 1 %]<th>Ações</th>[% END %]
-	</tr>
-	
-	[% FOREACH instalacao IN instalacoes %]
-	<tr class="lista">
-		<td>[% instalacao.cliente %]</td>
-		<td>[% instalacao.endereco %]</td>
-		<td>[% data2normal(instalacao.data_chamado) %]</td>
-		[% IF estado.id == 1 %]
-		<td>
-			<a href="[% Catalyst.uri_for('editar/') _ instalacao.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
-			<a href="[% Catalyst.uri_for('finalizar/') _ instalacao.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir/') _ instalacao.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
-		</td>
-		[% END %]
-	</tr>
-	[% END %]
-	
-</table>
-
-</div>
-
-<h3><a href="javascript:habilita_caixa('box_estudo');">Estudo de viabilidade</a></h3>
-
-<div id="mytextbox" style="display: none;" name="box_estudo">
-
-<table width="100%">
-	<tr>
-		<th>Cliente</th>
-		<th>Endereço</th>
-		<th>Data</th>
-		[% IF estado.id == 1 %]<th>Ações</th>[% END %]
-	</tr>
-	
-	[% FOREACH estudo IN estudos %]
-	<tr class="lista">
-		<td>[% estudo.cliente %]</td>
-		<td>[% estudo.endereco %]</td>
-		<td>[% data2normal(estudo.data_chamado) %]</td>
-		[% IF estado.id == 1 %]
-		<td>
-			<a href="[% Catalyst.uri_for('editar/') _ estudo.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
-			<a href="[% Catalyst.uri_for('finalizar/') _ estudo.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir/') _ estudo.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
-		</td>
-		[% END %]
-	</tr>
-	[% END %]
-
-</table>
-
-</div>
+[% END %]
