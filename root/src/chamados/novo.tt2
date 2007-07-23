@@ -5,7 +5,7 @@
 <p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
 [% IF val.has_missing() %]
-	<p class="missing_p">Alguns campos obrigatórios estão faltando.</p>
+	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
 [% END %]
 
 <p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>

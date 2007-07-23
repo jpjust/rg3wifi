@@ -6,13 +6,17 @@
 
 <p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
 
+[% IF val.has_missing() %]
+	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
+[% END %]
+
 <form action="[% Catalyst.uri_for('novo_rad_do') %]" method="POST">
 <input type="hidden" name="id" value="[% radio.id %]">
 <input type="hidden" name="acao" value="[% acao %]">
 
 <table>
 	<tr>
-		<th colspan="2">Dados da compra (campos obrigatórios)</th>
+		<th colspan="2">Dados da compra</th>
 	</tr>
 	<tr>
 		<td>Modelo:</td>
@@ -28,7 +32,7 @@
 	<tr>
 		<td>Data da compra:</td>
 		<td>
-			<input type="text" name="data_compra" id="data_compra" size="8" value="[% data2normal(radio.data_compra) || datahoje %]">
+			<input type="text" name="data_compra" id="data_compra" size="8" value="[% data2normal(radio.data_compra) || datahoje %]" [% IF val.missing('data_compra') %]class="missing"[% END %]>
 			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
 			<script type="text/javascript">
 				Calendar.setup(
@@ -44,11 +48,11 @@
 	</tr>
 	<tr>
 		<td>Valor da compra (incluir valor do pigtail):</td>
-		<td>R$ <input type="text" name="valor_compra" size="15" value="[% radio.valor_compra %]"><img src="/static/images/star.png"></td>
+		<td>R$ <input type="text" name="valor_compra" size="15" value="[% radio.valor_compra %]" [% IF val.missing('valor_compra') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Custo (valor da compra + frete rateado):</td>
-		<td>R$ <input type="text" name="custo" size="15" value="[% radio.custo %]"><img src="/static/images/star.png"></td>
+		<td>R$ <input type="text" name="custo" size="15" value="[% radio.custo %]" [% IF val.missing('custo') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 
 	<tr>
@@ -123,7 +127,7 @@
 	</tr>
 	<tr>
 		<td>Endereço MAC:</td>
-		<td><input type="text" name="mac" size="20" value="[% radio.mac %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="mac" size="20" value="[% radio.mac %]" [% IF val.missing('mac') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Endereço IP:</td>

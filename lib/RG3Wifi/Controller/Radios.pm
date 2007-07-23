@@ -3,6 +3,8 @@ package RG3Wifi::Controller::Radios;
 use strict;
 use warnings;
 use base 'Catalyst::Controller';
+use EasyCat;
+use Data::FormValidator;
 
 =head1 NAME
 
@@ -105,16 +107,26 @@ sub novo_fab_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = ({
+		id   => $p->{id}   || undef,
 		nome => $p->{nome} || undef,
 	});
 
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$dados,
+		{required => [qw(nome)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{fabricante} = $dados;
+		$c->forward('novo_fab');
+		return;
+	}
+
+	# Atualiza o banco
 	eval {
-		if ($p->{'acao'} eq 'editar') {
-			my $fabricante = $c->model('RG3WifiDB::Fabricantes')->search({id => $p->{id}})->first;
-			$fabricante->update($dados);
-		} else {
-			my $fabricante = $c->model('RG3WifiDB::Fabricantes')->create($dados);
-		}
+		$c->model('RG3WifiDB::Fabricantes')->update_or_create($dados);
 	};
 	
 	if ($@) {
@@ -142,17 +154,27 @@ sub novo_mod_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = ({
+		id				=> $p->{id}				|| undef,
 		id_fabricante	=> $p->{fabricante}		|| undef,
 		nome			=> $p->{nome}			|| undef,
 	});
 	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$dados,
+		{required => [qw(id_fabricante nome)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{modelo} = $dados;
+		$c->forward('novo_mod');
+		return;
+	}
+
+	# Atualiza o banco
 	eval {
-		if ($p->{'acao'} eq 'editar') {
-			my $modelo = $c->model('RG3WifiDB::Modelos')->search({id => $p->{id}})->first;
-			$modelo->update($dados);
-		} else {
-			my $modelo = $c->model('RG3WifiDB::Modelos')->create($dados);
-		}
+		$c->model('RG3WifiDB::Modelos')->update_or_create($dados);
 	};
 	
 	if ($@) {
@@ -180,14 +202,15 @@ sub novo_rad_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = ({
+		id				=> $p->{id}									|| undef,
 		id_modelo		=> $p->{modelo}								|| undef,
 		id_base			=> $p->{base}								|| undef,
 		id_tipo			=> $p->{tipo}								|| undef,
 		mac				=> $p->{mac}								|| undef,
-		data_compra		=> &RG3Wifi::data2sql($p->{data_compra})	|| undef,
-		data_instalacao	=> &RG3Wifi::data2sql($p->{data_instalacao})|| undef,
-		valor_compra	=> $p->{valor_compra}						|| 0,
-		custo			=> $p->{custo}								|| 0,
+		data_compra		=> &EasyCat::data2sql($p->{data_compra})	|| undef,
+		data_instalacao	=> &EasyCat::data2sql($p->{data_instalacao})|| undef,
+		valor_compra	=> $p->{valor_compra}						|| undef,
+		custo			=> $p->{custo}								|| undef,
 		localizacao		=> $p->{localizacao}						|| undef,
 		id_banda		=> $p->{banda}								|| undef,
 		id_preambulo	=> $p->{preambulo}							|| undef,
@@ -207,13 +230,22 @@ sub novo_rad_do : Local {
 		$dados->{essid} = undef;
 	}
 	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$dados,
+		{required => [qw(id_modelo id_tipo mac data_compra valor_compra custo)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{radio} = $dados;
+		$c->forward('novo_rad');
+		return;
+	}
+
+	# Atualiza o banco
 	eval {
-		if ($p->{'acao'} eq 'editar') {
-			my $radio = $c->model('RG3WifiDB::Radios')->search({id => $p->{id}})->first;
-			$radio->update($dados);
-		} else {
-			my $radio = $c->model('RG3WifiDB::Radios')->create($dados);
-		}
+		$c->model('RG3WifiDB::Radios')->update_or_create($dados);
 	};
 	
 	if ($@) {
@@ -235,15 +267,8 @@ Exclui um fabricante.
 
 sub excluir_fab : Local {
 	my ($self, $c, $id) = @_;
-	
-	my $fabricante = $c->model('RG3WifiDB::Fabricantes')->search({id => $id})->first;
-	if ($fabricante) {
-		$fabricante->delete();
-		$c->stash->{status_msg} = 'Fabricante excluído!';
-	} else {
-		$c->stash->{error_msg} = 'Fabricante não encontrado!';
-	}
-	
+	$c->model('RG3WifiDB::Fabricantes')->search({id => $id})->delete_all();
+	$c->stash->{status_msg} = 'Fabricante excluído!';
 	$c->forward('lista_mods');
 }
 
@@ -255,15 +280,8 @@ Exclui um modelo.
 
 sub excluir_mod : Local {
 	my ($self, $c, $id) = @_;
-	
-	my $modelo = $c->model('RG3WifiDB::Modelos')->search({id => $id})->first;
-	if ($modelo) {
-		$modelo->delete();
-		$c->stash->{status_msg} = 'Modelo excluído!';
-	} else {
-		$c->stash->{error_msg} = 'Modelo não encontrado!';
-	}
-	
+	$c->model('RG3WifiDB::Modelos')->search({id => $id})->delete_all();
+	$c->stash->{status_msg} = 'Modelo excluído!';
 	$c->forward('lista_mods');
 }
 
@@ -275,15 +293,8 @@ Exclui um rádio.
 
 sub excluir_rad : Local {
 	my ($self, $c, $id) = @_;
-	
-	my $radio = $c->model('RG3WifiDB::Radios')->search({id => $id})->first;
-	if ($radio) {
-		$radio->delete();
-		$c->stash->{status_msg} = 'Rádio excluído!';
-	} else {
-		$c->stash->{error_msg} = 'Rádio não encontrado!';
-	}
-	
+	$c->model('RG3WifiDB::Radios')->search({id => $id})->delete_all();
+	$c->stash->{status_msg} = 'Rádio excluído!';
 	$c->forward('lista');
 }
 
@@ -295,10 +306,7 @@ Exibe formulário para editar fabricante.
 
 sub editar_fab : Local {
 	my ($self, $c, $id) = @_;
-	
-	# Busca fabricante
-	my $fabricante = $c->model('RG3WifiDB::Fabricantes')->search({id => $id})->first;
-	$c->stash->{fabricante} = $fabricante;
+	$c->stash->{fabricante} = $c->model('RG3WifiDB::Fabricantes')->search({id => $id})->first;
 	$c->stash->{acao} = 'editar';
 	$c->forward('novo_fab');
 }
@@ -311,10 +319,7 @@ Exibe formulário para editar modelo.
 
 sub editar_mod : Local {
 	my ($self, $c, $id) = @_;
-	
-	# Busca modelo
-	my $modelo = $c->model('RG3WifiDB::Modelos')->search({id => $id})->first;
-	$c->stash->{modelo} = $modelo;
+	$c->stash->{modelo} = $c->model('RG3WifiDB::Modelos')->search({id => $id})->first;
 	$c->stash->{acao} = 'editar';
 	$c->forward('novo_mod');
 }
@@ -327,10 +332,7 @@ Exibe formulário para editar rádio.
 
 sub editar_rad : Local {
 	my ($self, $c, $id) = @_;
-	
-	# Busca rádio
-	my $radio = $c->model('RG3WifiDB::Radios')->search({id => $id})->first;
-	$c->stash->{radio} = $radio;
+	$c->stash->{radio} = $c->model('RG3WifiDB::Radios')->search({id => $id})->first;
 	$c->stash->{acao} = 'editar';
 	$c->forward('novo_rad');
 }

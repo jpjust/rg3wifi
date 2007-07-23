@@ -122,7 +122,7 @@ img {
 	padding: 10px;
 }
 
-.missing_p {
+.errorbox {
 	color: #aa0000;
 	font-weight: bold;
 }
