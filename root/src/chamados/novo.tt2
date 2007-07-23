@@ -72,7 +72,7 @@
 				Calendar.setup(
 					{
 						inputField  : "data_conclusao",// ID of the input field
-						ifFormat    : "%d/%m/%Y %H:%M",	   // the date format
+						ifFormat    : "%d/%m/%Y %H:%M",// the date format
 						button      : "t_rec"		   // ID of the button
 						showsTime	: true
 					}
