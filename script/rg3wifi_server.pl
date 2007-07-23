@@ -2,7 +2,7 @@
 
 BEGIN { 
     $ENV{CATALYST_ENGINE} ||= 'HTTP';
-    $ENV{CATALYST_SCRIPT_GEN} = 29;
+    $ENV{CATALYST_SCRIPT_GEN} = 30;
     require Catalyst::Engine::HTTP;
 }  
 
@@ -13,7 +13,7 @@ use Pod::Usage;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-my $debug             = 1;
+my $debug             = 0;
 my $fork              = 0;
 my $help              = 0;
 my $host              = undef;
