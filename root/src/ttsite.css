@@ -149,7 +149,29 @@ img {
 	td {
 		font-size: 8pt;
 	}
+	
+	h1.p_cadastro {
+		color: #000000;
+		font-size: 18pt;
+	}
 
+	h2.p_cadastro {
+		color: #000000;
+		font-size: 16pt;
+	}
+	
+	td.p_cadastro {
+		font-size: 12pt;
+	}
+
+	.mypage {
+		page-break-after: always;
+	}
+	
+	.dontprint {
+		display: none;
+	}
+	
 	#menu {
 		display: none;
 	}

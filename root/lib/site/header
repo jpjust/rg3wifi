@@ -1,5 +1,5 @@
 <!-- BEGIN site/header -->
-<div id="header">[% template.title or site.title %]</div>
+<div id="header" class="dontprint">[% template.title or site.title %]</div>
 
 [% IF Catalyst.user_exists %]
 <div id="menu" align="right">

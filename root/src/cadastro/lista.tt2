@@ -2,7 +2,10 @@
 
 <h2>Clientes RG3.Net</h2>
 
-<p><a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Cadastrar cliente</a></p>
+<p>
+	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Cadastrar cliente</a> ::
+	<a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir cadastros</a>
+</p>
 
 <table width="100%">
 	<tr>

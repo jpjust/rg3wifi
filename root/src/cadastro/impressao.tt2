@@ -1,0 +1,41 @@
+[% PROCESS site/macros %]
+
+<h2>Clientes RG3.Net :: Impressão</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Selecione os clientes que deseja imprimir.</p>
+
+<form action="[% Catalyst.uri_for('imprimir') %]" method="POST"> 
+
+<table>
+	<tr>
+		<td><input type="radio" name="selecao" value="1">Apenas o cliente selecionado:</td>
+		<td>
+			<select name="cliente_1">
+				[% FOREACH cliente IN clientes %]
+				<option value="[% cliente.id %]">[% cliente.nome %]</option>
+				[% END %]
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="selecao" value="2">Os cliente selecionados:</td>
+		<td>
+			<select multiple size="10" name="cliente_2">
+				[% FOREACH cliente IN clientes %]
+				<option value="[% cliente.id %]">[% cliente.nome %]</option>
+				[% END %]
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2"><input type="radio" name="selecao" value="3">Todos os clientes</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="OK"></td>
+	</tr>
+</table>
+
+</form>

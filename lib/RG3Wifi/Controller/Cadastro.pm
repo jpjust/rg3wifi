@@ -165,6 +165,39 @@ sub lista : Local {
 	$c->stash->{template} = 'cadastro/lista.tt2';
 }
 
+=head2 lista_p
+
+Exibe formulário para impressão de cadastros.
+
+=cut
+
+sub lista_p : Local {
+	my ($self, $c) = @_;
+	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->all];
+	$c->stash->{template} = 'cadastro/impressao.tt2';
+}
+
+=head2 imprimir
+
+Exibe os cadastros prontos para impressão.
+
+=cut
+
+sub imprimir : Local {
+	my ($self, $c) = @_;
+	my $p = $c->request->params;
+	
+	if ($p->{selecao} == 1) {
+		$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({uid => $p->{cliente_1}})];
+	} elsif ($p->{selecao} == 2) {
+		$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({uid => [$p->{cliente_2}]})];
+	} else {
+		$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->all];
+	}
+	
+	$c->stash->{template} = 'cadastro/papel.tt2';
+}
+
 =head2 novo
 
 Abre página de cadastro de cliente.

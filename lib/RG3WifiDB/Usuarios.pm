@@ -24,5 +24,6 @@ __PACKAGE__->resultset_attributes({order_by => 'nome'});
 #     2) Name of the model class referenced by this relationship
 #     3) Column name in *this* table
 __PACKAGE__->belongs_to(grupo => 'RG3WifiDB::Grupos', 'id_grupo');
+__PACKAGE__->belongs_to(plano => 'RG3WifiDB::Planos', 'id_plano');
 
 1;

@@ -1,0 +1,75 @@
+[% PROCESS site/macros %]
+
+<h2 id="menu_p">Clientes RG3.Net :: Impressão</h2>
+
+<p id="menu_p">
+	<a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à seleção</a> ::
+	<a href="javascript:window.print();"><img src="/static/images/printer.png" align="top">Imprimir</a>
+</p>
+
+[% FOREACH cliente IN clientes %]
+
+<div class="mypage">
+
+<h1 class="p_cadastro">Cadastro de cliente :: RG3.Net</h1>
+
+<hr>
+
+<h2 class="p_cadastro">[% cliente.nome %]</h2>
+
+<br><br>
+
+<table cellpadding="4">
+	<tr>
+		<td class="p_cadastro"><strong>Login:</strong></td>
+		<td class="p_cadastro">[% cliente.login %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>IP:</strong></td>
+		<td class="p_cadastro">[% cliente.ip %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Plano:</strong></td>
+		<td class="p_cadastro">[% cliente.plano.nome %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Data de adesão:</strong></td>
+		<td class="p_cadastro">[% data2normal(cliente.data_adesao) %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>RG:</strong></td>
+		<td class="p_cadastro">[% cliente.rg %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>CPF/CNPJ:</strong></td>
+		<td class="p_cadastro">[% cliente.doc %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Data de nascimento:</strong></td>
+		<td class="p_cadastro">[% data2normal(cliente.data_nascimento) %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Endereço:</strong></td>
+		<td class="p_cadastro">[% cliente.endereco %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Bairro:</strong></td>
+		<td class="p_cadastro">[% cliente.bairro %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>CEP:</strong></td>
+		<td class="p_cadastro">[% cliente.cep %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Telefone:</strong></td>
+		<td class="p_cadastro">[% cliente.telefone %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Observações:</strong></td>
+		<td class="p_cadastro">[% cliente.observacoes %]</td>
+	</tr>
+</table>
+
+</div>
+
+[% END %]

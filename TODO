@@ -1,8 +1,3 @@
-- Fazer impressão dados dos clientes.
-  Uma idéia é fazer uma página onde pode ser escolhidos
-  os clientes para impressão (impressão de vários clientes
-  simultaneamente).
-
 - O link "Imprimir esta lista" na lista de chamados imprime
   apenas a lista de chamados abertos. Modificar pra imprimir
   a lista que estiver sendo exibida no momento (abertos ou
