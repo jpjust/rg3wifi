@@ -42,7 +42,7 @@ sub access_denied : Private {
 
 =head2 lista
 
-Lista os chamados abertos.
+Lista os chamados.
 
 =cut
 
@@ -52,6 +52,19 @@ sub lista : Local {
 	$c->stash->{tipos} = [$c->model('RG3WifiDB::ChamadosTipo')->all];
 	$c->stash->{estado_atual} = $c->request->params->{estado} || 1;
 	$c->stash->{template} = 'chamados/lista.tt2';
+}
+
+=head2 lista_p
+
+Lista os chamados abertos para impressão.
+
+=cut
+
+sub lista_p : Local {
+	my ($self, $c, $tipo) = @_;
+	$c->stash->{tipo} = $c->model('RG3WifiDB::ChamadosTipo')->search({id => $tipo})->first;
+	$c->stash->{chamados} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => $tipo})];
+	$c->stash->{template} = 'chamados/papel.tt2';
 }
 
 =head2 novo
