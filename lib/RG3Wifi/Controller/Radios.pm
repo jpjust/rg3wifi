@@ -28,6 +28,18 @@ sub index : Private {
 	$c->forward('lista');
 }
 
+=head2 access_denied
+
+Handle Catalyst::Plugin::Authorization::ACL access denied exceptions
+
+=cut
+
+sub access_denied : Private {
+	my ($self, $c) = @_;
+	$c->stash->{error_msg} = 'Você não tem permissão para acessar este recurso.';
+	$c->forward('lista');
+}
+
 =head2 lista
 
 Lista os rádios cadastrados.

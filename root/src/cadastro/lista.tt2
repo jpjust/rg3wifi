@@ -1,8 +1,8 @@
+[% PROCESS site/macros %]
+
 <h2>Clientes RG3.Net</h2>
 
 <p><a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Cadastrar cliente</a></p>
-
-<p>Para alterar o cadastro ou bloquear um cliente, clique no seu nome e faça as mudanças necessárias no formulário que aparece.</p>
 
 <table width="100%">
 	<tr>
@@ -14,14 +14,14 @@
 	</tr>
 	
 	[% FOREACH cliente IN clientes %]
-	<tr class="lista" [% IF cliente.bloqueado == 1 %]bgcolor="#FFAAAA"[% END %]>
+	<tr class="lista" [% IF cliente.bloqueado == 1 %]bgcolor="#ffaaaa"[% END %]>
 		<td>[% cliente.login %]</td>
 		<td>[% cliente.nome %]</td>
 		<td>[% cliente.ip %]</td>
 		<td>[% cliente.grupo.nome %]</td>
 		<td>
 			<a href="[% Catalyst.uri_for('editar/') _ cliente.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('excluir/') _ cliente.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:askuser('Tem certeza que deseja excluir o usuário?', '[% Catalyst.uri_for('excluir/') _ cliente.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 	</tr>
 	[% END %]

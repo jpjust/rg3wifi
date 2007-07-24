@@ -6,6 +6,10 @@
 
 <p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
 
+[% IF val.has_missing() %]
+	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
+[% END %]
+
 <form action="[% Catalyst.uri_for('cadastro_do') %]" method="POST">
 <input type="hidden" name="uid" value="[% cliente.uid %]">
 <input type="hidden" name="acao" value="[% acao %]">
@@ -17,20 +21,20 @@
 
 	<tr>
 		<td>Nome completo:</td>
-		<td><input type="text" name="nome" size="50" value="[% cliente.nome %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="nome" size="50" value="[% cliente.nome %]" [% IF val.missing('nome') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>RG:</td>
-		<td><input type="text" name="rg" size="20" value="[% cliente.rg %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="rg" size="20" value="[% cliente.rg %]" [% IF val.missing('rg') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>CPF/CNPJ:</td>
-		<td><input type="text" name="doc" size="20" value="[% cliente.doc %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="doc" size="20" value="[% cliente.doc %]" [% IF val.missing('doc') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Data de nascimento:</td>
 		<td>
-			<input type="text" name="data_nascimento" id="data_nascimento" size="8" value="[% data2normal(cliente.data_nascimento) || datahoje %]">
+			<input type="text" name="data_nascimento" id="data_nascimento" size="8" value="[% data2normal(cliente.data_nascimento) || datahoje %]" [% IF val.missing('data_nascimento') %]class="missing"[% END %]>
 			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
 			<script type="text/javascript">
 				Calendar.setup(
@@ -46,19 +50,19 @@
 	</tr>
 	<tr>
 		<td>Endereço:</td>
-		<td><input type="text" name="endereco" size="50" value="[% cliente.endereco %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="endereco" size="50" value="[% cliente.endereco %]" [% IF val.missing('endereco') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Bairro:</td>
-		<td><input type="text" name="bairro" size="30" value="[% cliente.bairro %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="bairro" size="30" value="[% cliente.bairro %]" [% IF val.missing('bairro') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>CEP:</td>
-		<td><input type="text" name="cep" size="10" value="[% cliente.cep %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="cep" size="10" value="[% cliente.cep %]" [% IF val.missing('cep') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Telefone:</td>
-		<td><input type="text" name="telefone" size="10" value="[% cliente.telefone %]"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="telefone" size="10" value="[% cliente.telefone %]" [% IF val.missing('telefone') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Observações:</td>
@@ -71,15 +75,15 @@
 
 	<tr>
 		<td>Login:</td>
-		<td><input type="text" name="login" size="10" value="[% cliente.login %]" [% IF acao == 'editar_do' %]readonly="true"[% END %]><img src="/static/images/star.png"></td>
+		<td><input type="text" name="login" size="10" value="[% cliente.login %]" [% IF acao == 'editar_do' %]readonly="true"[% END %] [% IF val.missing('login') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Senha:</td>
-		<td><input type="password" name="pwd1" size="10" value="[% cliente.senha %]"><img src="/static/images/star.png"></td>
+		<td><input type="password" name="pwd1" size="10" value="[% cliente.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Repita a senha:</td>
-		<td><input type="password" name="pwd2" size="10" value="[% cliente.senha %]"><img src="/static/images/star.png"></td>
+		<td><input type="password" name="pwd2" size="10" value="[% cliente.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	
 	[% IF Catalyst.check_any_user_role('admin') %]
@@ -113,7 +117,7 @@
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td><input type="submit" name="btn_submit"> <input type="reset" name="btn_reset"></td>
+		<td><input type="submit" value="OK"></td>
 	</tr>
 </table>
 

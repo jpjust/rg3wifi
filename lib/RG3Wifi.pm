@@ -62,6 +62,23 @@ __PACKAGE__->allow_access_if("/radios", [qw/admin/]);
 __PACKAGE__->allow_access_if("/radios", [qw/operador/]);
 __PACKAGE__->deny_access("/radios");
 
+# Rádios (exclusão)
+__PACKAGE__->allow_access_if("/radios/excluir_fab", [qw/admin/]);
+__PACKAGE__->deny_access("/radios/excluir_fab");
+__PACKAGE__->allow_access_if("/radios/excluir_mod", [qw/admin/]);
+__PACKAGE__->deny_access("/radios/excluir_mod");
+__PACKAGE__->allow_access_if("/radios/excluir_rad", [qw/admin/]);
+__PACKAGE__->deny_access("/radios/excluir_rad");
+
+# Chamados (geral)
+__PACKAGE__->allow_access_if("/chamados", [qw/admin/]);
+__PACKAGE__->allow_access_if("/chamados", [qw/operador/]);
+__PACKAGE__->deny_access("/chamados");
+
+# Chamados (exclusão)
+__PACKAGE__->allow_access_if("/chamados/excluir", [qw/admin/]);
+__PACKAGE__->deny_access("/chamados/excluir");
+
 
 =head1 NAME
 

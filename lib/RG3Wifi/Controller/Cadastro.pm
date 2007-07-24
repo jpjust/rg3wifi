@@ -3,6 +3,8 @@ package RG3Wifi::Controller::Cadastro;
 use strict;
 use warnings;
 use base 'Catalyst::Controller';
+use EasyCat;
+use Data::FormValidator;
 
 =head1 NAME
 
@@ -55,20 +57,20 @@ sub user_add : Private {
 	if (!$cliente)	{ return 2; }
 	
 	# Tabela radcheck
-	my $radcheck = $c->model('RG3WifiDB::radcheck')->create({
+	$c->model('RG3WifiDB::radcheck')->create({
 		UserName	=> $cliente->login,
 		Attribute	=> 'Password',
 		Value		=> $cliente->senha,
 	});
 	
 	# Tabela usergroup
-	my $usergroup = $c->model('RG3WifiDB::usergroup')->create({
+	$c->model('RG3WifiDB::usergroup')->create({
 		UserName	=> $cliente->login,
 		GroupName	=> 'cliente',
 	});
 	
 	# Tabela radreply
-	my $radreply = $c->model('RG3WifiDB::radreply')->create({
+	$c->model('RG3WifiDB::radreply')->create({
 		UserName	=> $cliente->login,
 		Attribute	=> 'Framed-IP-Address',
 		Value		=> $cliente->ip,
@@ -89,12 +91,9 @@ sub user_del : Private {
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 	if (!$cliente)	{ return 2; }
 	
-	my $radcheck	= $c->model('RG3WifiDB::radcheck')->search({UserName => $cliente->login})->first;
-	if ($radcheck)	{ $radcheck->delete; }
-	my $radreply	= $c->model('RG3WifiDB::radreply')->search({UserName => $cliente->login})->first;
-	if ($radreply)	{ $radreply->delete; }
-	my $usergroup	= $c->model('RG3WifiDB::usergroup')->search({UserName => $cliente->login})->first;
-	if ($usergroup)	{ $usergroup->delete; }
+	$c->model('RG3WifiDB::radcheck')->search({UserName => $cliente->login})->delete_all();
+	$c->model('RG3WifiDB::radreply')->search({UserName => $cliente->login})->delete_all();
+	$c->model('RG3WifiDB::usergroup')->search({UserName => $cliente->login})->delete_all();
 }
 
 =head2 get_ip
@@ -136,7 +135,6 @@ Lista os clientes cadastrados.
 
 sub lista : Local {
 	my ($self, $c) = @_;
-	
 	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->all];
 	$c->stash->{template} = 'cadastro/lista.tt2';
 }
@@ -155,6 +153,113 @@ sub novo : Local {
 	$c->stash->{template} = 'cadastro/novo.tt2';
 }
 
+=head2 cadastro_do
+
+Efetua o cadastro/atualizacao do cliente.
+
+=cut
+
+sub cadastro_do : Local {
+	my ($self, $c) = @_;
+
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Efetua o cadastro
+	my $dados = {
+		uid				=> $p->{uid}									|| undef,
+		id_plano		=> $p->{plano}									|| undef,
+		login			=> $p->{login}									|| undef,
+		senha			=> $p->{pwd1}									|| undef,
+		bloqueado		=> $p->{bloqueado}								|| 0,
+		nome			=> $p->{nome}									|| undef,
+		rg				=> $p->{rg}										|| undef,
+		doc				=> $p->{doc}									|| undef,
+		data_nascimento	=> &EasyCat::data2sql($p->{data_nascimento})	|| undef,
+		endereco		=> $p->{endereco}								|| undef,
+		bairro			=> $p->{bairro}									|| undef,
+		cep				=> $p->{cep}									|| undef,
+		telefone		=> $p->{telefone}								|| undef,
+		observacao		=> $p->{observacao}								|| undef,
+	};
+	
+	# Verifica as senhas
+	if ($p->{pwd1} ne $p->{pwd2}) {
+		$c->stash->{error_msg} = 'As senhas digitadas não coincidem.';
+		$c->stash->{cliente} = $dados;
+		$c->forward('novo');
+		return;
+	}
+	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$dados,
+		{required => [qw(id_plano login senha nome rg doc data_nascimento endereco bairro cep telefone)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{cliente} = $dados;
+		$c->forward('novo');
+		return;
+	}
+
+	# O usuário admin pode escolher o grupo
+	if ($c->check_any_user_role('admin')) {
+		$dados->{id_grupo} = $p->{grupo};
+	}
+	
+	# Faz as devidas inserções no banco de dados
+	my $cliente = undef;
+	my $ip = get_ip($c, $p->{plano});
+	
+	eval {
+		# Cria novo usuário
+		if ($p->{acao} eq 'novo') {
+			$cliente = $c->model('RG3WifiDB::Usuarios')->create($dados);
+			$cliente->update({ip => $ip});
+		}
+		# Edita usuário já cadastrado
+		elsif ($p->{acao} eq 'editar') {
+			$cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $p->{uid}})->first;
+			if (!$cliente) {
+				$c->stash->{error_msg} = 'Cliente não encontrado!';
+				$c->forward('lista');
+				return;
+			}
+
+			# Verifica permissões
+			if (($cliente->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
+				$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
+				$c->forward('lista');
+				return;
+			}
+			
+			# Mudança de plano, obtém novo IP de acordo com o novo plano
+			if ($cliente->id_plano != $p->{plano}) { $cliente->update({ip => $ip}); }
+			
+			$cliente->update($dados);
+		}
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao cadastrar/editar cliente: ' . $@;
+		$c->stash->{template} = 'erro.tt2';
+		return;
+	}
+	
+	# Atualiza as tabelas do PPPoE
+	if ($p->{bloqueado}) {
+		&user_del($c, $cliente->uid);
+	} else {
+		&user_add($c, $cliente->uid);
+	}
+	
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Cliente cadastrado/editado com sucesso.';
+	$c->forward('lista');
+}
+
 =head2 editar
 
 Exibe página para edição do cliente.
@@ -169,7 +274,7 @@ sub editar : Local {
 	# Verifica permissões
 	if (($cliente->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
 		$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
-		$c->stash->{template} = 'erro.tt2';
+		$c->forward('lista');
 		return;
 	}
 
@@ -180,95 +285,6 @@ sub editar : Local {
 	$c->stash->{template} = 'cadastro/novo.tt2';
 }
 
-=head2 cadastro_do
-
-Efetua o cadastro/atualizacao do cliente.
-
-=cut
-
-sub cadastro_do : Local {
-	my ($self, $c) = @_;
-	
-	# Verifica as senhas
-	if ($c->request->params->{pwd1} ne $c->request->params->{pwd2}) {
-		$c->stash->{error_msg} = 'As senhas digitadas não coincidem.';
-		$c->stash->{template} = 'erro.tt2';
-		return;
-	}
-	
-	# Faz as devidas inserções no banco de dados
-	my $cliente = undef;
-	my $ip = get_ip($c, $c->request->params->{plano});
-	my $dados = {
-		id_plano		=> $c->request->params->{plano}				|| undef,
-		login			=> $c->request->params->{login}				|| undef,
-		senha			=> $c->request->params->{pwd1}				|| undef,
-		bloqueado		=> $c->request->params->{bloqueado}			|| 0,
-		nome			=> $c->request->params->{nome}				|| undef,
-		rg				=> $c->request->params->{rg}				|| undef,
-		doc				=> $c->request->params->{doc}				|| undef,
-		data_nascimento	=> &RG3Wifi::data2sql($c->request->params->{data_nascimento})	|| undef,
-		endereco		=> $c->request->params->{endereco}			|| undef,
-		bairro			=> $c->request->params->{bairro}			|| undef,
-		cep				=> $c->request->params->{cep}				|| undef,
-		telefone		=> $c->request->params->{telefone}			|| undef,
-		observacao		=> $c->request->params->{observacao}		|| undef,
-	};
-	
-	eval {
-		# Cria novo usuário
-		if ($c->request->params->{acao} eq 'novo') {
-			$cliente = $c->model('RG3WifiDB::Usuarios')->create($dados);
-			$cliente->update({ip => $ip});
-			if ($c->check_any_user_role('admin')) {
-				$cliente->update({id_grupo => $c->request->params->{grupo}});
-			}
-		}
-		# Edita usuário já cadastrado
-		elsif ($c->request->params->{acao} eq 'editar') {
-			$cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $c->request->params->{uid}})->first;
-			if (!$cliente) {
-				$c->stash->{error_msg} = 'Cliente não encontrado!';
-				$c->stash->{template} = 'erro.tt2';
-				return;
-			}
-
-			# Verifica permissões
-			if (($cliente->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
-				$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
-				$c->stash->{template} = 'erro.tt2';
-				return;
-			}
-			
-			# Mudança de plano, obtém novo IP de acordo com o novo plano
-			if ($cliente->id_plano != $c->request->params->{plano}) { $cliente->update({ip => $ip}); }
-			
-			$cliente->update($dados);
-			if ($c->check_any_user_role('admin')) {
-				$cliente->update({id_grupo => $c->request->params->{grupo}});
-			}
-		}
-	};
-	
-	if ($@) {
-		$c->stash->{error_msg} = 'Ocorreu um erro ao inserir os dados do cliente. Verifique se o formulário foi preenchido corretamente.';
-		$c->log->debug($@);
-		$c->stash->{template} = 'erro.tt2';
-		return;
-	}
-	
-	# Atualiza as tabelas do PPPoE
-	if ($c->request->params->{bloqueado}) {
-		&user_del($c, $cliente->uid);
-	} else {
-		&user_add($c, $cliente->uid);
-	}
-	
-	# Envia mensagem de sucesso
-	$c->stash->{status_msg} = 'Cliente cadastrado/alterado com sucesso!';
-	$c->forward('lista');
-}
-
 =head2 excluir
 
 Exclui um usuário do sistema.
@@ -277,19 +293,9 @@ Exclui um usuário do sistema.
 
 sub excluir : Local {
 	my ($self, $c, $uid) = @_;
-	
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
-	if (!$cliente) {
-		$c->stash->{error_msg} = 'Cliente não encontrado!';
-		$c->stash->{template} = 'erro.tt2';
-		return;
-	}
-	
-	# Exclui o cliente
-	&user_del($c, $cliente->login);
+	&user_del($c, $uid);
 	$cliente->delete();
-	
-	# Exibe mensagem de sucesso
 	$c->stash->{status_msg} = 'Cliente excluído com sucesso.';
 	$c->forward('lista');
 }

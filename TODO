@@ -1,12 +1,4 @@
-- Criar validações para as actions de fabricantes,
-  modelos, rádios e chamados (começou nos chamados).
-
 - Fazer impressão de chamados e dos dados dos clientes.
   Uma idéia é fazer uma página onde pode ser escolhidos
   os clientes para impressão (impressão de vários clientes
   simultaneamente).
-
-- Atualizar as ACLs.
-
-- Modificar as actions dos rádios e do cadastro de clientes
-  seguindo o modelo usado no cadastro de chamados.

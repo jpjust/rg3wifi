@@ -4,11 +4,11 @@
 
 <p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
+<p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
+
 [% IF val.has_missing() %]
 	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
 [% END %]
-
-<p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
 
 <form action="[% Catalyst.uri_for('novo_do') %]" method="POST">
 <input type="hidden" name="id" value="[% chamado.id %]">
