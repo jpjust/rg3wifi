@@ -32,7 +32,7 @@
 		<th>Cliente</th>
 		<th>Endereço</th>
 		<th>Data</th>
-		[% IF estado_atual == 1 %]<th>Ações</th>[% END %]
+		<th>Ações</th>
 	</tr>
 	
 	[% FOREACH chamado IN tipo.chamados %]
@@ -41,13 +41,15 @@
 		<td>[% chamado.cliente %]</td>
 		<td>[% chamado.endereco %]</td>
 		<td>[% data2normal(chamado.data_chamado) %]</td>
-		[% IF estado_atual == 1 %]
 		<td>
+			[% IF estado_atual == 1 %]
 			<a href="[% Catalyst.uri_for('editar/') _ chamado.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
 			<a href="[% Catalyst.uri_for('finalizar/') _ chamado.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
 			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:askuser('Tem certeza que deseja excluir o chamado?', '[% Catalyst.uri_for('excluir/') _ chamado.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+			[% ELSE %]
+			<a href="[% Catalyst.uri_for('detalhes/') _ chamado.id %]"><img src="/static/images/table.png" align="top">Detalhes</a><br>
+			[% END %]
 		</td>
-		[% END %]
 	</tr>
 	[% END %]
 	

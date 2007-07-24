@@ -179,6 +179,18 @@ sub finalizar : Local {
 	$c->stash->{template} = 'chamados/novo.tt2';
 }
 
+=head2 detalhes
+
+Exibe detalhes do chamado.
+
+=cut
+
+sub detalhes : Local {
+	my ($self, $c, $id) = @_;
+	$c->stash->{chamado} = $c->model('RG3WifiDB::Chamados')->search({id => $id})->first;
+	$c->stash->{template} = 'chamados/detalhes.tt2';
+}
+
 
 =head1 AUTHOR
 

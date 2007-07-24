@@ -1,0 +1,39 @@
+[% PROCESS site/macros %]
+
+<h2>Detalhes do chamado</h2>
+
+<p id="menu_p">
+	<a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a> ::
+	<a href="javascript:window.print();"><img src="/static/images/printer.png" align="top">Imprimir</a>
+</p>
+
+<table border="0" cellpadding="2">
+	<tr>
+		<td><strong>Cliente:</strong></td>
+		<td>[% chamado.cliente %]</td>
+	</tr>
+	<tr>
+		<td><strong>Endereço:</strong></td>
+		<td>[% chamado.endereco %]</td>
+	</tr>
+	<tr>
+		<td><strong>Telefone:</strong></td>
+		<td>[% chamado.telefone %]</td>
+	</tr>
+	<tr>
+		<td><strong>Data e hora do chamado:</strong></td>
+		<td>[% data2normal(chamado.data_chamado) %]</td>
+	</tr>
+	<tr>
+		<td><strong>Descrição:</strong></td>
+		<td>[% chamado.motivo %]</td>
+	</tr>
+	<tr>
+		<td><strong>Data e hora da solução:</strong></td>
+		<td>[% data2normal(chamado.data_conclusao) %]</td>
+	</tr>
+	<tr>
+		<td><strong>Observações finais:</strong></td>
+		<td>[% chamado.observacoes %]</td>
+	</tr>
+</table>
