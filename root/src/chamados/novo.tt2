@@ -47,9 +47,9 @@
 			<script type="text/javascript">
 				Calendar.setup(
 					{
-						inputField  : "data_chamado",// ID of the input field
-						ifFormat    : "%d/%m/%Y %H:%M",	 // the date format
-						button      : "t_rec",		 // ID of the button
+						inputField  : "data_chamado",  // ID of the input field
+						ifFormat    : "%d/%m/%Y %H:%M",// the date format
+						button      : "t_rec",		   // ID of the button
 						showsTime	: true
 					}
 				);
@@ -67,13 +67,13 @@
 		<td>Data da conclusão:</td>
 		<td>
 			<input type="text" name="data_conclusao" id="data_conclusao" size="15" value="[% data2normal(chamado.data_conclusao) || dhorahoje %]" [% IF val.missing('data_conclusao') %]class="missing"[% END %]>
-			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+			<img src="/static/images/calendar.png" id="t_rec2" style="cursor: pointer;" alt="Calendário">
 			<script type="text/javascript">
 				Calendar.setup(
 					{
 						inputField  : "data_conclusao",// ID of the input field
 						ifFormat    : "%d/%m/%Y %H:%M",// the date format
-						button      : "t_rec"		   // ID of the button
+						button      : "t_rec2",		   // ID of the button
 						showsTime	: true
 					}
 				);

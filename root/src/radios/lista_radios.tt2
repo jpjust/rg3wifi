@@ -10,10 +10,12 @@
 
 <div id="mytextbox" style="display: none;" name="box_[% base.essid %]">
 
-<h4>
-<p><a href="[% Catalyst.uri_for('editar_rad/') _ base.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-[% IF Catalyst.check_any_user_role('admin') %]:: <a href="javascript:askuser('Tem certeza que deseja excluir a base?', '[% Catalyst.uri_for('excluir_rad/') _ base.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]</p>
+<p>
+	<a href="[% Catalyst.uri_for('editar_rad/') _ base.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+	[% IF Catalyst.check_any_user_role('admin') %]:: <a href="javascript:askuser('Tem certeza que deseja excluir a base?', '[% Catalyst.uri_for('excluir_rad/') _ base.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+</p>
 
+<h4>
 Endereço IP: <a href="http://[% base.ip %]" target="_blank">[% base.ip %]</a><br>
 Endereço MAC: [% base.mac %]<br>
 Banda: [% base.banda.nome %]<br>

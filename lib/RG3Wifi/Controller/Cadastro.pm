@@ -96,6 +96,32 @@ sub user_del : Private {
 	$c->model('RG3WifiDB::usergroup')->search({UserName => $cliente->login})->delete_all();
 }
 
+=head2 remake_users
+
+Refaz a lista de usuários o PPPoE.
+
+=cut
+
+sub remake_users : Local {
+	my ($self, $c) = @_;
+	
+	# Limpa os dados atuais
+	$c->model('RG3WifiDB::radcheck')->delete_all();
+	$c->model('RG3WifiDB::radreply')->delete_all();
+	$c->model('RG3WifiDB::usergroup')->delete_all();
+	
+	# Recadastra os usuários
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->all) {
+		if (!$cliente->bloqueado) {
+			&user_add($c, $cliente->uid);
+		}
+	}
+	
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Lista de usuários PPPoE refeita!';
+	$c->forward('lista');
+}
+
 =head2 get_ip
 
 Gera um número IP de acordo com o plano do cliente.

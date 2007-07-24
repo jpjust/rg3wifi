@@ -62,13 +62,13 @@
 		<td>Data de instalação:</td>
 		<td>
 			<input type="text" name="data_instalacao" id="data_instalacao" size="8" value="[% data2normal(radio.data_instalacao) || datahoje %]">
-			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+			<img src="/static/images/calendar.png" id="t_rec2" style="cursor: pointer;" alt="Calendário">
 			<script type="text/javascript">
 				Calendar.setup(
 					{
 						inputField  : "data_instalacao",// ID of the input field
-						ifFormat    : "%d/%m/%Y",	// the date format
-						button      : "t_rec"		// ID of the button
+						ifFormat    : "%d/%m/%Y",   	// the date format
+						button      : "t_rec2"	    	// ID of the button
 					}
 				);
 			</script>
