@@ -61,9 +61,9 @@ Lista os chamados abertos para impressão.
 =cut
 
 sub lista_p : Local {
-	my ($self, $c, $tipo) = @_;
+	my ($self, $c, $tipo, $estado) = @_;
 	$c->stash->{tipo} = $c->model('RG3WifiDB::ChamadosTipo')->search({id => $tipo})->first;
-	$c->stash->{chamados} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => $tipo})];
+	$c->stash->{chamados} = [$c->model('RG3WifiDB::Chamados')->search({id_tipo => $tipo, id_estado => $estado})];
 	$c->stash->{template} = 'chamados/papel.tt2';
 }
 

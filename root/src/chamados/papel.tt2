@@ -1,6 +1,6 @@
 [% PROCESS site/macros %]
 
-<h2>Lista de chamados abertos: [% tipo.nome %]</h2>
+<h2>Lista de chamados: [% tipo.nome %]</h2>
 
 <p id="menu_p">
 	<a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a> ::
@@ -8,7 +8,6 @@
 </p>
 
 [% FOREACH chamado IN chamados %]
-[% NEXT IF chamado.id_estado != 1 %]
 
 <table border="0" cellpadding="2">
 	<tr>

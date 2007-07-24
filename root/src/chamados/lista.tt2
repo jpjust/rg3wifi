@@ -25,7 +25,7 @@
 
 <div id="mytextbox" style="display: none;" name="box_[% tipo.nome %]">
 
-<p><a href="[% Catalyst.uri_for('lista_p/') _ tipo.id %]"><img src="/static/images/printer.png" align="top">Imprimir esta lista</a></p>
+<p><a href="[% Catalyst.uri_for('lista_p/') _ tipo.id _ '/' _ estado_atual %]"><img src="/static/images/printer.png" align="top">Imprimir esta lista</a></p>
 
 <table width="100%">
 	<tr>

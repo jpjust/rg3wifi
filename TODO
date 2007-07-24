@@ -1,4 +1,0 @@
-- O link "Imprimir esta lista" na lista de chamados imprime
-  apenas a lista de chamados abertos. Modificar pra imprimir
-  a lista que estiver sendo exibida no momento (abertos ou
-  finalizados).
