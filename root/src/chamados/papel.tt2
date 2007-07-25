@@ -4,7 +4,7 @@
 
 <p id="menu_p">
 	<a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a> ::
-	<a href="javascript:window.print();"><img src="/static/images/printer.png" align="top">Imprimir</a>
+	<a href="javascript:void(0)" onClick="javascript:window.print();"><img src="/static/images/printer.png" align="top">Imprimir</a>
 </p>
 
 [% FOREACH chamado IN chamados %]

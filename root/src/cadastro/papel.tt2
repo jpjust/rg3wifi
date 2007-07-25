@@ -1,10 +1,10 @@
 [% PROCESS site/macros %]
 
-<h2 id="menu_p">Clientes RG3.Net :: Impressão</h2>
+<h2 class="dontprint">Clientes RG3.Net :: Impressão</h2>
 
-<p id="menu_p">
+<p class="dontprint">
 	<a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à seleção</a> ::
-	<a href="javascript:window.print();"><img src="/static/images/printer.png" align="top">Imprimir</a>
+	<a href="javascript:void(0)" onClick="javascript:window.print();"><img src="/static/images/printer.png" align="top">Imprimir</a>
 </p>
 
 [% FOREACH cliente IN clientes %]

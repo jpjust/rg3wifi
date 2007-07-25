@@ -55,13 +55,13 @@ function askuser(message, action) {
 
 <script type="text/javascript">
 // Habilita caixa
-function showbox(name) {
-	var mydiv = document.getElementsByName(name);
+function showbox(id) {
+	var mydiv = document.getElementById(id);
 	
-	if (mydiv[0].style.display == '') {
-		mydiv[0].style.display = 'none';
+	if (mydiv.style.display == '') {
+		mydiv.style.display = 'none';
 	} else {
-		mydiv[0].style.display = '';
+		mydiv.style.display = '';
 	}
 }
 </script>

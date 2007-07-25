@@ -6,13 +6,13 @@
 
 [% FOREACH base IN bases %]
 
-<h3><a href="javascript:showbox('box_[% base.essid %]');">[% base.essid %]</a></h3>
+<h3><a href="javascript:void(0)" onClick="javascript:showbox('box_[% base.essid %]');">[% base.essid %]</a></h3>
 
-<div id="mytextbox" style="display: none;" name="box_[% base.essid %]">
+<div class="mytextbox" style="display: none;" id="box_[% base.essid %]">
 
 <p>
 	<a href="[% Catalyst.uri_for('editar_rad/') _ base.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-	[% IF Catalyst.check_any_user_role('admin') %]:: <a href="javascript:askuser('Tem certeza que deseja excluir a base?', '[% Catalyst.uri_for('excluir_rad/') _ base.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+	[% IF Catalyst.check_any_user_role('admin') %]:: <a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir a base?', '[% Catalyst.uri_for('excluir_rad/') _ base.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 </p>
 
 <h4>
@@ -43,7 +43,7 @@ Preâmbulo: [% base.preambulo.nome %]
 		<td>[% radio.modelo.fabricante.nome %] [% radio.modelo.nome %]</td>
 		<td>
 			<a href="[% Catalyst.uri_for('editar_rad/') _ radio.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:askuser('Tem certeza que deseja excluir o rádio?', '[% Catalyst.uri_for('excluir_rad/') _ radio.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir o rádio?', '[% Catalyst.uri_for('excluir_rad/') _ radio.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 	</tr>
 	[% END %]
@@ -52,9 +52,9 @@ Preâmbulo: [% base.preambulo.nome %]
 </div>
 [% END %]
 
-<h3><a href="javascript:showbox('box_desativados');">Rádios não instalados</a></h3>
+<h3><a href="javascript:void(0)" onClick="javascript:showbox('box_desativados');">Rádios não instalados</a></h3>
 
-<div id="mytextbox" style="display: none;" name="box_desativados">
+<div class="mytextbox" style="display: none;" id="box_desativados">
 
 <table width="100%">
 	<tr>
@@ -71,7 +71,7 @@ Preâmbulo: [% base.preambulo.nome %]
 		<td>[% radio.mac %]</td>
 		<td>
 			<a href="[% Catalyst.uri_for('editar_rad/') _ radio.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:askuser('Tem certeza que deseja excluir o rádio?', '[% Catalyst.uri_for('excluir_rad/') _ radio.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir o rádio?', '[% Catalyst.uri_for('excluir_rad/') _ radio.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 	</tr>
 	[% END %]

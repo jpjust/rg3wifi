@@ -5,9 +5,9 @@
 <p><a href="[% Catalyst.uri_for('novo_fab') %]"><img src="/static/images/add.png" align="top">Cadastrar fabricante</a> ::
 <a href="[% Catalyst.uri_for('novo_mod') %]"><img src="/static/images/add.png" align="top">Cadastrar modelo</a></p>
 
-<h3><a href="javascript:showbox('box_fabricantes');">Fabricantes</a></h3>
+<h3><a href="javascript:void(0)" onClick="javascript:showbox('box_fabricantes');">Fabricantes</a></h3>
 
-<div id="mytextbox" style="display: none;" name="box_fabricantes">
+<div class="mytextbox" style="display: none;" id="box_fabricantes">
 
 <table width="100%">
 	<tr>
@@ -20,7 +20,7 @@
 		<td>[% fabricante.nome %]</td>
 		<td>
 			<a href="[% Catalyst.uri_for('editar_fab/') _ fabricante.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:askuser('Tem certeza que deseja excluir este fabricante?', '[% Catalyst.uri_for('excluir_fab/') _ fabricante.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir este fabricante?', '[% Catalyst.uri_for('excluir_fab/') _ fabricante.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 	</tr>
 	[% END %]
@@ -28,9 +28,9 @@
 
 </div>
 
-<h3><a href="javascript:showbox('box_modelos');">Modelos</a></h3>
+<h3><a href="javascript:void(0)" onClick="javascript:showbox('box_modelos');">Modelos</a></h3>
 
-<div id="mytextbox" style="display: none;" name="box_modelos">
+<div class="mytextbox" style="display: none;" id="box_modelos">
 
 <table width="100%">
 	<tr>
@@ -45,7 +45,7 @@
 		<td>[% modelo.nome %]</td>
 		<td>
 			<a href="[% Catalyst.uri_for('editar_mod/') _ modelo.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:askuser('Tem certeza que deseja excluir este modelo?', '[% Catalyst.uri_for('excluir_mod/') _ modelo.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir este modelo?', '[% Catalyst.uri_for('excluir_mod/') _ modelo.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 	</tr>
 	[% END %]

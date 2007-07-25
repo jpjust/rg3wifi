@@ -2,7 +2,7 @@
 <div id="header" class="dontprint">[% template.title or site.title %]</div>
 
 [% IF Catalyst.user_exists %]
-<div id="menu" align="right">
+<div class="menu" align="right">
 	<a href="[% Catalyst.uri_for('/chamados') %]"><img src="/static/images/telephone.png" align="top"> Chamados de suporte</a> ::
 	<a href="[% Catalyst.uri_for('/radios/lista_mods') %]"><img src="/static/images/bricks.png" align="top"> Fabricantes e modelos</a> ::
 	<a href="[% Catalyst.uri_for('/radios') %]"><img src="/static/images/transmit.png" align="top"> Rádios</a> ::

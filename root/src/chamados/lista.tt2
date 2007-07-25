@@ -21,9 +21,9 @@
 
 [% FOREACH tipo IN tipos %]
 
-<h3><a href="javascript:showbox('box_[% tipo.nome %]');">[% tipo.nome %]</a></h3>
+<h3><a href="javascript:void(0)" onClick="javascript:showbox('box_[% tipo.nome %]');">[% tipo.nome %]</a></h3>
 
-<div id="mytextbox" style="display: none;" name="box_[% tipo.nome %]">
+<div class="mytextbox" style="display: none;" id="box_[% tipo.nome %]">
 
 <p><a href="[% Catalyst.uri_for('lista_p/') _ tipo.id _ '/' _ estado_atual %]"><img src="/static/images/printer.png" align="top">Imprimir esta lista</a></p>
 
@@ -45,7 +45,7 @@
 			[% IF estado_atual == 1 %]
 			<a href="[% Catalyst.uri_for('editar/') _ chamado.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
 			<a href="[% Catalyst.uri_for('finalizar/') _ chamado.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:askuser('Tem certeza que deseja excluir o chamado?', '[% Catalyst.uri_for('excluir/') _ chamado.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir o chamado?', '[% Catalyst.uri_for('excluir/') _ chamado.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 			[% ELSE %]
 			<a href="[% Catalyst.uri_for('detalhes/') _ chamado.id %]"><img src="/static/images/table.png" align="top">Detalhes</a><br>
 			[% END %]
