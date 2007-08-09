@@ -226,7 +226,7 @@ sub cadastro_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = {
-		uid				=> $p->{uid}									|| undef,
+		uid				=> $p->{uid}									|| -1,
 		id_plano		=> $p->{plano}									|| undef,
 		login			=> $p->{login}									|| undef,
 		senha			=> $p->{pwd1}									|| undef,
@@ -275,8 +275,8 @@ sub cadastro_do : Local {
 	eval {
 		# Cria novo usuário
 		if ($p->{acao} eq 'novo') {
+			$dados->{ip} = $ip;
 			$cliente = $c->model('RG3WifiDB::Usuarios')->create($dados);
-			$cliente->update({ip => $ip});
 		}
 		# Edita usuário já cadastrado
 		elsif ($p->{acao} eq 'editar') {

@@ -119,7 +119,7 @@ sub novo_fab_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = ({
-		id   => $p->{id}   || undef,
+		id   => $p->{id}   || -1,
 		nome => $p->{nome} || undef,
 	});
 
@@ -166,7 +166,7 @@ sub novo_mod_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = ({
-		id				=> $p->{id}				|| undef,
+		id				=> $p->{id}				|| -1,
 		id_fabricante	=> $p->{fabricante}		|| undef,
 		nome			=> $p->{nome}			|| undef,
 	});
@@ -214,7 +214,7 @@ sub novo_rad_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = ({
-		id				=> $p->{id}									|| undef,
+		id				=> $p->{id}									|| -1,
 		id_modelo		=> $p->{modelo}								|| undef,
 		id_base			=> $p->{base}								|| undef,
 		id_tipo			=> $p->{tipo}								|| undef,

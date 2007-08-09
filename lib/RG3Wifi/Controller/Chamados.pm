@@ -95,7 +95,7 @@ sub novo_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = ({
-		id				=> $p->{id}									|| undef,
+		id				=> $p->{id}									|| -1,
 		id_tipo			=> $p->{tipo}								|| undef,
 		id_estado		=> $p->{estado}								|| undef,
 		cliente			=> $p->{cliente}							|| undef,
