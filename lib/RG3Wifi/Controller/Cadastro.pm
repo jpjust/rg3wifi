@@ -240,6 +240,11 @@ sub cadastro_do : Local {
 		cep				=> $p->{cep}									|| undef,
 		telefone		=> $p->{telefone}								|| undef,
 		observacao		=> $p->{observacao}								|| undef,
+		pppoe			=> $p->{pppoe}									|| undef,
+		kit_proprio		=> $p->{kit_proprio}							|| undef,
+		cabo			=> $p->{cabo}									|| undef,
+		valor_instalacao => $p->{valor_instalacao}						|| undef,
+		valor_mensalidade => $p->{valor_mensalidade}					|| undef,
 	};
 	
 	# Verifica as senhas
@@ -253,7 +258,7 @@ sub cadastro_do : Local {
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
-		{required => [qw(id_plano login senha nome rg doc data_nascimento endereco bairro cep telefone)]}
+		{required => [qw(id_plano login senha nome rg doc data_nascimento endereco bairro cep telefone ip cabo valor_instalacao valor_mensalidade)]}
 	);
 	
 	if (!$val->success()) {
@@ -270,7 +275,14 @@ sub cadastro_do : Local {
 	
 	# Faz as devidas inserções no banco de dados
 	my $cliente = undef;
-	my $ip = get_ip($c, $p->{plano});
+	
+	# Verifica de onde obter o IP (PPPoE ou VLAN?)
+	my $ip = undef;
+	if ($p->{pppoe}) {
+		$ip = get_ip($c, $p->{plano});
+	} else {
+		$ip = $p->{ip};
+	}
 	
 	eval {
 		# Cria novo usuário

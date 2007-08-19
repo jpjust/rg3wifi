@@ -21,10 +21,6 @@
 
 <table cellpadding="4">
 	<tr>
-		<td class="p_cadastro"><strong>Login:</strong></td>
-		<td class="p_cadastro">[% cliente.login %]</td>
-	</tr>
-	<tr>
 		<td class="p_cadastro"><strong>IP:</strong></td>
 		<td class="p_cadastro">[% cliente.ip %]</td>
 	</tr>
@@ -63,6 +59,30 @@
 	<tr>
 		<td class="p_cadastro"><strong>Telefone:</strong></td>
 		<td class="p_cadastro">[% cliente.telefone %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>PPPoE:</strong></td>
+		<td class="p_cadastro">[% IF cliente.pppoe %]Sim[% ELSE %]Não[% END %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Login PPPoE:</strong></td>
+		<td class="p_cadastro">[% cliente.login %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Kit próprio:</strong></td>
+		<td class="p_cadastro">[% IF cliente.kit_proprio %]Sim[% ELSE %]Não[% END %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Cabo:</strong></td>
+		<td class="p_cadastro">[% cliente.cabo %] m</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Taxa de instalação:</strong></td>
+		<td class="p_cadastro">R$ [% cliente.valor_instalacao %]</td>
+	</tr>
+	<tr>
+		<td class="p_cadastro"><strong>Mensalidade:</strong></td>
+		<td class="p_cadastro">R$ [% cliente.valor_mensalidade %]</td>
 	</tr>
 	<tr>
 		<td class="p_cadastro"><strong>Observações:</strong></td>

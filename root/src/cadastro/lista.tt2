@@ -9,7 +9,6 @@
 
 <table width="100%">
 	<tr>
-		<th>Login</th>
 		<th>Nome</th>
 		<th>IP</th>
 		<th>Grupo</th>
@@ -18,7 +17,6 @@
 	
 	[% FOREACH cliente IN clientes %]
 	<tr class="lista" [% IF cliente.bloqueado == 1 %]bgcolor="#ffaaaa"[% END %]>
-		<td>[% cliente.login %]</td>
 		<td>[% cliente.nome %]</td>
 		<td>[% cliente.ip %]</td>
 		<td>[% cliente.grupo.nome %]</td>

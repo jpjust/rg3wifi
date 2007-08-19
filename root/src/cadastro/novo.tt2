@@ -15,9 +15,9 @@
 <input type="hidden" name="acao" value="[% acao %]">
 
 <table>
-	<tr>
-		<th colspan="2">Dados pessoais</th>
-	</tr>
+<tr>
+	<th colspan="2">Dados pessoais</th>
+</tr>
 
 	<tr>
 		<td>Nome completo:</td>
@@ -68,24 +68,6 @@
 		<td>Observações:</td>
 		<td><textarea name="observacao" cols="50" rows="5">[% cliente.observacao %]</textarea></td>
 	</tr>
-
-	<tr>
-		<th colspan="2">Dados da conexão</th>
-	</tr>
-
-	<tr>
-		<td>Login:</td>
-		<td><input type="text" name="login" size="10" value="[% cliente.login %]" [% IF acao == 'editar_do' %]readonly="true"[% END %] [% IF val.missing('login') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
-	</tr>
-	<tr>
-		<td>Senha:</td>
-		<td><input type="password" name="pwd1" size="10" value="[% cliente.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
-	</tr>
-	<tr>
-		<td>Repita a senha:</td>
-		<td><input type="password" name="pwd2" size="10" value="[% cliente.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
-	</tr>
-	
 	[% IF Catalyst.check_any_user_role('admin') %]
 	<tr>
 		<td>Grupo:</td>
@@ -99,9 +81,53 @@
 		</td>
 	</tr>
 	[% END %]
-	
 	<tr>
-		<td>Plano:</td>
+		<td>Cliente bloqueado?</td>
+		<td><input type="checkbox" name="bloqueado" value="1" [% IF cliente.bloqueado == 1 %]checked[% END %]>Sim</td>
+	</tr>
+
+<tr>
+	<th colspan="2">Dados da instalação</th>
+</tr>
+
+	<tr>
+		<td>Kit próprio?</td>
+		<td><input type="checkbox" name="kit_proprio" value="1" [% IF cliente.kit_proprio == 1 %]checked[% END %]>Sim</td>
+	</tr>
+	<tr>
+		<td>Cabo:</td>
+		<td><input type="text" name="cabo" size="10" value="[% cliente.cabo %]" [% IF val.missing('cabo') %]class="missing"[% END %]> m<img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Taxa de instalação:</td>
+		<td>R$ <input type="text" name="valor_instalacao" size="10" value="[% cliente.valor_instalacao %]" [% IF val.missing('valor_instalacao') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Mensalidade:</td>
+		<td>R$ <input type="text" name="valor_mensalidade" size="10" value="[% cliente.valor_mensalidade %]" [% IF val.missing('valor_mensalidade') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+
+	<tr>
+		<th colspan="2">Dados da conexão PPPoE</th>
+	</tr>
+	<tr>
+		<td>Usa PPPoE?</td>
+		<td><input type="checkbox" name="pppoe" value="1" [% IF cliente.pppoe == 1 %]checked[% END %]>Sim</td>
+	</tr>
+	<tr>
+		<td>Login:</td>
+		<td><input type="text" name="login" size="10" value="[% cliente.login %]" [% IF acao == 'editar_do' %]readonly="true"[% END %] [% IF val.missing('login') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Senha:</td>
+		<td><input type="password" name="pwd1" size="10" value="[% cliente.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Repita a senha:</td>
+		<td><input type="password" name="pwd2" size="10" value="[% cliente.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Plano PPPoE:</td>
 		<td>
 			<select name="plano">
 				[% FOREACH plano IN planos %]
@@ -111,10 +137,16 @@
 			<img src="/static/images/star.png">
 		</td>
 	</tr>
+
+<tr>
+	<th colspan="2">Dados da conexão via IP fixo</th>
+</tr>
+
 	<tr>
-		<td>Cliente bloqueado?</td>
-		<td><input type="checkbox" name="bloqueado" value="1" [% IF cliente.bloqueado == 1 %]checked[% END %]>Sim</td>
+		<td>IP:</td>
+		<td><input type="text" name="ip" size="20" value="[% cliente.ip %]"></td>
 	</tr>
+
 	<tr>
 		<td>&nbsp;</td>
 		<td><input type="submit" value="OK"></td>

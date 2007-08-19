@@ -12,6 +12,5 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.epic.perleditor.perlnature</nature>
 	</natures>
 </projectDescription>
