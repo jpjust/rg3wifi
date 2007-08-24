@@ -5,6 +5,7 @@ use warnings;
 use base 'Catalyst::Controller';
 use EasyCat;
 use Data::FormValidator;
+#use Net::Ping::External qw(ping);
 
 =head1 NAME
 
@@ -349,6 +350,84 @@ sub editar_rad : Local {
 	$c->forward('novo_rad');
 }
 
+=head2 teste_rad
+
+Exibe formulário para testar rádio.
+
+=cut
+
+sub teste_rad : Local {
+	my ($self, $c) = @_;
+	$c->stash->{template} = 'radios/teste.tt2';
+}
+
+=head2 teste_rad_do
+
+Efetua o teste dos rádios.
+
+=cut
+
+sub teste_rad_do : Local {
+	my ($self, $c) = @_;
+	
+	my $count = $c->request->params->{count} || 5;
+	my $size = $c->request->params->{size} || 56;
+	my @resultado = undef;
+
+	foreach my $radio ($c->model('RG3WifiDB::Radios')->all) {
+		my $host = $radio->ip;
+		next unless ($host);
+		my $res;
+
+		{
+			local $SIG{CHLD} = 'DEFAULT';
+			#$res = ping(host => $host, count => $count, size => $size);
+			$res = system('/sbin/ping', '-c', $count, $host);
+		}
+
+		my $teste = ({
+			falhou	=> $res,
+			radio	=> $radio,
+		});
+		
+		push(@resultado, $teste);
+	}
+	
+	$c->stash->{resultado} = [@resultado];
+	$c->stash->{quantidade} = $count;
+	$c->stash->{tamanho} = $size;
+	$c->forward('teste_rad');
+}
+
+=head2 teste1_rad_do
+
+Efetua o teste de um rádio específico.
+
+=cut
+
+sub teste1_rad_do : Local {
+	my ($self, $c, $id) = @_;
+	
+	my $count = 5;
+	my $size = 56;
+
+	my $radio = $c->model('RG3WifiDB::Radios')->search({id => $id})->first;
+	if (!$radio) {
+		$c->stash->{error_msg} = 'Rádio inexistente!';
+		$c->forward('lista');
+		return;
+	}
+	
+	my $res;
+	{
+		local $SIG{CHLD} = 'DEFAULT';
+		$res = system('/bin/ping', '-c', $count, $radio->ip);
+	}
+
+	$c->stash->{falhou} = $res;
+	$c->stash->{radio} = $radio;
+	$c->stash->{template} = 'radios/teste1.tt2';
+}
 
 =head1 AUTHOR
 

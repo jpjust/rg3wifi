@@ -20,6 +20,7 @@ __PACKAGE__->set_primary_key(qw/id/);
 #     1) Name of relationship, DBIC will create accessor with this name
 #     2) Name of the model class referenced by this relationship
 #     3) Column name in *this* table
+__PACKAGE__->belongs_to(base		=> 'RG3WifiDB::Radios', 'id_base');
 __PACKAGE__->belongs_to(modelo		=> 'RG3WifiDB::Modelos', 'id_modelo');
 __PACKAGE__->belongs_to(tipo		=> 'RG3WifiDB::RadiosTipo', 'id_tipo');
 __PACKAGE__->belongs_to(banda		=> 'RG3WifiDB::RadiosBanda', 'id_banda');

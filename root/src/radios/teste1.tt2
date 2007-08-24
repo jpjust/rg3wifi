@@ -1,0 +1,22 @@
+[% PROCESS site/macros %]
+
+<h2>Teste de rádio</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<table width="100%">
+	<tr>
+		<th>Localização</th>
+		<th>Endereço IP</th>
+		<th>MAC</th>
+		<th>ESSID/base</th>
+		<th>Resultado</th>
+	</tr>
+	<tr [% IF falhou %]bgcolor="#ffaaaa"[% END %]>
+		<td>[% radio.localizacao %]</td>
+		<td>[% radio.ip %]</td>
+		<td>[% radio.mac %]</td>
+		<td>[% radio.essid || radio.base.essid %]</td>
+		<td><strong>[% IF falhou %]Falhou[% ELSE %]OK[% END %]</td>
+	</tr>
+</table>

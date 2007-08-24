@@ -1,0 +1,47 @@
+[% PROCESS site/macros %]
+
+<h2>Teste de rádios</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<form action="[% Catalyst.uri_for('teste_rad_do') %]" method="POST">
+<table>
+	<tr>
+		<td>Quantidade:</td>
+		<td><input type="text" name="count" size="5" value="[% quantidade || 5 %]"> pacotes</td>
+	</tr>
+	<tr>
+		<td>Tamanho:</td>
+		<td><input type="text" name="size" size="5" value="[% tamanho || 56 %]"> bytes</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="Testar"></td>
+	</tr>
+</table>
+</form>
+
+[% IF resultado %]
+
+<h3>Resultados</h3>
+
+<table width="100%">
+	<tr>
+		<th>Localização</th>
+		<th>Endereço IP</th>
+		<th>MAC</th>
+		<th>ESSID/base</th>
+		<th>Resultado</th>
+	</tr>
+	[% FOREACH teste IN resultado %]
+		<tr [% IF teste.falhou %]bgcolor="#ffaaaa"[% END %]>
+			<td>[% teste.radio.localizacao %] [% teste.falhou %]</td>
+			<td>[% teste.radio.ip %]</td>
+			<td>[% teste.radio.mac %]</td>
+			<td>[% teste.radio.essid || teste.radio.base.essid %]</td>
+			<td><strong>[% IF teste.falhou %]Falhou[% ELSE %]OK[% END %]</td>
+		</tr>
+	[% END %]
+</table>
+
+[% END %]

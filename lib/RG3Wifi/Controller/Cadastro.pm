@@ -240,8 +240,8 @@ sub cadastro_do : Local {
 		cep				=> $p->{cep}									|| undef,
 		telefone		=> $p->{telefone}								|| undef,
 		observacao		=> $p->{observacao}								|| undef,
-		pppoe			=> $p->{pppoe}									|| undef,
-		kit_proprio		=> $p->{kit_proprio}							|| undef,
+		pppoe			=> $p->{pppoe}									|| 0,
+		kit_proprio		=> $p->{kit_proprio}							|| 0,
 		cabo			=> $p->{cabo}									|| undef,
 		valor_instalacao => $p->{valor_instalacao}						|| undef,
 		valor_mensalidade => $p->{valor_mensalidade}					|| undef,
@@ -255,10 +255,18 @@ sub cadastro_do : Local {
 		return;
 	}
 	
+	# Verifica de onde obter o IP (PPPoE ou VLAN?)
+	my $ip = undef;
+	if ($p->{pppoe}) {
+		$ip = get_ip($c, $p->{plano});
+	} else {
+		$ip = $p->{ip};
+	}
+
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
-		{required => [qw(id_plano login senha nome rg doc data_nascimento endereco bairro cep telefone ip cabo valor_instalacao valor_mensalidade)]}
+		{required => [qw(id_plano nome rg doc data_nascimento endereco bairro cep telefone cabo valor_instalacao valor_mensalidade)]}
 	);
 	
 	if (!$val->success()) {
@@ -275,14 +283,6 @@ sub cadastro_do : Local {
 	
 	# Faz as devidas inserções no banco de dados
 	my $cliente = undef;
-	
-	# Verifica de onde obter o IP (PPPoE ou VLAN?)
-	my $ip = undef;
-	if ($p->{pppoe}) {
-		$ip = get_ip($c, $p->{plano});
-	} else {
-		$ip = $p->{ip};
-	}
 	
 	eval {
 		# Cria novo usuário
@@ -320,7 +320,7 @@ sub cadastro_do : Local {
 	}
 	
 	# Atualiza as tabelas do PPPoE
-	if ($p->{bloqueado}) {
+	if (($p->{bloqueado} == 1) || ($p->{pppoe} == 0)) {
 		&user_del($c, $cliente->uid);
 	} else {
 		&user_add($c, $cliente->uid);
