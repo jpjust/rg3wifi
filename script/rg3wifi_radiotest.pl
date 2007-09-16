@@ -13,6 +13,7 @@ my $count = '10';
 # Horário
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year += 1900;
+$mon += 1;
 $sec = '0' . $sec if ($sec < 10);
 $min = '0' . $min if ($min < 10);
 $hour = '0' . $hour if ($hour < 10);
