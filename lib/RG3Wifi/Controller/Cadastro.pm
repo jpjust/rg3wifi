@@ -53,27 +53,27 @@ sub user_add : Private {
 
 	&user_del($c, $uid);
 
-	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
-	if (!$cliente)	{ return 2; }
+	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
+	if (!$conta)	{ return 2; }
 	
 	# Tabela radcheck
 	$c->model('RG3WifiDB::radcheck')->create({
-		UserName	=> $cliente->login,
+		UserName	=> $conta->login,
 		Attribute	=> 'Password',
-		Value		=> $cliente->senha,
+		Value		=> $conta->senha,
 	});
 	
 	# Tabela usergroup
 	$c->model('RG3WifiDB::usergroup')->create({
-		UserName	=> $cliente->login,
+		UserName	=> $conta->login,
 		GroupName	=> 'cliente',
 	});
 	
 	# Tabela radreply
 	$c->model('RG3WifiDB::radreply')->create({
-		UserName	=> $cliente->login,
+		UserName	=> $conta->login,
 		Attribute	=> 'Framed-IP-Address',
-		Value		=> $cliente->ip,
+		Value		=> $conta->ip,
 	});
 }
 
@@ -88,12 +88,12 @@ sub user_del : Private {
 	
 	if (@_ < 2) { return 1; }
 	
-	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
-	if (!$cliente)	{ return 2; }
+	my $conta = $c->model('RG3WifiDB::Adicionais')->search({uid => $uid})->first;
+	if (!$conta)	{ return 2; }
 	
-	$c->model('RG3WifiDB::radcheck')->search({UserName => $cliente->login})->delete_all();
-	$c->model('RG3WifiDB::radreply')->search({UserName => $cliente->login})->delete_all();
-	$c->model('RG3WifiDB::usergroup')->search({UserName => $cliente->login})->delete_all();
+	$c->model('RG3WifiDB::radcheck')->search({UserName => $conta->login})->delete_all();
+	$c->model('RG3WifiDB::radreply')->search({UserName => $conta->login})->delete_all();
+	$c->model('RG3WifiDB::usergroup')->search({UserName => $conta->login})->delete_all();
 }
 
 =head2 remake_users
@@ -111,9 +111,14 @@ sub remake_users : Local {
 	$c->model('RG3WifiDB::usergroup')->delete_all();
 	
 	# Recadastra os usuários
-	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->all) {
-		if (!$cliente->bloqueado) {
-			&user_add($c, $cliente->uid);
+	#foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->all) {
+	#	if (!$cliente->bloqueado) {
+	#		&user_add($c, $cliente->uid);
+	#	}
+	#}
+	foreach my $conta ($c->model('RG3WifiDB::Contas')->all) {
+		if (!$conta->cliente->bloqueado) {
+			&user_add($c, $conta->uid);
 		}
 	}
 	
@@ -206,10 +211,23 @@ Abre página de cadastro de cliente.
 
 sub novo : Local {
 	my ($self, $c) = @_;
-	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
 	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
 	$c->stash->{acao} = 'novo';
 	$c->stash->{template} = 'cadastro/novo.tt2';
+}
+
+=head2 nova_conta
+
+Abre página de cadastro de conta PPPoE.
+
+=cut
+
+sub nova_conta : Local {
+	my ($self, $c, $uid) = @_;
+	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
+	$c->stash->{cliente} = $uid;
+	$c->stash->{acao} = 'novo';
+	$c->stash->{template} = 'cadastro/nova_conta.tt2';
 }
 
 =head2 cadastro_do
@@ -227,9 +245,6 @@ sub cadastro_do : Local {
 	# Efetua o cadastro
 	my $dados = {
 		uid				=> $p->{uid}									|| -1,
-		id_plano		=> $p->{plano}									|| undef,
-		login			=> $p->{login}									|| undef,
-		senha			=> $p->{pwd1}									|| undef,
 		bloqueado		=> $p->{bloqueado}								|| 0,
 		nome			=> $p->{nome}									|| undef,
 		rg				=> $p->{rg}										|| undef,
@@ -240,33 +255,16 @@ sub cadastro_do : Local {
 		cep				=> $p->{cep}									|| undef,
 		telefone		=> $p->{telefone}								|| undef,
 		observacao		=> $p->{observacao}								|| undef,
-		pppoe			=> $p->{pppoe}									|| 0,
 		kit_proprio		=> $p->{kit_proprio}							|| 0,
 		cabo			=> $p->{cabo}									|| undef,
 		valor_instalacao => $p->{valor_instalacao}						|| undef,
 		valor_mensalidade => $p->{valor_mensalidade}					|| undef,
 	};
 	
-	# Verifica as senhas
-	if ($p->{pwd1} ne $p->{pwd2}) {
-		$c->stash->{error_msg} = 'As senhas digitadas não coincidem.';
-		$c->stash->{cliente} = $dados;
-		$c->forward('novo');
-		return;
-	}
-	
-	# Verifica de onde obter o IP (PPPoE ou VLAN?)
-	my $ip = undef;
-	if ($p->{pppoe}) {
-		$ip = get_ip($c, $p->{plano});
-	} else {
-		$ip = $p->{ip};
-	}
-
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
-		{required => [qw(id_plano nome rg doc data_nascimento endereco bairro cep telefone cabo valor_instalacao valor_mensalidade)]}
+		{required => [qw(nome rg doc data_nascimento endereco bairro cep telefone cabo valor_instalacao valor_mensalidade)]}
 	);
 	
 	if (!$val->success()) {
@@ -287,7 +285,6 @@ sub cadastro_do : Local {
 	eval {
 		# Cria novo usuário
 		if ($p->{acao} eq 'novo') {
-			$dados->{ip} = $ip;
 			$cliente = $c->model('RG3WifiDB::Usuarios')->create($dados);
 		}
 		# Edita usuário já cadastrado
@@ -306,9 +303,6 @@ sub cadastro_do : Local {
 				return;
 			}
 			
-			# Mudança de plano, obtém novo IP de acordo com o novo plano
-			if ($cliente->id_plano != $p->{plano}) { $cliente->update({ip => $ip}); }
-			
 			$cliente->update($dados);
 		}
 	};
@@ -320,11 +314,72 @@ sub cadastro_do : Local {
 	}
 	
 	# Atualiza as tabelas do PPPoE
-	if (($p->{bloqueado} == 1) || ($p->{pppoe} == 0)) {
-		&user_del($c, $cliente->uid);
-	} else {
-		&user_add($c, $cliente->uid);
+#	if (($p->{bloqueado} == 1) || ($p->{pppoe} == 0)) {
+#		&user_del($c, $cliente->uid);
+#	} else {
+#		&user_add($c, $cliente->uid);
+#	}
+	
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Cliente cadastrado/editado com sucesso.';
+	$c->forward('lista');
+}
+
+=head2 cadastro_conta_do
+
+Efetua o cadastro/atualizacao de conta PPPoE.
+
+=cut
+
+sub cadastro_conta_do : Local {
+	my ($self, $c) = @_;
+
+	# Parâmetros
+	my $p = $c->request->params;
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $p->id_cliente})->first;
+	
+	# Efetua o cadastro
+	my $dados = {
+		uid				=> $p->{uid}									|| -1,
+		login			=> $p->{login}									|| undef,
+		senha			=> $p->{pwd1}									|| undef,
+		id_plano		=> $p->{plano}									|| undef,
+		id_grupo		=> $cliente->id_grupo							|| 1,
+	};
+	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$dados,
+		{required => [qw(login senha id_plano)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{conta} = $dados;
+		$c->forward('nova_conta');
+		return;
 	}
+
+	# Faz as devidas inserções no banco de dados
+	my $conta = undef;
+	
+	eval {
+		# Cria nova conta
+		$c->model('RG3WifiDB::Contas')->update_or_create($dados);
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao cadastrar/editar cliente: ' . $@;
+		$c->stash->{template} = 'erro.tt2';
+		return;
+	}
+	
+	# Atualiza as tabelas do PPPoE
+#	if (($p->{bloqueado} == 1) || ($p->{pppoe} == 0)) {
+#		&user_del($c, $cliente->uid);
+#	} else {
+#		&user_add($c, $cliente->uid);
+#	}
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Cliente cadastrado/editado com sucesso.';
@@ -340,20 +395,45 @@ Exibe página para edição do cliente.
 sub editar : Local {
 	my ($self, $c, $uid) = @_;
 
-	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
+	my $conta = $c->model('RG3WifiDB::Contas')->search({id_cliente => $uid})->first;
 
 	# Verifica permissões
-	if (($cliente->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
+	if (($conta->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
 		$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
 		$c->forward('lista');
 		return;
 	}
 
-	$c->stash->{cliente} = $cliente; 
+	$c->stash->{cliente} = $conta->cliente;
 	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
 	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
 	$c->stash->{acao} = 'editar';
 	$c->stash->{template} = 'cadastro/novo.tt2';
+}
+
+=head2 editar_conta
+
+Exibe página para edição de conta PPPoE.
+
+=cut
+
+sub editar_conta : Local {
+	my ($self, $c, $uid) = @_;
+
+	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
+
+	# Verifica permissões
+	if (($conta->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
+		$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
+		$c->forward('lista');
+		return;
+	}
+
+	$c->stash->{conta} = $conta;
+	$c->stash->{cliente} = $conta->id_cliente;
+	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
+	$c->stash->{acao} = 'editar';
+	$c->stash->{template} = 'cadastro/nova_conta.tt2';
 }
 
 =head2 excluir
@@ -365,11 +445,30 @@ Exclui um usuário do sistema.
 sub excluir : Local {
 	my ($self, $c, $uid) = @_;
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
-	&user_del($c, $uid);
+	
+	foreach my $conta ($cliente->contas) {
+		&user_del($c, $conta->uid);
+	}
+	
 	$cliente->delete();
 	$c->stash->{status_msg} = 'Cliente excluído com sucesso.';
 	$c->forward('lista');
 }
+
+=head2 excluir_conta
+
+Exclui uma conta PPPoE
+
+=cut
+
+sub excluir_conta : Local {
+	my ($self, $c, $uid) = @_;
+	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
+	$conta->delete();
+	$c->stash->{status_msg} = 'Conta excluída com sucesso.';
+	$c->forward('lista');
+}
+
 
 =head1 AUTHOR
 

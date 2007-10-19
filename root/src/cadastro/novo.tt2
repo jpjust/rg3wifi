@@ -1,3 +1,11 @@
+	# Verifica as senhas
+	if ($p->{pwd1} ne $p->{pwd2}) {
+		$c->stash->{error_msg} = 'As senhas digitadas não coincidem.';
+		$c->stash->{cliente} = $dados;
+		$c->forward('novo');
+		return;
+	}
+
 [% PROCESS site/macros %]
 
 <h2>Cadastro de cliente</h2>
@@ -108,49 +116,31 @@
 	</tr>
 
 	<tr>
-		<th colspan="2">Dados da conexão PPPoE</th>
-	</tr>
-	<tr>
-		<td>Usa PPPoE?</td>
-		<td><input type="checkbox" name="pppoe" value="1" [% IF cliente.pppoe == 1 %]checked[% END %]>Sim</td>
-	</tr>
-	<tr>
-		<td>Login:</td>
-		<td><input type="text" name="login" size="10" value="[% cliente.login %]" [% IF acao == 'editar_do' %]readonly="true"[% END %] [% IF val.missing('login') %]class="missing"[% END %]></td>
-	</tr>
-	<tr>
-		<td>Senha:</td>
-		<td><input type="password" name="pwd1" size="10" value="[% cliente.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]></td>
-	</tr>
-	<tr>
-		<td>Repita a senha:</td>
-		<td><input type="password" name="pwd2" size="10" value="[% cliente.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]></td>
-	</tr>
-	<tr>
-		<td>Plano PPPoE:</td>
-		<td>
-			<select name="plano">
-				[% FOREACH plano IN planos %]
-				<option value="[% plano.id %]" [% IF cliente.id_plano == plano.id %]selected[% END %]>[% plano.nome %]</option>
-				[% END %]
-			</select>
-			<img src="/static/images/star.png">
-		</td>
-	</tr>
-
-<tr>
-	<th colspan="2">Dados da conexão via IP fixo</th>
-</tr>
-
-	<tr>
-		<td>IP:</td>
-		<td><input type="text" name="ip" size="20" value="[% cliente.ip %]"></td>
-	</tr>
-
-	<tr>
 		<td>&nbsp;</td>
 		<td><input type="submit" value="OK"></td>
 	</tr>
 </table>
-
 </form>
+
+<h3>Contas de acesso</h3>
+
+<table width="100%">
+	<tr>
+		<th>Login</th>
+		<th>Plano</th>
+		<th>IP</th>
+		<th>Ações</th>
+	</tr>
+
+	[% FOREACH conta IN cliente.contas %]
+	<tr class="lista">
+		<td>[% conta.login %]</td>
+		<td>[% conta.plano.nome %]</td>
+		<td>[% conta.ip %]</td>
+		<td>
+			<a href="[% Catalyst.uri_for('editar_conta/') _ conta.uid %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir a conta do usuário?', '[% Catalyst.uri_for('excluir_conta/') _ conta.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
+		</td>
+	</tr>
+	[% END %]
+</table>

@@ -20,6 +20,7 @@ use base qw/DBIx::Class::Schema/;
 __PACKAGE__->load_classes({
 	RG3WifiDB => [qw/
 		Usuarios
+		Contas
 		Grupos
 		Planos
 		Chamados

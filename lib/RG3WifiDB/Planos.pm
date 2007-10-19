@@ -20,6 +20,6 @@ __PACKAGE__->set_primary_key(qw/id/);
 #     1) Name of relationship, DBIC will create accessor with this name
 #     2) Name of the model class referenced by this relationship
 #     3) Column name in *foreign* table
-__PACKAGE__->has_many(usuarios => 'RG3WifiDB::Usuarios', 'id_plano');
+__PACKAGE__->has_many(contas => 'RG3WifiDB::Contas', 'id_plano');
 
 1;
