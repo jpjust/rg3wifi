@@ -245,6 +245,7 @@ sub cadastro_do : Local {
 	# Efetua o cadastro
 	my $dados = {
 		uid				=> $p->{uid}									|| -1,
+		id_grupo		=> 3,
 		bloqueado		=> $p->{bloqueado}								|| 0,
 		nome			=> $p->{nome}									|| undef,
 		rg				=> $p->{rg}										|| undef,
@@ -336,15 +337,17 @@ sub cadastro_conta_do : Local {
 
 	# Parâmetros
 	my $p = $c->request->params;
-	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $p->id_cliente})->first;
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $p->{cliente}})->first;
 	
 	# Efetua o cadastro
 	my $dados = {
 		uid				=> $p->{uid}									|| -1,
+		id_cliente		=> $p->{cliente}								|| undef,
 		login			=> $p->{login}									|| undef,
 		senha			=> $p->{pwd1}									|| undef,
+		ip				=> &get_ip($c, $p->{plano}),
 		id_plano		=> $p->{plano}									|| undef,
-		id_grupo		=> $cliente->id_grupo							|| 1,
+		id_grupo		=> $cliente->id_grupo							|| 3,
 	};
 	
 	# Valida formulário
@@ -355,6 +358,14 @@ sub cadastro_conta_do : Local {
 	
 	if (!$val->success()) {
 		$c->stash->{val} = $val;
+		$c->stash->{conta} = $dados;
+		$c->forward('nova_conta');
+		return;
+	}
+	
+	# Verifica as senhas
+	if ($p->{pwd1} ne $p->{pwd2}) {
+		$c->stash->{error_msg} = 'As senhas digitadas não coincidem.';
 		$c->stash->{conta} = $dados;
 		$c->forward('nova_conta');
 		return;
@@ -395,16 +406,16 @@ Exibe página para edição do cliente.
 sub editar : Local {
 	my ($self, $c, $uid) = @_;
 
-	my $conta = $c->model('RG3WifiDB::Contas')->search({id_cliente => $uid})->first;
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 
 	# Verifica permissões
-	if (($conta->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
+	if (($cliente->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
 		$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
 		$c->forward('lista');
 		return;
 	}
 
-	$c->stash->{cliente} = $conta->cliente;
+	$c->stash->{cliente} = $cliente;
 	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
 	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
 	$c->stash->{acao} = 'editar';

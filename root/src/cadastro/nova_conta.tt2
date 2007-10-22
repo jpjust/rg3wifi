@@ -11,7 +11,8 @@
 [% END %]
 
 <form action="[% Catalyst.uri_for('cadastro_conta_do') %]" method="POST">
-<input type="hidden" name="uid" value="[% conta.cliente.uid %]">
+<input type="hidden" name="uid" value="[% conta.uid %]">
+<input type="hidden" name="cliente" value="[% cliente %]">
 <input type="hidden" name="acao" value="[% acao %]">
 
 <table>

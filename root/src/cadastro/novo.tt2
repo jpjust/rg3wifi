@@ -1,11 +1,3 @@
-	# Verifica as senhas
-	if ($p->{pwd1} ne $p->{pwd2}) {
-		$c->stash->{error_msg} = 'As senhas digitadas não coincidem.';
-		$c->stash->{cliente} = $dados;
-		$c->forward('novo');
-		return;
-	}
-
 [% PROCESS site/macros %]
 
 <h2>Cadastro de cliente</h2>
