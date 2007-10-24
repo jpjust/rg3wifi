@@ -3,6 +3,8 @@ package RG3Wifi::Controller::Cadastro;
 use strict;
 use warnings;
 use base 'Catalyst::Controller';
+use FindBin;
+use lib "$FindBin::Bin/../..";
 use EasyCat;
 use Data::FormValidator;
 
@@ -88,7 +90,7 @@ sub user_del : Private {
 	
 	if (@_ < 2) { return 1; }
 	
-	my $conta = $c->model('RG3WifiDB::Adicionais')->search({uid => $uid})->first;
+	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
 	if (!$conta)	{ return 2; }
 	
 	$c->model('RG3WifiDB::radcheck')->search({UserName => $conta->login})->delete_all();
@@ -110,12 +112,6 @@ sub remake_users : Local {
 	$c->model('RG3WifiDB::radreply')->delete_all();
 	$c->model('RG3WifiDB::usergroup')->delete_all();
 	
-	# Recadastra os usuários
-	#foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->all) {
-	#	if (!$cliente->bloqueado) {
-	#		&user_add($c, $cliente->uid);
-	#	}
-	#}
 	foreach my $conta ($c->model('RG3WifiDB::Contas')->all) {
 		if (!$conta->cliente->bloqueado) {
 			&user_add($c, $conta->uid);
@@ -211,8 +207,10 @@ Abre página de cadastro de cliente.
 
 sub novo : Local {
 	my ($self, $c) = @_;
+	my $cliente = {id_grupo => 3};
 	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
 	$c->stash->{acao} = 'novo';
+	$c->stash->{cliente} = $cliente unless ($c->stash->{cliente});
 	$c->stash->{template} = 'cadastro/novo.tt2';
 }
 
@@ -314,12 +312,15 @@ sub cadastro_do : Local {
 		return;
 	}
 	
-	# Atualiza as tabelas do PPPoE
-#	if (($p->{bloqueado} == 1) || ($p->{pppoe} == 0)) {
-#		&user_del($c, $cliente->uid);
-#	} else {
-#		&user_add($c, $cliente->uid);
-#	}
+	# Atualiza o coluna de grupo das contas e as tabelas do PPPoE
+	foreach my $conta ($cliente->contas) {
+		$conta->update({id_grupo => $cliente->id_grupo});
+		if ($cliente->bloqueado == 1) {
+			&user_del($c, $conta->uid);
+		} else {
+			&user_add($c, $conta->uid);
+		}
+	}
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Cliente cadastrado/editado com sucesso.';
@@ -341,13 +342,13 @@ sub cadastro_conta_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = {
-		uid				=> $p->{uid}									|| -1,
-		id_cliente		=> $p->{cliente}								|| undef,
-		login			=> $p->{login}									|| undef,
-		senha			=> $p->{pwd1}									|| undef,
+		uid				=> $p->{uid}					|| -1,
+		id_cliente		=> $cliente->uid				|| undef,
+		login			=> $p->{login}					|| undef,
+		senha			=> $p->{pwd1}					|| undef,
 		ip				=> &get_ip($c, $p->{plano}),
-		id_plano		=> $p->{plano}									|| undef,
-		id_grupo		=> $cliente->id_grupo							|| 3,
+		id_plano		=> $p->{plano}					|| undef,
+		id_grupo		=> $cliente->id_grupo			|| 3,
 	};
 	
 	# Valida formulário
@@ -366,35 +367,33 @@ sub cadastro_conta_do : Local {
 	# Verifica as senhas
 	if ($p->{pwd1} ne $p->{pwd2}) {
 		$c->stash->{error_msg} = 'As senhas digitadas não coincidem.';
+		$dados->{senha} = '';
 		$c->stash->{conta} = $dados;
-		$c->forward('nova_conta');
+		$c->forward('nova_conta/' . $cliente->uid);
 		return;
 	}
 
 	# Faz as devidas inserções no banco de dados
-	my $conta = undef;
-	
 	eval {
 		# Cria nova conta
 		$c->model('RG3WifiDB::Contas')->update_or_create($dados);
 	};
 	
 	if ($@) {
-		$c->stash->{error_msg} = 'Erro ao cadastrar/editar cliente: ' . $@;
+		$c->stash->{error_msg} = 'Erro ao cadastrar/editar conta PPPoE: ' . $@;
 		$c->stash->{template} = 'erro.tt2';
 		return;
 	}
 	
 	# Atualiza as tabelas do PPPoE
-#	if (($p->{bloqueado} == 1) || ($p->{pppoe} == 0)) {
-#		&user_del($c, $cliente->uid);
-#	} else {
-#		&user_add($c, $cliente->uid);
-#	}
+	if ($cliente->bloqueado == 0) {
+		my $conta = $c->model('RG3WifiDB::Contas')->search({login => $p->{login}})->first;
+		&user_add($c, $conta->uid);
+	}
 	
 	# Exibe mensagem de conclusão
-	$c->stash->{status_msg} = 'Cliente cadastrado/editado com sucesso.';
-	$c->forward('lista');
+	$c->stash->{status_msg} = 'Conta PPPoE cadastrado/editado com sucesso.';
+	$c->forward('editar/' . $cliente->uid);
 }
 
 =head2 editar
@@ -475,6 +474,7 @@ Exclui uma conta PPPoE
 sub excluir_conta : Local {
 	my ($self, $c, $uid) = @_;
 	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
+	&user_del($c, $conta->uid);
 	$conta->delete();
 	$c->stash->{status_msg} = 'Conta excluída com sucesso.';
 	$c->forward('lista');

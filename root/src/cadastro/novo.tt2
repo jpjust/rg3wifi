@@ -114,7 +114,11 @@
 </table>
 </form>
 
+[% IF acao != 'novo' %]
+
 <h3>Contas de acesso</h3>
+
+<p><a href="[% Catalyst.uri_for('nova_conta/') _ cliente.uid %]"><img src="/static/images/add.png" align="top">Cadastrar conta PPPoE</a></p>
 
 <table width="100%">
 	<tr>
@@ -136,3 +140,5 @@
 	</tr>
 	[% END %]
 </table>
+
+[% END %]

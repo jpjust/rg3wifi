@@ -31,7 +31,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 # Configure the application. 
 #
@@ -56,6 +56,9 @@ __PACKAGE__->deny_access("/cadastro");
 # Cadastro (exclusão)
 __PACKAGE__->allow_access_if("/cadastro/excluir", [qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/excluir");
+
+__PACKAGE__->allow_access_if("/cadastro/excluir_conta", [qw/admin/]);
+__PACKAGE__->deny_access("/cadastro/excluir_conta");
 
 # Rádios (geral)
 __PACKAGE__->allow_access_if("/radios", [qw/admin/]);

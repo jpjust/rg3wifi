@@ -10,12 +10,14 @@
 <table width="100%">
 	<tr>
 		<th>Nome</th>
+		<th>Grupo</th>
 		<th>Ações</th>
 	</tr>
 	
 	[% FOREACH cliente IN clientes %]
 	<tr class="lista" [% IF cliente.bloqueado == 1 %]bgcolor="#ffaaaa"[% END %]>
 		<td>[% cliente.nome %]</td>
+		<td>[% cliente.grupo.nome %]</td>
 		<td>
 			<a href="[% Catalyst.uri_for('editar/') _ cliente.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
 			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir o usuário?', '[% Catalyst.uri_for('excluir/') _ cliente.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]

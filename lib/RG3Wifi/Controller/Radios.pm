@@ -3,10 +3,11 @@ package RG3Wifi::Controller::Radios;
 use strict;
 use warnings;
 use base 'Catalyst::Controller';
+use FindBin;
+use lib "$FindBin::Bin/../..";
 use EasyCat;
 use Data::FormValidator;
-#use Net::Ping::External qw(ping);
-
+#
 =head1 NAME
 
 RG3Wifi::Controller::Radios - Catalyst Controller
