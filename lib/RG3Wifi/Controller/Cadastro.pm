@@ -7,6 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/../..";
 use EasyCat;
 use Data::FormValidator;
+use Business::BR::Ids;
 
 =head1 NAME
 
@@ -240,6 +241,9 @@ sub cadastro_do : Local {
 	# Parâmetros
 	my $p = $c->request->params;
 	
+	# Checa o CPF/CNPJ
+	$p->{doc} = undef unless (test_id('cpf', $p->{doc}));
+	
 	# Efetua o cadastro
 	my $dados = {
 		uid				=> $p->{uid}									|| -1,
@@ -269,7 +273,7 @@ sub cadastro_do : Local {
 	if (!$val->success()) {
 		$c->stash->{val} = $val;
 		$c->stash->{cliente} = $dados;
-		$c->forward('novo');
+		$c->forward($p->{acao} . '/' . $p->{uid});
 		return;
 	}
 
@@ -414,7 +418,7 @@ sub editar : Local {
 		return;
 	}
 
-	$c->stash->{cliente} = $cliente;
+	$c->stash->{cliente} = $cliente unless $c->stash->{cliente};
 	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
 	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
 	$c->stash->{acao} = 'editar';
