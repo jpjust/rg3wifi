@@ -223,8 +223,6 @@ sub novo_rad_do : Local {
 		mac				=> $p->{mac}								|| undef,
 		data_compra		=> &EasyCat::data2sql($p->{data_compra})	|| undef,
 		data_instalacao	=> &EasyCat::data2sql($p->{data_instalacao})|| undef,
-		valor_compra	=> $p->{valor_compra}						|| undef,
-		custo			=> $p->{custo}								|| undef,
 		localizacao		=> $p->{localizacao}						|| undef,
 		id_banda		=> $p->{banda}								|| undef,
 		id_preambulo	=> $p->{preambulo}							|| undef,
@@ -247,7 +245,7 @@ sub novo_rad_do : Local {
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
-		{required => [qw(id_modelo id_tipo mac data_compra valor_compra custo)]}
+		{required => [qw(id_modelo id_tipo mac data_compra)]}
 	);
 	
 	if (!$val->success()) {

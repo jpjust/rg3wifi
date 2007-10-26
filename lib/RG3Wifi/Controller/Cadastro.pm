@@ -264,6 +264,11 @@ sub cadastro_do : Local {
 		valor_mensalidade => $p->{valor_mensalidade}					|| undef,
 	};
 	
+	# O usuário admin pode escolher o grupo
+	if ($c->check_any_user_role('admin')) {
+		$dados->{id_grupo} = $p->{grupo};
+	}
+	
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
@@ -277,11 +282,6 @@ sub cadastro_do : Local {
 		return;
 	}
 
-	# O usuário admin pode escolher o grupo
-	if ($c->check_any_user_role('admin')) {
-		$dados->{id_grupo} = $p->{grupo};
-	}
-	
 	# Faz as devidas inserções no banco de dados
 	my $cliente = undef;
 	
