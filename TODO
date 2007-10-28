@@ -1,0 +1,3 @@
+- Colocar mensagens de erro quando CPF/CNPJ
+  estiverem incorretos ou quando algum campo único já
+  existir (ex.: login já cadastrado).

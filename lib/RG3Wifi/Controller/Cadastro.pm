@@ -242,7 +242,7 @@ sub cadastro_do : Local {
 	my $p = $c->request->params;
 	
 	# Checa o CPF/CNPJ
-	$p->{doc} = undef unless (test_id('cpf', $p->{doc}));
+	$p->{doc} = undef if (((test_id('cpf', $p->{doc})) || (test_id('cnpj', $p->{doc}))) == 0);
 	
 	# Efetua o cadastro
 	my $dados = {

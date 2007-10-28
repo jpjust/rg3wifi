@@ -37,7 +37,7 @@ INSERT INTO `rg3_contas` (`id_cliente`, `id_grupo`, `id_plano`, `login`, `senha`
 -- Apaga colunas que não são mais necessárias
 --
 
-ALTER TABLE `rg3_usuarios` DROP FOREIGN KEY `fk_id_plano`;
+ALTER TABLE `rg3_usuarios` DROP FOREIGN KEY `rg3_usuarios_ibfk_2`;
 ALTER TABLE `rg3_usuarios` DROP INDEX `id_plano`;
 ALTER TABLE `rg3_usuarios` DROP `id_plano`;
 ALTER TABLE `rg3_usuarios` DROP `login`;
