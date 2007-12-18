@@ -33,10 +33,6 @@
 		<td class="p_cadastro">[% data2normal(cliente.data_adesao) %]</td>
 	</tr>
 	<tr>
-		<td class="p_cadastro"><strong>RG:</strong></td>
-		<td class="p_cadastro">[% cliente.rg %]</td>
-	</tr>
-	<tr>
 		<td class="p_cadastro"><strong>CPF/CNPJ:</strong></td>
 		<td class="p_cadastro">[% cliente.doc %]</td>
 	</tr>

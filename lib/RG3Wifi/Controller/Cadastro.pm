@@ -250,7 +250,6 @@ sub cadastro_do : Local {
 		id_grupo		=> 3,
 		bloqueado		=> $p->{bloqueado}								|| 0,
 		nome			=> $p->{nome}									|| undef,
-		rg				=> $p->{rg}										|| undef,
 		doc				=> $p->{doc}									|| undef,
 		data_nascimento	=> &EasyCat::data2sql($p->{data_nascimento})	|| undef,
 		endereco		=> $p->{endereco}								|| undef,
@@ -272,7 +271,7 @@ sub cadastro_do : Local {
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
-		{required => [qw(nome rg doc data_nascimento endereco bairro cep telefone cabo valor_instalacao valor_mensalidade)]}
+		{required => [qw(nome doc data_nascimento endereco bairro cep telefone cabo valor_instalacao valor_mensalidade)]}
 	);
 	
 	if (!$val->success()) {

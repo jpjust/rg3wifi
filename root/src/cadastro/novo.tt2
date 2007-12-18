@@ -24,10 +24,6 @@
 		<td><input type="text" name="nome" size="50" value="[% cliente.nome %]" [% IF val.missing('nome') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
-		<td>RG:</td>
-		<td><input type="text" name="rg" size="20" value="[% cliente.rg %]" [% IF val.missing('rg') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
-	</tr>
-	<tr>
 		<td>CPF/CNPJ:</td>
 		<td><input type="text" name="doc" size="20" value="[% cliente.doc %]" [% IF val.missing('doc') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
