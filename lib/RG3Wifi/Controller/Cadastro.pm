@@ -248,7 +248,6 @@ sub cadastro_do : Local {
 	my $dados = {
 		uid				=> $p->{uid}									|| -1,
 		id_grupo		=> 3,
-		bloqueado		=> $p->{bloqueado}								|| 0,
 		nome			=> $p->{nome}									|| undef,
 		doc				=> $p->{doc}									|| undef,
 		data_nascimento	=> &EasyCat::data2sql($p->{data_nascimento})	|| undef,
@@ -483,6 +482,90 @@ sub excluir_conta : Local {
 	$c->forward('lista');
 }
 
+=head2 aviso_do
+
+Coloca o cliente na lista de aviso de falta de pagamento.
+
+=cut
+
+sub aviso_do : Local {
+	my ($self, $c, $uid) = @_;
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
+	$cliente->update({aviso => 1});
+	$c->stash->{status_msg} = 'O cliente foi adicionado na lista de aviso de falta de pagamento.';
+	$c->forward('lista');
+}
+
+=head2 aviso_undo
+
+Retira o cliente da lista de aviso de falta de pagamento.
+
+=cut
+
+sub aviso_undo : Local {
+	my ($self, $c, $uid) = @_;
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
+	$cliente->update({aviso => 0});
+	$c->stash->{status_msg} = 'O cliente foi removido da lista de aviso de falta de pagamento.';
+	$c->forward('lista');
+}
+
+=head2 aviso_cria_lista
+
+Cria a lista de aviso de falta de pagamento.
+
+=cut
+
+sub aviso_cria_lista : Local {
+	my ($self, $c) = @_;
+	$c->stash->{error_msg} = 'Ocorreu um erro ao tentar criar a lista de aviso.';
+	
+	# Abre o arquivo de IPs
+	open(IPS, '>/usr/local/www/cadastro/aviso_pagamento') or $c->forward('lista');
+	flock(IPS, 2) or $c->forward('lista');
+	
+	# Adiciona os IPs
+	foreach my $conta ($c->model('RG3WifiDB::Contas')->all) {
+		if ($conta->cliente->aviso) {
+			print IPS $conta->ip . "\n" or $c->forward('lista');
+		}
+	}
+	
+	# Fecha o arquivo
+	close(IPS) or $c->forward('lista');
+	
+	$c->stash->{status_msg} = 'Lista de aviso de falta de pagamento criada com sucesso!';
+	$c->stash->{error_msg} = '';
+	$c->forward('lista');
+}
+
+=head2 bloqueio_do
+
+Coloca o cliente na lista de bloqueio.
+
+=cut
+
+sub bloqueio_do : Local {
+	my ($self, $c, $uid) = @_;
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
+	$cliente->update({bloqueado => 1});
+	$c->stash->{status_msg} = 'O cliente foi adicionado na lista de bloqueio.';
+	$c->forward('lista');
+}
+
+=head2 bloqueio_undo
+
+Retira o cliente da lista de bloqueio.
+
+=cut
+
+sub bloqueio_undo : Local {
+	my ($self, $c, $uid) = @_;
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
+	$cliente->update({bloqueado => 0, aviso => 0});
+	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio e da lista de aviso.';
+	$c->forward('lista');
+}
 
 =head1 AUTHOR
 

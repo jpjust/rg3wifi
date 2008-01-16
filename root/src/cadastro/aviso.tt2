@@ -1,0 +1,19 @@
+[% PROCESS site/macros %]
+
+<h2>Clientes RG3.Net :: Contas sob aviso</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Selecione os clientes que deseja avisar sobre o bloqueio.</p>
+
+<form action="[% Catalyst.uri_for('aviso_do') %]" method="POST"> 
+
+<select multiple size="10" name="cliente">
+	[% FOREACH cliente IN clientes %]
+	<option value="[% cliente.ip %]">[% cliente.nome %] ([% cliente.ip %])</option>
+	[% END %]
+</select>
+
+<input type="submit" value="Avisar">
+
+</form>

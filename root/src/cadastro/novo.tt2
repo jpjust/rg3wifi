@@ -77,10 +77,6 @@
 		</td>
 	</tr>
 	[% END %]
-	<tr>
-		<td>Cliente bloqueado?</td>
-		<td><input type="checkbox" name="bloqueado" value="1" [% IF cliente.bloqueado == 1 %]checked[% END %]>Sim</td>
-	</tr>
 
 <tr>
 	<th colspan="2">Dados da instalação</th>
