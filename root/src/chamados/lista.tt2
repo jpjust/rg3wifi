@@ -31,7 +31,8 @@
 	<tr>
 		<th>Cliente</th>
 		<th>Endereço</th>
-		<th>Data</th>
+		<th>Data/agendamento</th>
+		<th>Motivo</th>
 		<th>Ações</th>
 	</tr>
 	
@@ -41,6 +42,7 @@
 		<td>[% chamado.cliente %]</td>
 		<td>[% chamado.endereco %]</td>
 		<td>[% data2normal(chamado.data_chamado) %]</td>
+		<td>[% chamado.motivo %]</td>
 		<td>
 			[% IF estado_atual == 1 %]
 			<a href="[% Catalyst.uri_for('editar/') _ chamado.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>

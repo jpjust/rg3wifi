@@ -2,6 +2,44 @@
 
 <h2>Clientes RG3.Net</h2>
 
+<p><strong><a href="javascript:void(0)" onClick="javascript:showbox('box_filtros');"><img src="/static/images/find.png" align="top">Filtros</a></strong></p>
+<div class="mytextbox" style="display: none;" id="box_filtros">
+
+	<!-- Data de instalação -->
+	<form action="[% Catalyst.uri_for('/cadastro/filtro') %]" method="POST">
+	<input type="hidden" name="tipo" value="0">
+	Data de instalação entre
+	
+	<input type="text" name="data_inst1" id="data_inst1" size="10">
+	<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+	<script type="text/javascript">
+		Calendar.setup(
+			{
+				inputField  : "data_inst1",    // ID of the input field
+				ifFormat    : "%d/%m/%Y",      // the date format
+				button      : "t_rec",		   // ID of the button
+				showsTime	: false
+			}
+		);
+	</script>
+	e
+	<input type="text" name="data_inst2" id="data_inst2" size="10">
+	<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+	<script type="text/javascript">
+		Calendar.setup(
+			{
+				inputField  : "data_inst2",    // ID of the input field
+				ifFormat    : "%d/%m/%Y",      // the date format
+				button      : "t_rec",		   // ID of the button
+				showsTime	: false
+			}
+		);
+	</script>
+	<input type="submit" value="Filtrar">
+	</form>
+	
+</div>
+
 <p>
 	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Cadastrar cliente</a> ::
 	<a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir cadastros</a>
@@ -11,6 +49,7 @@
 	<tr>
 		<th>Nome</th>
 		<th>Grupo</th>
+		<th>Data de instalação</th>
 		<th>Ações</th>
 	</tr>
 	
@@ -28,6 +67,7 @@
 	<tr class="lista" bgcolor="[% bgcolor %]">
 		<td>[% cliente.nome %]</td>
 		<td>[% cliente.grupo.nome %]</td>
+		<td>[% data2normal(cliente.data_adesao) %]</td>
 		<td>
 			<a href="[% Catalyst.uri_for('editar/') _ cliente.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
 			[% IF Catalyst.check_any_user_role('admin') %]

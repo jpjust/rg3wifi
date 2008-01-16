@@ -179,6 +179,28 @@ sub lista_p : Local {
 	$c->stash->{template} = 'cadastro/impressao.tt2';
 }
 
+=head2 filtro
+
+Lista os clientes de acordo com o filtro configurado.
+
+=cut
+
+sub filtro : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Filtro por data de instalação
+	if ($p->{tipo} eq '0') {
+		$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({data_adesao => {
+			-between => [&EasyCat::data2sql($p->{data_inst1}), &EasyCat::data2sql($p->{data_inst2})]
+		}})];
+	}
+	
+	$c->stash->{template} = 'cadastro/lista.tt2';
+}
+
 =head2 imprimir
 
 Exibe os cadastros prontos para impressão.
