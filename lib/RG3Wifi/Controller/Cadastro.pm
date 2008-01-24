@@ -137,6 +137,8 @@ sub get_ip : Private {
 	my $base;
 	if    ($plano == 1)	{ $base = 16; }
 	elsif ($plano == 2)	{ $base = 32; }
+	elsif ($plano == 3)	{ $base = 48; }
+	elsif ($plano == 4)	{ $base = 64; }
 	
 	# Sorteia um IP e verifica se já existe
 	my ($addr, $ip);

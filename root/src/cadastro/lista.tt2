@@ -41,8 +41,13 @@
 </div>
 
 <p>
-	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Cadastrar cliente</a> ::
-	<a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir cadastros</a>
+	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Cadastrar cliente</a>
+	:: <a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir cadastros</a>
+	
+	[% IF Catalyst.check_any_user_role('admin') %]
+		:: <a href="[% Catalyst.uri_for('aviso_cria_lista') %]"><img src="/static/images/database_refresh.png" align="top">Aplicar lista de avisos</a>
+		:: <a href="[% Catalyst.uri_for('remake_users') %]"><img src="/static/images/database_refresh.png" align="top">Aplicar lista de bloqueios</a>
+	[% END %]
 </p>
 
 <table width="100%">
