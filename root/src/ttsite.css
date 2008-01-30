@@ -97,6 +97,15 @@ img {
 	padding: 10px;
 }
 
+.mytextbox_green {
+	background-color: #ddffdd;
+	color: black;
+	border-style: solid;
+	border-color: #003300;
+	border-width: 1px;
+	padding: 10px;
+}
+
 .errorbox {
 	color: #aa0000;
 	font-weight: bold;

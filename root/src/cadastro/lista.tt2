@@ -3,7 +3,7 @@
 <h2>Clientes RG3.Net</h2>
 
 <p><strong><a href="javascript:void(0)" onClick="javascript:showbox('box_filtros');"><img src="/static/images/find.png" align="top">Filtros</a></strong></p>
-<div class="mytextbox" style="display: none;" id="box_filtros">
+<div class="mytextbox_green" style="display: none;" id="box_filtros">
 
 	<!-- Data de instalação -->
 	<form action="[% Catalyst.uri_for('/cadastro/filtro') %]" method="POST">
