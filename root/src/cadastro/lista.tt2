@@ -50,6 +50,8 @@
 	[% END %]
 </p>
 
+<p>Clientes listados: [% clientes.size %]</p>
+
 <table width="100%">
 	<tr>
 		<th>Nome</th>
@@ -73,7 +75,7 @@
 		<td>[% cliente.nome %]</td>
 		<td>[% cliente.grupo.nome %]</td>
 		<td>[% data2normal(cliente.data_adesao) %]</td>
-		<td>
+		<td nowrap>
 			<a href="[% Catalyst.uri_for('editar/') _ cliente.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
 			[% IF Catalyst.check_any_user_role('admin') %]
 				<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir o usuário?', '[% Catalyst.uri_for('excluir/') _ cliente.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>

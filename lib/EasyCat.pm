@@ -41,6 +41,23 @@ sub data2sql {
 	}
 }
 
+=head2 datacmp
+
+Compara duas datas, ignorando a parte de hora
+
+=cut
+
+sub datacmp {
+	my ($d1, $lixo1) = split(/ /, $_[0]);
+	my ($d2, $lixo2) = split(/ /, $_[1]);
+	
+	if (&data2sql($d1) eq &data2sql($d2)) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 =head2 formatadoc
 
 Retorna o número do documento (CPF/CNPJ) formatado com pontos e hífen.

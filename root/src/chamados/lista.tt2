@@ -38,12 +38,27 @@
 	
 	[% FOREACH chamado IN tipo.chamados %]
 	[% NEXT IF chamado.id_estado != estado_atual %]
-	<tr class="lista">
+
+	[% # Compara a data com a data atual %]
+	[% PERL %]
+		my ($d1, $lixo) = split(/ /, $stash->get('chamado.data_chamado'), 2);
+		my (@datah) = localtime();
+		my $d2 = abs($datah[3]) . '/' . abs($datah[4] + 1) . '/' . abs($datah[5] + 1900);
+	
+		$d2 = EasyCat::data2sql($d2);
+		
+		if ($d1 eq $d2) {
+			print '<tr class="highligth">';
+		} else {
+			print '<tr class="lista">';
+		}
+	[% END %]
+	
 		<td>[% chamado.cliente %]</td>
 		<td>[% chamado.endereco %]</td>
 		<td>[% data2normal(chamado.data_chamado) %]</td>
 		<td>[% chamado.motivo %]</td>
-		<td>
+		<td nowrap>
 			[% IF estado_atual == 1 %]
 			<a href="[% Catalyst.uri_for('editar/') _ chamado.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
 			<a href="[% Catalyst.uri_for('finalizar/') _ chamado.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>

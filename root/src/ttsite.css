@@ -22,6 +22,14 @@ a:hover {
 	text-decoration: underline;
 }
 
+tr.highligth {
+	background-color: #aaaaff;
+}
+
+tr.highligth:hover {
+	background-color: #ccccff;
+}
+
 tr.lista:hover {
 	background-color: #aaffaa;
 }
