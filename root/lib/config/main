@@ -12,8 +12,8 @@
 
    # define a data structure to hold sitewide data
    site = {
-     title     => 'Gerenciamento RG3.Net',
-     copyright => '2007 Justsoft Informática Ltda.',
+     title     => 'Central de Acesso RG3.Net',
+     copyright => '2007 - 2008 Justsoft Informática Ltda.',
    };
 
    # load up any other configuration items 

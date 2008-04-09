@@ -32,6 +32,7 @@ __PACKAGE__->load_classes({
 		RadiosTipo
 		RadiosBanda
 		RadiosPreambulo
+		radacct
 		radcheck
 		radreply
 		usergroup

@@ -14,6 +14,7 @@ use Catalyst::Runtime '5.70';
 #                 directory
 
 use Catalyst qw/
+	-Debug
 	ConfigLoader
 	Static::Simple
 	
@@ -28,7 +29,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 # Configure the application. 
 #

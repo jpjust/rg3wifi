@@ -125,8 +125,9 @@
 		<td>[% conta.login %]</td>
 		<td>[% conta.plano.nome %]</td>
 		<td>[% conta.ip %]</td>
-		<td>
+		<td nowrap>
 			<a href="[% Catalyst.uri_for('editar_conta/') _ conta.uid %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+			<br><a href="[% Catalyst.uri_for('/acesso/logs/') _ conta.uid %]"><img src="/static/images/report.png" align="top">Relatório</a>
 			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir a conta do usuário?', '[% Catalyst.uri_for('excluir_conta/') _ conta.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
 		</td>
 	</tr>

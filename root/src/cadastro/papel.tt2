@@ -11,25 +11,15 @@
 
 <div class="mypage">
 
-<h1 class="p_cadastro">Cadastro de cliente :: RG3.Net</h1>
+<h2 class="p_cadastro">Anexo II: Cadastro do cliente</h2>
 
-<hr>
-
-<h2 class="p_cadastro">[% cliente.nome %]</h2>
-
-<br><br>
-
-<table cellpadding="4">
+<table cellpadding="4" cellspacing="0" border="1">
 	<tr>
-		<td class="p_cadastro"><strong>IP:</strong></td>
-		<td class="p_cadastro">[% cliente.ip %]</td>
+		<td class="p_cadastro"><strong>Nome/Razão social:</strong></td>
+		<td class="p_cadastro">[% cliente.nome %]</td>
 	</tr>
 	<tr>
-		<td class="p_cadastro"><strong>Plano:</strong></td>
-		<td class="p_cadastro">[% cliente.plano.nome %]</td>
-	</tr>
-	<tr>
-		<td class="p_cadastro"><strong>Data de adesão:</strong></td>
+		<td class="p_cadastro"><strong>Data de instalação:</strong></td>
 		<td class="p_cadastro">[% data2normal(cliente.data_adesao) %]</td>
 	</tr>
 	<tr>
@@ -57,14 +47,6 @@
 		<td class="p_cadastro">[% cliente.telefone %]</td>
 	</tr>
 	<tr>
-		<td class="p_cadastro"><strong>PPPoE:</strong></td>
-		<td class="p_cadastro">[% IF cliente.pppoe %]Sim[% ELSE %]Não[% END %]</td>
-	</tr>
-	<tr>
-		<td class="p_cadastro"><strong>Login PPPoE:</strong></td>
-		<td class="p_cadastro">[% cliente.login %]</td>
-	</tr>
-	<tr>
 		<td class="p_cadastro"><strong>Kit próprio:</strong></td>
 		<td class="p_cadastro">[% IF cliente.kit_proprio %]Sim[% ELSE %]Não[% END %]</td>
 	</tr>
@@ -82,7 +64,7 @@
 	</tr>
 	<tr>
 		<td class="p_cadastro"><strong>Observações:</strong></td>
-		<td class="p_cadastro"><pre>[% cliente.observacao %]</pre></td>
+		<td class="p_cadastro">&nbsp;<pre>[% cliente.observacao %]</pre></td>
 	</tr>
 </table>
 

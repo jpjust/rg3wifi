@@ -35,7 +35,7 @@ sub index : Private {
 				$c->stash->{template} = 'erro.tt2';
 				$c->logout;
 			} else {
-				$c->response->redirect($c->uri_for('/cadastro/lista'));
+				$c->response->redirect($c->uri_for('/acesso/inicio'));
 				return;
 			}
 		} else {

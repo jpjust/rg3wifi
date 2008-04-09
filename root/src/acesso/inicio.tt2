@@ -1,0 +1,76 @@
+[% PROCESS site/macros %]
+
+<h2>Bem-vindo(a), [% cliente.nome %]</h2>
+
+<p>Esta é a sua página inicial na <strong>Central de Acesso RG3.Net</strong>. A partir daqui, você poderá gerenciar as senhas das suas contas e verificar os relatórios de acesso.</p>
+
+<div align="center">
+<table cellpadding="10">
+
+<tr>
+<td valign="top" width="50%">
+
+<h3>Dados do cliente</h3>
+
+<table>
+	<tr>
+		<td>Nome:</td>
+		<td>[% cliente.nome %]</td>
+	</tr>
+	<tr>
+		<td>CPF/CNPJ:</td>
+		<td>[% cliente.doc %]</td>
+	</tr>
+	<tr>
+		<td>Endereço:</td>
+		<td>[% cliente.endereco %]</td>
+	</tr>
+	<tr>
+		<td>Bairro:</td>
+		<td>[% cliente.bairro %]</td>
+	</tr>
+	<tr>
+		<td>CEP:</td>
+		<td>[% cliente.cep %]</td>
+	</tr>
+	<tr>
+		<td>Telefone:</td>
+		<td>[% cliente.telefone %]</td>
+	</tr>
+</table>
+
+<p>Para alteração de assinatura, endereço ou telefone, entre em contato com nosso escritório no telefone <strong>(75) 3624-8601</strong>.</p>
+
+<p><strong>Suporte 24 horas: (75) 8814-6677</strong></p>
+
+<!-- ################################################################# -->
+<td><img src="/static/images/vline.png" alt="vline"></td>
+<!-- ################################################################# -->
+
+<td valign="top" width="50%">
+
+<h3>Contas de acesso</h3>
+
+<table width="100%">
+	<tr>
+		<th>Conta</th>
+		<th>Plano</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH conta IN cliente.contas %]
+	<tr class="lista">
+		<td>[% conta.login %]</td>
+		<td>[% conta.plano.nome %]</td>
+		<td nowrap>
+			<a href="[% Catalyst.uri_for('/acesso/senha/') _ conta.uid %]"><img src="/static/images/key.png" align="top">Alterar senha</a>
+			<br><a href="[% Catalyst.uri_for('/acesso/logs/') _ conta.uid %]"><img src="/static/images/report.png" align="top">Relatório de acesso</a>
+		</td>
+	</tr>
+	[% END %]
+</table>
+
+</td>
+</tr>
+</table>
+</div>

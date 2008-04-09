@@ -1,4 +1,19 @@
 [% ##### MACROS EASYCAT ##### %]
+[% # Converte segundos para HH:MM:SS %]
+[% MACRO seg2hora(tempo) PERL %]
+	use integer;
+	my $tempo = $stash->get('tempo');
+	my $horas = $tempo / 3600;
+	my $tempo = $tempo % 3600;
+	my $minutos = $tempo / 60;
+	my $segundos = $tempo % 60;
+	
+	$minutos = '0' . $minutos if ($minutos < 10);
+	$segundos = '0' . $segundos if ($segundos < 10);
+	
+	print $horas . ':' . $minutos . ':' . $segundos;
+[% END %]
+
 [% # Retorna a data atual %]
 [% MACRO datahoje PERL %]
 	my (@data) = localtime();
