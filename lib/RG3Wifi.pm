@@ -14,7 +14,6 @@ use Catalyst::Runtime '5.70';
 #                 directory
 
 use Catalyst qw/
-	-Debug
 	ConfigLoader
 	Static::Simple
 	
@@ -46,6 +45,8 @@ __PACKAGE__->config( name => 'RG3Wifi' );
 __PACKAGE__->setup;
 
 # Authorization::ACL Rules
+# O controller Acesso é liberado pra todo mundo.
+
 # Cadastro (geral)
 __PACKAGE__->allow_access_if("/cadastro",					[qw/admin/]);
 __PACKAGE__->allow_access_if("/cadastro",					[qw/operador/]);

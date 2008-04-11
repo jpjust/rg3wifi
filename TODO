@@ -1,8 +1,5 @@
 - Colocar mensagens de erro quando CPF/CNPJ
   estiverem incorretos ou quando algum campo único já
   existir (ex.: login já cadastrado).
-* Marcar itens de listas com data de hoje em azul
-* Diminuir o tamanho da fonte
-* Ordenar modelos de rádio por ordem alfabética
 / Colocar a contagem de itens listados em cada tabela
 - Criar uma opção pra imprimir o contrato

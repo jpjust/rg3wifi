@@ -40,7 +40,7 @@ Handle Catalyst::Plugin::Authorization::ACL access denied exceptions
 sub access_denied : Private {
 	my ($self, $c) = @_;
 	$c->stash->{error_msg} = 'Você não tem permissão para acessar este recurso.';
-	$c->forward('lista');
+	$c->forward('RG3Wifi::Controller::Acesso', 'inicio');
 }
 
 =head2 user_add
@@ -573,7 +573,12 @@ sub bloqueio_do : Local {
 	my ($self, $c, $uid) = @_;
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 	$cliente->update({bloqueado => 1});
-	$c->stash->{status_msg} = 'O cliente foi adicionado na lista de bloqueio.';
+	
+	foreach my $conta ($cliente->contas) {
+		&user_del($c, $conta->uid);
+	}
+
+	$c->stash->{status_msg} = 'O cliente foi bloqueado.';
 	$c->forward('lista');
 }
 
@@ -587,6 +592,11 @@ sub bloqueio_undo : Local {
 	my ($self, $c, $uid) = @_;
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 	$cliente->update({bloqueado => 0, aviso => 0});
+
+	foreach my $conta ($cliente->contas) {
+		&user_add($c, $conta->uid);
+	}
+
 	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio e da lista de aviso.';
 	$c->forward('lista');
 }

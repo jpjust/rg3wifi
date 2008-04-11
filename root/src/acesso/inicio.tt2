@@ -51,6 +51,10 @@
 
 <h3>Contas de acesso</h3>
 
+[% IF cliente.bloqueado %]
+<div class="error"><strong>Suas contas de acesso estão bloqueadas. Entre em contato com nosso escritório para verificar sua situação.</strong></div>
+[% END %]
+
 <table width="100%">
 	<tr>
 		<th>Conta</th>

@@ -39,7 +39,7 @@ Handle Catalyst::Plugin::Authorization::ACL access denied exceptions
 sub access_denied : Private {
 	my ($self, $c) = @_;
 	$c->stash->{error_msg} = 'Você não tem permissão para acessar este recurso.';
-	$c->forward('lista');
+	$c->forward('RG3Wifi::Controller::Acesso', 'inicio');
 }
 
 =head2 lista

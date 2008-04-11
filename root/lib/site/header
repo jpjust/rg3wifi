@@ -4,10 +4,14 @@
 [% IF Catalyst.user_exists %]
 <div class="menu" align="right">
 	<a href="[% Catalyst.uri_for('/acesso') %]"><img src="/static/images/application_home.png" align="top"> Início</a> ::
+	
+	[% IF Catalyst.check_any_user_role('admin', 'operador') %]
 	<a href="[% Catalyst.uri_for('/chamados') %]"><img src="/static/images/telephone.png" align="top"> Chamados de suporte</a> ::
 	<a href="[% Catalyst.uri_for('/radios/lista_mods') %]"><img src="/static/images/bricks.png" align="top"> Fabricantes e modelos</a> ::
 	<a href="[% Catalyst.uri_for('/radios') %]"><img src="/static/images/transmit.png" align="top"> Rádios</a> ::
 	<a href="[% Catalyst.uri_for('/cadastro') %]"><img src="/static/images/user.png" align="top"> Clientes</a> ::
+	[% END %]
+	
 	<a href="[% Catalyst.uri_for('/logout') %]"><img src="/static/images/disconnect.png" align="top"> Sair ([% Catalyst.user %])</a>
 </div>
 [% END %]
