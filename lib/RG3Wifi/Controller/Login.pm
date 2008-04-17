@@ -23,6 +23,10 @@ Catalyst Controller.
 
 sub index : Private {
 	my ($self, $c) = @_;
+	
+	if ($c->user_exists) {
+		$c->response->redirect($c->uri_for('/acesso/inicio'));
+	}
 
 	my $username = $c->request->params->{username} || "";
 	my $password = $c->request->params->{password} || "";

@@ -30,6 +30,18 @@ sub default : Private {
 	my ($self, $c) = @_;
 }
 
+=head2 index 
+
+=cut
+
+sub index : Private {
+	my ($self, $c) = @_;
+	if ($c->user_exists) {
+		$c->response->redirect($c->uri_for('/acesso/inicio'));
+	}
+	
+}
+
 =head2 auto
 
 Check if there is a user and, if not, forward to login page

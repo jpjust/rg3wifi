@@ -59,11 +59,33 @@ sub user_add : Private {
 	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
 	if (!$conta)	{ return 2; }
 	
+	# Seleciona o IP Pool de acordo com o plano
+	my $ippool = undef;
+	if (($conta->plano->id == 1) || ($conta->plano->id == 3)) {
+		if ($conta->cliente->aviso) {
+			$ippool = 'ippa150';
+		} else {
+			$ippool = 'ipp150';
+		}
+	} else {
+		if ($conta->cliente->aviso) {
+			$ippool = 'ippa300';
+		} else {
+			$ippool = 'ipp300';
+		}
+	}
+	
 	# Tabela radcheck
 	$c->model('RG3WifiDB::radcheck')->create({
 		UserName	=> $conta->login,
 		Attribute	=> 'Password',
 		Value		=> $conta->senha,
+	});
+	$c->model('RG3WifiDB::radcheck')->create({
+		UserName	=> $conta->login,
+		Attribute	=> 'Pool-Name',
+		op			=> ':=',
+		Value		=> $ippool,
 	});
 	
 	# Tabela usergroup
@@ -113,6 +135,7 @@ sub remake_users : Local {
 	$c->model('RG3WifiDB::radreply')->delete_all();
 	$c->model('RG3WifiDB::usergroup')->delete_all();
 	
+	# Escreve pontos em comentários pra evitar time-out
 	foreach my $conta ($c->model('RG3WifiDB::Contas')->all) {
 		if (!$conta->cliente->bloqueado) {
 			&user_add($c, $conta->uid);
