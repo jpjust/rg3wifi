@@ -35,7 +35,7 @@ __PACKAGE__->load_classes({
 		radacct
 		radcheck
 		radreply
-		usergroup
+		radusergroup
 	/]
 });
 

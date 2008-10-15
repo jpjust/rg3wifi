@@ -7,7 +7,7 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
 __PACKAGE__->table('rg3_planos');
 # Set columns in table
-__PACKAGE__->add_columns(qw/id nome/);
+__PACKAGE__->add_columns(qw/id nome pool_name/);
 # Set the primary key for the table
 __PACKAGE__->set_primary_key(qw/id/);
 

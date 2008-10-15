@@ -8,6 +8,7 @@ use lib "$FindBin::Bin/../..";
 use EasyCat;
 use Data::FormValidator;
 use Business::BR::Ids;
+use Text::Unaccent;
 
 =head1 NAME
 
@@ -59,20 +60,12 @@ sub user_add : Private {
 	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
 	if (!$conta)	{ return 2; }
 	
-	# Seleciona o IP Pool de acordo com o plano
-	my $ippool = undef;
-	if (($conta->plano->id == 1) || ($conta->plano->id == 3)) {
-		if ($conta->cliente->aviso) {
-			$ippool = 'ippa150';
-		} else {
-			$ippool = 'ipp150';
-		}
+	# Pool de IP. Se está sob aviso, o pool é diferente
+	my $pool;
+	if ($conta->cliente->aviso) {
+		$pool = $conta->plano->pool_name . 'a';
 	} else {
-		if ($conta->cliente->aviso) {
-			$ippool = 'ippa300';
-		} else {
-			$ippool = 'ipp300';
-		}
+		$pool = $conta->plano->pool_name;
 	}
 	
 	# Tabela radcheck
@@ -85,20 +78,13 @@ sub user_add : Private {
 		UserName	=> $conta->login,
 		Attribute	=> 'Pool-Name',
 		op			=> ':=',
-		Value		=> $ippool,
+		Value		=> $pool,
 	});
 	
-	# Tabela usergroup
-	$c->model('RG3WifiDB::usergroup')->create({
-		UserName	=> $conta->login,
-		GroupName	=> 'cliente',
-	});
-	
-	# Tabela radreply
-	$c->model('RG3WifiDB::radreply')->create({
-		UserName	=> $conta->login,
-		Attribute	=> 'Framed-IP-Address',
-		Value		=> $conta->ip,
+	# Tabela radusergroup
+	$c->model('RG3WifiDB::radusergroup')->create({
+		username	=> $conta->login,
+		groupname	=> 'cliente',
 	});
 }
 
@@ -117,8 +103,8 @@ sub user_del : Private {
 	if (!$conta)	{ return 2; }
 	
 	$c->model('RG3WifiDB::radcheck')->search({UserName => $conta->login})->delete_all();
-	$c->model('RG3WifiDB::radreply')->search({UserName => $conta->login})->delete_all();
-	$c->model('RG3WifiDB::usergroup')->search({UserName => $conta->login})->delete_all();
+	#$c->model('RG3WifiDB::radreply')->search({UserName => $conta->login})->delete_all();
+	$c->model('RG3WifiDB::radusergroup')->search({UserName => $conta->login})->delete_all();
 }
 
 =head2 remake_users
@@ -131,53 +117,20 @@ sub remake_users : Local {
 	my ($self, $c) = @_;
 	
 	# Limpa os dados atuais
-	$c->model('RG3WifiDB::radcheck')->delete_all();
-	$c->model('RG3WifiDB::radreply')->delete_all();
-	$c->model('RG3WifiDB::usergroup')->delete_all();
+	#$c->model('RG3WifiDB::radcheck')->delete_all();
+	#$c->model('RG3WifiDB::radreply')->delete_all();
+	#$c->model('RG3WifiDB::radusergroup')->delete_all();
 	
-	# Escreve pontos em comentários pra evitar time-out
-	foreach my $conta ($c->model('RG3WifiDB::Contas')->all) {
-		if (!$conta->cliente->bloqueado) {
-			&user_add($c, $conta->uid);
-		}
-	}
+	# Popula as tabelas
+	#foreach my $conta ($c->model('RG3WifiDB::Contas')->all) {
+	#	if (!$conta->cliente->bloqueado) {
+	#		&user_add($c, $conta->uid);
+	#	}
+	#}
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Lista de usuários PPPoE refeita!';
 	$c->forward('lista');
-}
-
-=head2 get_ip
-
-Gera um número IP de acordo com o plano do cliente.
-
-=cut
-
-sub get_ip : Private {
-	my ($c, $plano) = @_;
-	
-	# Verifica o plano
-	my $base;
-	if    ($plano == 1)	{ $base = 16; }
-	elsif ($plano == 2)	{ $base = 32; }
-	elsif ($plano == 3)	{ $base = 48; }
-	elsif ($plano == 4)	{ $base = 64; }
-	
-	# Sorteia um IP e verifica se já existe
-	my ($addr, $ip);
-	while(1) {
-		$addr = int(rand(4096));
-		$ip = '172.16.' . (int($addr / 256) + $base) . '.' . ($addr % 256);
-
-		my $verifica = $c->model('RG3WifiDB::radreply')->search({Value => $ip})->first;
-		if ($verifica) {
-			next;   # Já existe esse IP
-		} else {
-			last;
-		}
-	};
-	
-	return $ip;
 }
 
 =head2 lista
@@ -189,6 +142,26 @@ Lista os clientes cadastrados.
 sub lista : Local {
 	my ($self, $c) = @_;
 	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->all];
+	$c->stash->{template} = 'cadastro/lista.tt2';
+}
+
+=head2 lista_doc
+
+Lista os clientes com documentos inválidos.
+
+=cut
+
+sub lista_doc : Local {
+	my ($self, $c) = @_;
+	
+	my @clientes = undef;
+	
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->all) {
+		next if (test_id('cpf', $cliente->doc) || test_id('cnpj', $cliente->doc));
+		push(@clientes, $cliente);
+	}
+	
+	$c->stash->{clientes} = [@clientes];
 	$c->stash->{template} = 'cadastro/lista.tt2';
 }
 
@@ -395,7 +368,7 @@ sub cadastro_conta_do : Local {
 		id_cliente		=> $cliente->uid				|| undef,
 		login			=> $p->{login}					|| undef,
 		senha			=> $p->{pwd1}					|| undef,
-		ip				=> &get_ip($c, $p->{plano}),
+		ip				=> '',
 		id_plano		=> $p->{plano}					|| undef,
 		id_grupo		=> $cliente->id_grupo			|| 3,
 	};
@@ -540,6 +513,9 @@ sub aviso_do : Local {
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 	$cliente->update({aviso => 1});
 	$c->stash->{status_msg} = 'O cliente foi adicionado na lista de aviso de falta de pagamento.';
+	foreach my $conta ($cliente->contas) {
+		&user_add($c, $conta->uid);
+	}
 	$c->forward('lista');
 }
 
@@ -554,6 +530,9 @@ sub aviso_undo : Local {
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 	$cliente->update({aviso => 0});
 	$c->stash->{status_msg} = 'O cliente foi removido da lista de aviso de falta de pagamento.';
+	foreach my $conta ($cliente->contas) {
+		&user_add($c, $conta->uid);
+	}
 	$c->forward('lista');
 }
 
@@ -622,6 +601,52 @@ sub bloqueio_undo : Local {
 
 	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio e da lista de aviso.';
 	$c->forward('lista');
+}
+
+=head2 exportar
+
+Exporta a lista de clientes para o OBBPlus.
+
+=cut
+
+sub exportar : Local {
+	my ($self, $c) = @_;
+	
+	my $saida = undef;
+	
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->all) {
+		# Remove formatação do CPF ou CNPJ
+		my $doc = $cliente->doc;
+		$doc =~ s/\.//g;
+		$doc =~ s/\-//g;
+		$doc =~ s/\///g;
+		if (length($doc) == 14) {
+			$doc = 'J' . abs($doc);
+		} else {
+			$doc = 'F' . abs($doc);
+		}
+		
+		# Remove formatação do CEP também
+		my $cep = $cliente->cep;
+		$cep =~ s/\.//g;
+		$cep =~ s/\-//g;
+		
+		# Inclui na variável
+		$saida .= sprintf("%-15.15s%-15.15s%-40.40s%-52.52s%-63.63s%-30.30s%-30.30s%-2.2s%-8.8s%s\n",
+			unac_string('utf-8', $cliente->uid),
+			$doc,
+			unac_string('utf-8', $cliente->nome),
+			'0',
+			unac_string('utf-8', $cliente->endereco),
+			unac_string('utf-8', $cliente->bairro),
+			'Feira de Santana',
+			'BA',
+			$cep,
+			'00000000 000000000000 000000 ');
+	}
+	
+	$c->stash->{saida} = $saida;
+	$c->stash->{template} = 'cadastro/exportacao.tt2';
 }
 
 =head1 AUTHOR

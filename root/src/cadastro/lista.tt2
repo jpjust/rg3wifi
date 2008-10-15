@@ -76,7 +76,7 @@
 		<td>[% cliente.nome %]</td>
 		<td>[% cliente.grupo.nome %]</td>
 		<td>[% data2normal(cliente.data_adesao) %]</td>
-		<td>[% cliente.contas.size %]</td>
+		<td> [% cliente.contas.size() %] </td>
 		<td nowrap>
 			<a href="[% Catalyst.uri_for('editar/') _ cliente.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
 			[% IF Catalyst.check_any_user_role('admin') %]
