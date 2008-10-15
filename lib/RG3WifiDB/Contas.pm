@@ -27,4 +27,11 @@ __PACKAGE__->belongs_to(cliente => 'RG3WifiDB::Usuarios', 'id_cliente');
 __PACKAGE__->belongs_to(plano => 'RG3WifiDB::Planos', 'id_plano');
 __PACKAGE__->belongs_to(grupo => 'RG3WifiDB::Grupos', 'id_grupo');
 
+# has_many():
+#   args:
+#     1) Name of relationship, DBIC will create accessor with this name
+#     2) Name of the model class referenced by this relationship
+#     3) Column name in *foreign* table
+__PACKAGE__->has_many(acoes => 'RG3WifiDB::Auditoria', 'uid');
+
 1;

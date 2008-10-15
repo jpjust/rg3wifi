@@ -1,0 +1,32 @@
+[% PROCESS site/macros %]
+
+<h2>Relatório de auditoria</h2>
+
+<p>Exibindo a página <strong>[% pagina %]</strong>.</p>
+
+<p>Escolher página:
+[% i = 1 %]
+[% WHILE i <= paginas %]
+	<a href="[% Catalyst.uri_for('/auditoria/logs/') _ i %]">[% i %]</a>
+	[% i = i + 1 %]
+	[% IF i <= paginas %]-[% END %]
+[% END %]
+</p>
+
+<table width="100%">
+	<tr>
+		<th>Usuário</th>
+		<th>Ação</th>
+		<th>Data</th>
+	</tr>
+	
+	[% FOREACH acao IN acoes %]
+	
+	<tr class="lista">
+		<td>[% acao.login.login %]</td>
+		<td>[% acao.acao %]</td>
+		<td>[% data2normal(acao.data) %]</td>
+	</tr>
+	[% END %]
+	
+</table>

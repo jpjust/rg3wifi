@@ -51,15 +51,24 @@ Check if there is a user and, if not, forward to login page
 sub auto : Private {
 	my ($self, $c) = @_;
 	
+	# Se está acessando a tela de login, OK!
 	if ($c->controller eq $c->controller('Login')) {
 		return 1;
 	}
 	
+	# Se está acessando outra tela e não está logado, envia para a tela de login
 	if (!$c->user_exists) {
 		$c->log->debug('***Root::auto User not found, forwarding to /login');
 		$c->response->redirect($c->uri_for('/login'));
 		return 0;
 	}
+	
+	# Em outros casos (uma tela qualquer E usuário logado), faz auditoria
+	# talvez $c->req->param retorne os parametros
+	$c->model('RG3WifiDB::Auditoria')->create({
+		uid => $c->user->uid,
+		acao => $c->req->path,
+	});
 	
 	return 1;
 }

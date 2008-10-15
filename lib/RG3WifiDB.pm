@@ -23,6 +23,7 @@ __PACKAGE__->load_classes({
 		Contas
 		Grupos
 		Planos
+		Auditoria
 		Chamados
 		ChamadosEstado
 		ChamadosTipo
