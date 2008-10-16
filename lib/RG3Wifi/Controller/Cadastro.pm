@@ -367,16 +367,20 @@ sub cadastro_conta_do : Local {
 		uid				=> $p->{uid}					|| -1,
 		id_cliente		=> $cliente->uid				|| undef,
 		login			=> $p->{login}					|| undef,
-		senha			=> $p->{pwd1}					|| undef,
 		ip				=> '',
 		id_plano		=> $p->{plano}					|| undef,
 		id_grupo		=> $cliente->id_grupo			|| 3,
 	};
-	
+
+	# Verifica se vai alterar a senha
+	if ($p->{pwd1}) {
+		$dados->{senha} = $p->{pwd1}
+	};
+		
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
-		{required => [qw(login senha id_plano)]}
+		{required => [qw(login id_plano)]}
 	);
 	
 	if (!$val->success()) {

@@ -21,11 +21,11 @@
 	</tr>
 	<tr>
 		<td>Senha:</td>
-		<td><input type="password" name="pwd1" size="10" value="[% conta.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+		<td><input type="password" name="pwd1" size="10" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Repita a senha:</td>
-		<td><input type="password" name="pwd2" size="10" value="[% conta.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+		<td><input type="password" name="pwd2" size="10" [% IF val.missing('senha') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>

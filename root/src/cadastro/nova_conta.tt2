@@ -25,11 +25,11 @@
 	</tr>
 	<tr>
 		<td>Senha:</td>
-		<td><input type="password" name="pwd1" size="10" value="[% conta.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]></td>
+		<td><input type="password" name="pwd1" size="10" [% IF val.missing('senha') %]class="missing"[% END %]></td>
 	</tr>
 	<tr>
 		<td>Repita a senha:</td>
-		<td><input type="password" name="pwd2" size="10" value="[% conta.senha %]" [% IF val.missing('senha') %]class="missing"[% END %]></td>
+		<td><input type="password" name="pwd2" size="10" [% IF val.missing('senha') %]class="missing"[% END %]></td>
 	</tr>
 	<tr>
 		<td>Plano PPPoE:</td>
