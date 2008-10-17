@@ -166,7 +166,6 @@ sub novo_rad : Local {
 	$c->stash->{bases} = [$c->model('RG3WifiDB::Radios')->search({id_tipo => 2})];
 	$c->stash->{tipos} = [$c->model('RG3WifiDB::RadiosTipo')->all];
 	$c->stash->{bandas} = [$c->model('RG3WifiDB::RadiosBanda')->all];
-	$c->stash->{preambulos} = [$c->model('RG3WifiDB::RadiosPreambulo')->all];
 	$c->stash->{template} = 'radios/novo_radio.tt2';
 }
 
@@ -284,22 +283,15 @@ sub novo_rad_do : Local {
 		id_base			=> $p->{base}								|| undef,
 		id_tipo			=> $p->{tipo}								|| undef,
 		mac				=> $p->{mac}								|| undef,
-		data_compra		=> &EasyCat::data2sql($p->{data_compra})	|| undef,
 		data_instalacao	=> &EasyCat::data2sql($p->{data_instalacao})|| undef,
 		localizacao		=> $p->{localizacao}						|| undef,
 		id_banda		=> $p->{banda}								|| undef,
-		id_preambulo	=> $p->{preambulo}							|| undef,
 		ip				=> $p->{ip}									|| undef,
 		essid			=> $p->{essid}								|| undef,
 	});
 	
 	# Rádio não instalado e rádio base
-	if ($dados->{id_tipo} == 1) {
-		$dados->{id_base} = undef;
-		$dados->{data_instalacao} = undef;
-		$dados->{localizacao} = undef;
-		$dados->{essid} = undef;
-	} elsif ($dados->{id_tipo} == 2) {
+	if ($dados->{id_tipo} == 2) {
 		$dados->{id_base} = undef;
 	} else {
 		$dados->{essid} = undef;

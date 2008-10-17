@@ -16,9 +16,6 @@
 
 <table>
 	<tr>
-		<th colspan="2">Dados da compra</th>
-	</tr>
-	<tr>
 		<td>Modelo:</td>
 		<td>
 			<select name="modelo">
@@ -28,27 +25,6 @@
 			</select>
 			<img src="/static/images/star.png">
 		</td>
-	</tr>
-	<tr>
-		<td>Data da compra:</td>
-		<td>
-			<input type="text" name="data_compra" id="data_compra" size="8" value="[% data2normal(radio.data_compra) || datahoje %]" [% IF val.missing('data_compra') %]class="missing"[% END %]>
-			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
-			<script type="text/javascript">
-				Calendar.setup(
-					{
-						inputField  : "data_compra",// ID of the input field
-						ifFormat    : "%d/%m/%Y",	// the date format
-						button      : "t_rec"		// ID of the button
-					}
-				);
-			</script>
-			<img src="/static/images/star.png">
-		</td>
-	</tr>
-
-	<tr>
-		<th colspan="2">Dados técnicos</th>
 	</tr>
 	<tr>
 		<td>Data de instalação:</td>
@@ -103,16 +79,6 @@
 			<select name="banda">
 				[% FOREACH banda IN bandas %]
 				<option value="[% banda.id %]" [% IF radio.id_banda == banda.id %]selected[% END %]>[% banda.nome %]</option>
-				[% END %]
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td>Tamanho do preâmbulo:</td>
-		<td>
-			<select name="preambulo">
-				[% FOREACH preambulo IN preambulos %]
-				<option value="[% preambulo.id %]" [% IF radio.id_preambulo == preambulo.id %]selected[% END %]>[% preambulo.nome %]</option>
 				[% END %]
 			</select>
 		</td>

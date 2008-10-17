@@ -7,7 +7,7 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
 __PACKAGE__->table('rg3_radios');
 # Set columns in table
-__PACKAGE__->add_columns(qw/id id_modelo id_base id_tipo mac data_compra data_instalacao localizacao id_banda id_preambulo ip essid/);
+__PACKAGE__->add_columns(qw/id id_modelo id_base id_tipo mac data_instalacao localizacao id_banda ip essid/);
 # Set the primary key for the table
 __PACKAGE__->set_primary_key(qw/id/);
 
@@ -24,7 +24,6 @@ __PACKAGE__->belongs_to(base		=> 'RG3WifiDB::Radios', 'id_base');
 __PACKAGE__->belongs_to(modelo		=> 'RG3WifiDB::Modelos', 'id_modelo');
 __PACKAGE__->belongs_to(tipo		=> 'RG3WifiDB::RadiosTipo', 'id_tipo');
 __PACKAGE__->belongs_to(banda		=> 'RG3WifiDB::RadiosBanda', 'id_banda');
-__PACKAGE__->belongs_to(preambulo	=> 'RG3WifiDB::RadiosPreambulo', 'id_preambulo');
 
 # has_many():
 #   args:

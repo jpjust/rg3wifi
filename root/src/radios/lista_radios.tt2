@@ -29,7 +29,6 @@ Preâmbulo: [% base.preambulo.nome %]
 		<th>IP</th>
 		<th>MAC</th>
 		<th>Banda</th>
-		<th>Preâmbulo</th>
 		<th>Modelo</th>
 		<th>Ações</th>
 	</tr>
@@ -40,7 +39,6 @@ Preâmbulo: [% base.preambulo.nome %]
 		<td><a href="http://[% radio.ip %]" target="_blank">[% radio.ip %]</a></td>
 		<td>[% radio.mac %]</td>
 		<td>[% radio.banda.nome %]</td>
-		<td>[% radio.preambulo.nome %]</td>
 		<td>[% radio.modelo.fabricante.nome %] [% radio.modelo.nome %]</td>
 		<td nowrap>
 			<a href="[% Catalyst.uri_for('editar_rad/') _ radio.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
@@ -53,30 +51,3 @@ Preâmbulo: [% base.preambulo.nome %]
 
 </div>
 [% END %]
-
-<h3><a href="javascript:void(0)" onClick="javascript:showbox('box_desativados');">Rádios não instalados</a></h3>
-
-<div class="mytextbox" style="display: none;" id="box_desativados">
-
-<table width="100%">
-	<tr>
-		<th>Modelo</th>
-		<th>Data da compra</th>
-		<th>MAC</th>
-		<th>Ações</th>
-	</tr>
-	
-	[% FOREACH radio IN radiosloja %]
-	<tr class="lista">
-		<td>[% radio.modelo.fabricante.nome %] [% radio.modelo.nome %]</td>
-		<td>[% data2normal(radio.data_compra) %]</td>
-		<td>[% radio.mac %]</td>
-		<td>
-			<a href="[% Catalyst.uri_for('editar_rad/') _ radio.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-			[% IF Catalyst.check_any_user_role('admin') %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir o rádio?', '[% Catalyst.uri_for('excluir_rad/') _ radio.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
-		</td>
-	</tr>
-	[% END %]
-</table>
-
-</div>
