@@ -300,7 +300,7 @@ sub novo_rad_do : Local {
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
-		{required => [qw(id_modelo id_tipo mac data_compra)]}
+		{required => [qw(id_modelo id_tipo mac)]}
 	);
 	
 	if (!$val->success()) {
