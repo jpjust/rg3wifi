@@ -7,7 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/../..";
 use EasyCat;
 use Data::FormValidator;
-#
+
 =head1 NAME
 
 RG3Wifi::Controller::Radios - Catalyst Controller
@@ -40,6 +40,69 @@ sub access_denied : Private {
 	my ($self, $c) = @_;
 	$c->stash->{error_msg} = 'Você não tem permissão para acessar este recurso.';
 	$c->forward('RG3Wifi::Controller::Acesso', 'inicio');
+}
+
+=head2 mac_add
+
+Adiciona um MAC no RADIUS.
+
+=cut
+
+sub mac_add : Private {
+	my ($c, $mac) = @_;
+	$mac =~ tr/a-z/A-Z/;
+	
+	if (@_ < 2) { return 1; }
+
+	# Apaga MAC já existente
+	&mac_del($c, $mac);
+	
+	# Tabela radcheck
+	$c->model('RG3WifiDB::radcheck')->create({
+		UserName	=> $mac,
+		Attribute	=> 'Password',
+		Value		=> $mac,
+	});
+
+	# Tabela radusergroup
+	$c->model('RG3WifiDB::radusergroup')->create({
+		username	=> $mac,
+		groupname	=> 'radio',
+	});
+}
+
+=head2 mac_del
+
+Remove um MAC do RADIUS.
+
+=cut
+
+sub mac_del : Private {
+	my ($c, $mac) = @_;
+	$mac =~ tr/a-z/A-Z/;
+	
+	if (@_ < 2) { return 1; }
+	
+	$c->model('RG3WifiDB::radcheck')->search({UserName => $mac})->delete_all();
+	$c->model('RG3WifiDB::radusergroup')->search({username => $mac})->delete_all();
+}
+
+=head2 mac_add_all
+
+Adiciona os MACs de todos os rádios no RADIUS.
+
+=cut
+
+sub mac_add_all : Local {
+	my ($self, $c) = @_;
+	
+	foreach my $radio ($c->model('RG3WifiDB::Radios')->all) {
+		&mac_add($c, $radio->mac);
+	}
+	
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Todos os MACs foram adicionados!';
+	$c->forward('lista');
 }
 
 =head2 lista
@@ -265,6 +328,9 @@ sub novo_rad_do : Local {
 		$c->stash->{template} = 'erro.tt2';
 		return;
 	}
+	
+	# Cadastra o MAC na autenticação via RADIUS
+	&mac_add($c, $dados->{mac});
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Rádio cadastrado com sucesso.';
