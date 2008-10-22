@@ -6,7 +6,7 @@
 
 [% FOREACH base IN bases %]
 
-<h3><a href="javascript:void(0)" onClick="javascript:showbox('box_[% base.essid %]');">[% base.essid %] ([% base.estacoes.size %])</a></h3>
+<h3><a href="javascript:void(0)" onClick="javascript:showbox('box_[% base.essid %]');">[% base.essid %] ([% base.estacoes_rs.count %])</a></h3>
 
 <div class="mytextbox" style="display: none;" id="box_[% base.essid %]">
 
