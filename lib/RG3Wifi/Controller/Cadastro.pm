@@ -140,8 +140,9 @@ Lista os clientes cadastrados.
 =cut
 
 sub lista : Local {
-	my ($self, $c) = @_;
-	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->all];
+	my ($self, $c, $situacao) = @_;
+	$situacao = 1 unless $situacao;
+	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({id_situacao => $situacao})];
 	$c->stash->{template} = 'cadastro/lista.tt2';
 }
 
@@ -230,6 +231,7 @@ sub novo : Local {
 	my ($self, $c) = @_;
 	my $cliente = {id_grupo => 3};
 	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
+	$c->stash->{situacoes} = [$c->model('RG3WifiDB::UsuariosSituacao')->all];
 	$c->stash->{acao} = 'novo';
 	$c->stash->{cliente} = $cliente unless ($c->stash->{cliente});
 	$c->stash->{template} = 'cadastro/novo.tt2';
@@ -268,6 +270,7 @@ sub cadastro_do : Local {
 	my $dados = {
 		uid				=> $p->{uid}									|| -1,
 		id_grupo		=> 3,
+		id_situacao		=> 1,
 		nome			=> $p->{nome}									|| undef,
 		doc				=> $p->{doc}									|| undef,
 		data_nascimento	=> &EasyCat::data2sql($p->{data_nascimento})	|| undef,
@@ -282,9 +285,10 @@ sub cadastro_do : Local {
 		valor_mensalidade => $p->{valor_mensalidade}					|| undef,
 	};
 	
-	# O usuário admin pode escolher o grupo
+	# O usuário admin pode escolher o grupo e a situação
 	if ($c->check_any_user_role('admin')) {
 		$dados->{id_grupo} = $p->{grupo};
+		$dados->{id_situacao} = $p->{situacao};
 	}
 	
 	# Valida formulário
@@ -337,7 +341,7 @@ sub cadastro_do : Local {
 	# Atualiza o coluna de grupo das contas e as tabelas do PPPoE
 	foreach my $conta ($cliente->contas) {
 		$conta->update({id_grupo => $cliente->id_grupo});
-		if ($cliente->bloqueado == 1) {
+		if ($cliente->bloqueado == 1 || $cliente->id_situacao != 1) {
 			&user_del($c, $conta->uid);
 		} else {
 			&user_add($c, $conta->uid);
@@ -443,6 +447,7 @@ sub editar : Local {
 	$c->stash->{cliente} = $cliente unless $c->stash->{cliente};
 	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
 	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
+	$c->stash->{situacoes} = [$c->model('RG3WifiDB::UsuariosSituacao')->all];
 	$c->stash->{acao} = 'editar';
 	$c->stash->{template} = 'cadastro/novo.tt2';
 }

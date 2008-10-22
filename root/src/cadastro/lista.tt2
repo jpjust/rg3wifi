@@ -8,7 +8,7 @@
 	<!-- Data de instalação -->
 	<form action="[% Catalyst.uri_for('/cadastro/filtro') %]" method="POST">
 	<input type="hidden" name="tipo" value="0">
-	Data de instalação entre
+	<strong>Data de instalação:</strong> Entre
 	
 	<input type="text" name="data_inst1" id="data_inst1" size="10">
 	<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
@@ -38,16 +38,19 @@
 	<input type="submit" value="Filtrar">
 	</form>
 	
+	<br>
+	
+	<!-- Situação -->
+	<strong>Situação:</strong> 
+		<a href="[% Catalyst.uri_for('lista/') _ 1 %]"><img src="/static/images/user_green.png" align="top">Ativos</a>
+		:: <a href="[% Catalyst.uri_for('lista/') _ 2 %]"><img src="/static/images/user_orange.png" align="top">Suspensos</a>
+		:: <a href="[% Catalyst.uri_for('lista/') _ 3 %]"><img src="/static/images/user_red.png" align="top">Cancelados</a>
+	
 </div>
 
 <p>
 	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Cadastrar cliente</a>
 	:: <a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir cadastros</a>
-	
-	[% IF Catalyst.check_any_user_role('admin') %]
-		:: <a href="[% Catalyst.uri_for('aviso_cria_lista') %]"><img src="/static/images/database_refresh.png" align="top">Aplicar lista de avisos</a>
-		:: <a href="[% Catalyst.uri_for('remake_users') %]"><img src="/static/images/database_refresh.png" align="top">Aplicar lista de bloqueios</a>
-	[% END %]
 </p>
 
 <p>Clientes listados: [% clientes.size %]</p>

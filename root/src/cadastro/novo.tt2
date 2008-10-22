@@ -64,6 +64,7 @@
 		<td>Observações:</td>
 		<td><textarea name="observacao" cols="50" rows="5">[% cliente.observacao %]</textarea></td>
 	</tr>
+	
 	[% IF Catalyst.check_any_user_role('admin') %]
 	<tr>
 		<td>Grupo:</td>
@@ -71,6 +72,17 @@
 			<select name="grupo">
 				[% FOREACH grupo IN grupos %]
 				<option value="[% grupo.id %]" [% IF cliente.id_grupo == grupo.id %]selected[% END %]>[% grupo.nome %]</option>
+				[% END %]
+			</select>
+			<img src="/static/images/star.png">
+		</td>
+	</tr>
+		<tr>
+		<td>Situação:</td>
+		<td>
+			<select name="situacao">
+				[% FOREACH situacao IN situacoes %]
+				<option value="[% situacao.id %]" [% IF cliente.id_situacao == situacao.id %]selected[% END %]>[% situacao.nome %]</option>
 				[% END %]
 			</select>
 			<img src="/static/images/star.png">
