@@ -283,6 +283,7 @@ sub novo_rad_do : Local {
 		id_base			=> $p->{base}								|| undef,
 		id_tipo			=> $p->{tipo}								|| undef,
 		mac				=> $p->{mac}								|| undef,
+		comodato		=> $p->{comodato}							|| 0,
 		data_instalacao	=> &EasyCat::data2sql($p->{data_instalacao})|| undef,
 		localizacao		=> $p->{localizacao}						|| undef,
 		id_banda		=> $p->{banda}								|| undef,

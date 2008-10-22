@@ -70,6 +70,15 @@
 		</td>
 	</tr>
 	<tr>
+		<td>Comodato? (estação apenas):</td>
+		<td>
+			<select name="comodato">
+				<option value="0">Não</option>
+				<option value="1" [% IF radio.comodato == 1 OR radio == undef %]selected[% END %]>Sim</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
 		<td>Localização:</td>
 		<td><input type="text" name="localizacao" size="50" value="[% radio.localizacao %]"></td>
 	</tr>

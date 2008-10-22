@@ -3,3 +3,8 @@
   existir (ex.: login já cadastrado).
 / Colocar a contagem de itens listados em cada tabela
 - Criar uma opção pra imprimir o contrato
+
+Mais urgentes:
+- Colocar uma nova coluna na tabela de clientes para
+  sua situação: ativo, suspenso ou cancelado.
+- Fazer o sistema exportar os boletos pro OBBPlus.

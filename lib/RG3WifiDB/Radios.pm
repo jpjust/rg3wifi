@@ -7,7 +7,7 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
 __PACKAGE__->table('rg3_radios');
 # Set columns in table
-__PACKAGE__->add_columns(qw/id id_modelo id_base id_tipo mac data_instalacao localizacao id_banda ip essid/);
+__PACKAGE__->add_columns(qw/id id_modelo id_base id_tipo comodato mac data_instalacao localizacao id_banda ip essid/);
 # Set the primary key for the table
 __PACKAGE__->set_primary_key(qw/id/);
 

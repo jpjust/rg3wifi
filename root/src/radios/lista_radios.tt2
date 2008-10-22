@@ -28,6 +28,7 @@ Preâmbulo: [% base.preambulo.nome %]
 		<th>Localização</th>
 		<th>IP</th>
 		<th>MAC</th>
+		<th>Comodato</th>
 		<th>Banda</th>
 		<th>Modelo</th>
 		<th>Ações</th>
@@ -38,6 +39,7 @@ Preâmbulo: [% base.preambulo.nome %]
 		<td>[% radio.localizacao %]</td>
 		<td><a href="http://[% radio.ip %]" target="_blank">[% radio.ip %]</a></td>
 		<td>[% radio.mac %]</td>
+		<td>[% IF radio.comodato %]Sim[% ELSE %]Não[% END %]</td>
 		<td>[% radio.banda.nome %]</td>
 		<td>[% radio.modelo.fabricante.nome %] [% radio.modelo.nome %]</td>
 		<td nowrap>
