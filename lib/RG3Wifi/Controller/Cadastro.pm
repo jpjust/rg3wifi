@@ -146,7 +146,7 @@ sub remake_users : Local {
 	}
 	
 	# Exibe mensagem de conclusão
-	$c->stash->{status_msg} = 'Lista de usuários PPPoE refeita!';
+	$c->stash->{status_msg} = 'Lista de usuários PPPoE refeita! Execute "/radios/mac_add_all" para adicionar os MACs dos rádios ao RADIUS.';
 	$c->forward('lista');
 }
 
