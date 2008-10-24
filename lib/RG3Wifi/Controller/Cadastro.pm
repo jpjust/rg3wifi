@@ -44,6 +44,26 @@ sub access_denied : Private {
 	$c->forward('RG3Wifi::Controller::Acesso', 'inicio');
 }
 
+=head2 radius_user_update
+
+Atualiza cliente PPPoE no RADIUS (adiciona ou remove de acordo com situação e outros estados).
+
+=cut
+
+sub radius_user_update : Private {
+	my ($c, $cliente) = @_;
+	
+	if ($cliente->id_situacao == 1) {
+		foreach my $conta ($cliente->contas) {
+			&user_add($c, $conta->uid);
+		}
+	} else {
+		foreach my $conta ($cliente->contas) {
+			&user_del($c, $conta->uid);
+		}
+	}
+}
+
 =head2 user_add
 
 Adiciona/atualiza um usuário na configuração do PPPoE.
@@ -117,16 +137,13 @@ sub remake_users : Local {
 	my ($self, $c) = @_;
 	
 	# Limpa os dados atuais
-	#$c->model('RG3WifiDB::radcheck')->delete_all();
-	#$c->model('RG3WifiDB::radreply')->delete_all();
-	#$c->model('RG3WifiDB::radusergroup')->delete_all();
+	$c->model('RG3WifiDB::radcheck')->delete_all();
+	$c->model('RG3WifiDB::radusergroup')->delete_all();
 	
 	# Popula as tabelas
-	#foreach my $conta ($c->model('RG3WifiDB::Contas')->all) {
-	#	if (!$conta->cliente->bloqueado) {
-	#		&user_add($c, $conta->uid);
-	#	}
-	#}
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->all) {
+		&radius_user_update($c, $cliente);		
+	}
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Lista de usuários PPPoE refeita!';
@@ -341,12 +358,8 @@ sub cadastro_do : Local {
 	# Atualiza o coluna de grupo das contas e as tabelas do PPPoE
 	foreach my $conta ($cliente->contas) {
 		$conta->update({id_grupo => $cliente->id_grupo});
-		if ($cliente->bloqueado == 1 || $cliente->id_situacao != 1) {
-			&user_del($c, $conta->uid);
-		} else {
-			&user_add($c, $conta->uid);
-		}
 	}
+	&radius_user_update($c, $cliente);
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Cliente cadastrado/editado com sucesso.';
@@ -416,10 +429,7 @@ sub cadastro_conta_do : Local {
 	}
 	
 	# Atualiza as tabelas do PPPoE
-	if ($cliente->bloqueado == 0) {
-		my $conta = $c->model('RG3WifiDB::Contas')->search({login => $p->{login}})->first;
-		&user_add($c, $conta->uid);
-	}
+	&radius_user_update($c, $cliente);
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Conta PPPoE cadastrado/editado com sucesso.';
@@ -522,9 +532,7 @@ sub aviso_do : Local {
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 	$cliente->update({aviso => 1});
 	$c->stash->{status_msg} = 'O cliente foi adicionado na lista de aviso de falta de pagamento.';
-	foreach my $conta ($cliente->contas) {
-		&user_add($c, $conta->uid);
-	}
+	&radius_user_update($c, $cliente);
 	$c->forward('lista');
 }
 
@@ -539,38 +547,7 @@ sub aviso_undo : Local {
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 	$cliente->update({aviso => 0});
 	$c->stash->{status_msg} = 'O cliente foi removido da lista de aviso de falta de pagamento.';
-	foreach my $conta ($cliente->contas) {
-		&user_add($c, $conta->uid);
-	}
-	$c->forward('lista');
-}
-
-=head2 aviso_cria_lista
-
-Cria a lista de aviso de falta de pagamento.
-
-=cut
-
-sub aviso_cria_lista : Local {
-	my ($self, $c) = @_;
-	$c->stash->{error_msg} = 'Ocorreu um erro ao tentar criar a lista de aviso.';
-	
-	# Abre o arquivo de IPs
-	open(IPS, '>/usr/local/www/cadastro/aviso_pagamento') or $c->forward('lista');
-	flock(IPS, 2) or $c->forward('lista');
-	
-	# Adiciona os IPs
-	foreach my $conta ($c->model('RG3WifiDB::Contas')->all) {
-		if ($conta->cliente->aviso) {
-			print IPS $conta->ip . "\n" or $c->forward('lista');
-		}
-	}
-	
-	# Fecha o arquivo
-	close(IPS) or $c->forward('lista');
-	
-	$c->stash->{status_msg} = 'Lista de aviso de falta de pagamento criada com sucesso!';
-	$c->stash->{error_msg} = '';
+	&radius_user_update($c, $cliente);
 	$c->forward('lista');
 }
 
@@ -584,11 +561,7 @@ sub bloqueio_do : Local {
 	my ($self, $c, $uid) = @_;
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 	$cliente->update({bloqueado => 1});
-	
-	foreach my $conta ($cliente->contas) {
-		&user_del($c, $conta->uid);
-	}
-
+	&radius_user_update($c, $cliente);
 	$c->stash->{status_msg} = 'O cliente foi bloqueado.';
 	$c->forward('lista');
 }
@@ -603,11 +576,7 @@ sub bloqueio_undo : Local {
 	my ($self, $c, $uid) = @_;
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 	$cliente->update({bloqueado => 0, aviso => 0});
-
-	foreach my $conta ($cliente->contas) {
-		&user_add($c, $conta->uid);
-	}
-
+	&radius_user_update($c, $cliente);
 	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio e da lista de aviso.';
 	$c->forward('lista');
 }

@@ -14,7 +14,6 @@ use Catalyst::Runtime '5.70';
 #                 directory
 
 use Catalyst qw/
-	-Debug
 	ConfigLoader
 	Static::Simple
 	
@@ -48,6 +47,10 @@ __PACKAGE__->setup;
 # Authorization::ACL Rules
 # O controller Acesso é liberado pra todo mundo.
 
+# Auditoria (geral)
+__PACKAGE__->allow_access_if("/auditoria",					[qw/admin/]);
+__PACKAGE__->deny_access("/auditoria");
+
 # Cadastro (geral)
 __PACKAGE__->allow_access_if("/cadastro",					[qw/admin/]);
 __PACKAGE__->allow_access_if("/cadastro",					[qw/operador/]);
@@ -60,13 +63,14 @@ __PACKAGE__->deny_access("/cadastro/excluir");
 __PACKAGE__->allow_access_if("/cadastro/excluir_conta",		[qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/excluir_conta");
 
+__PACKAGE__->allow_access_if("/cadastro/remake_users",		[qw/admin/]);
+__PACKAGE__->deny_access("/cadastro/remake_users");
+
 # Cadastro (aviso)
 __PACKAGE__->allow_access_if("/cadastro/aviso_do", 			[qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/aviso_do");
 __PACKAGE__->allow_access_if("/cadastro/aviso_undo", 		[qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/aviso_undo");
-__PACKAGE__->allow_access_if("/cadastro/aviso_cria_lista",	[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/aviso_cria_lista");
 
 # Cadastro (bloqueio)
 __PACKAGE__->allow_access_if("/cadastro/bloqueio_do", 		[qw/admin/]);
