@@ -53,10 +53,12 @@ Atualiza cliente PPPoE no RADIUS (adiciona ou remove de acordo com situação e 
 sub radius_user_update : Private {
 	my ($c, $cliente) = @_;
 	
-	if ($cliente->id_situacao == 1) {
+	# Se estiver ativo e desbloqueado, adiciona
+	if (($cliente->id_situacao == 1) && ($cliente->bloqueado == 0)) {
 		foreach my $conta ($cliente->contas) {
 			&user_add($c, $conta->uid);
 		}
+	# Caso contrário, remove
 	} else {
 		foreach my $conta ($cliente->contas) {
 			&user_del($c, $conta->uid);
