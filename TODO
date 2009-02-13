@@ -3,6 +3,8 @@
   existir (ex.: login já cadastrado).
 / Colocar a contagem de itens listados em cada tabela
 - Criar uma opção pra imprimir o contrato
+- Quando um cliente é desbloqueado, a tela não volta
+  corretamente para a página de clientes.
 
 Mais urgentes:
 - Fazer o sistema exportar os boletos pro OBBPlus.

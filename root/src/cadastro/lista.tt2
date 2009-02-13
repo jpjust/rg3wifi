@@ -11,26 +11,26 @@
 	<strong>Data de instalação:</strong> Entre
 	
 	<input type="text" name="data_inst1" id="data_inst1" size="10">
-	<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+	<img src="/static/images/calendar.png" id="t_rec1" style="cursor: pointer;" alt="Calendário">
 	<script type="text/javascript">
 		Calendar.setup(
 			{
 				inputField  : "data_inst1",    // ID of the input field
 				ifFormat    : "%d/%m/%Y",      // the date format
-				button      : "t_rec",		   // ID of the button
+				button      : "t_rec1",		   // ID of the button
 				showsTime	: false
 			}
 		);
 	</script>
 	e
 	<input type="text" name="data_inst2" id="data_inst2" size="10">
-	<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+	<img src="/static/images/calendar.png" id="t_rec2" style="cursor: pointer;" alt="Calendário">
 	<script type="text/javascript">
 		Calendar.setup(
 			{
 				inputField  : "data_inst2",    // ID of the input field
 				ifFormat    : "%d/%m/%Y",      // the date format
-				button      : "t_rec",		   // ID of the button
+				button      : "t_rec2",		   // ID of the button
 				showsTime	: false
 			}
 		);
@@ -67,8 +67,6 @@
 	[% # Cores da lista, de acordo com o status %]
 	[% IF cliente.bloqueado == 1 %]
 		[% bgcolor = '#ffaaaa' %]
-	[% ELSIF cliente.aviso == 1 %]
-		[% bgcolor = '#ffffaa' %]
 	[% ELSE %]
 		[% bgcolor = '#ffffff' %]
 	[% END %]
@@ -82,12 +80,6 @@
 			<a href="[% Catalyst.uri_for('editar/') _ cliente.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
 			[% IF Catalyst.check_any_user_role('admin') %]
 				<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir o usuário?', '[% Catalyst.uri_for('excluir/') _ cliente.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
-				
-				[% IF cliente.aviso == 0 %]
-					<br><a href="[% Catalyst.uri_for('aviso_do/') _ cliente.id %]"><img src="/static/images/exclamation.png" align="top">Avisar</a>
-				[% ELSE %]
-					<br><a href="[% Catalyst.uri_for('aviso_undo/') _ cliente.id %]"><img src="/static/images/accept.png" align="top">Retirar aviso</a>
-				[% END %]
 
 				[% IF cliente.bloqueado == 0 %]
 					<br><a href="[% Catalyst.uri_for('bloqueio_do/') _ cliente.id %]"><img src="/static/images/disconnect.png" align="top">Bloquear</a>

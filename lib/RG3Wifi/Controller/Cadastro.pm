@@ -82,13 +82,9 @@ sub user_add : Private {
 	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
 	if (!$conta)	{ return 2; }
 	
-	# Pool de IP. Se está sob aviso, o pool é diferente
+	# Pool de IP
 	my $pool;
-	if ($conta->cliente->aviso) {
-		$pool = $conta->plano->pool_name . 'a';
-	} else {
-		$pool = $conta->plano->pool_name;
-	}
+	$pool = $conta->plano->pool_name;
 	
 	# Tabela radcheck
 	$c->model('RG3WifiDB::radcheck')->create({
@@ -125,7 +121,6 @@ sub user_del : Private {
 	if (!$conta)	{ return 2; }
 	
 	$c->model('RG3WifiDB::radcheck')->search({UserName => $conta->login})->delete_all();
-	#$c->model('RG3WifiDB::radreply')->search({UserName => $conta->login})->delete_all();
 	$c->model('RG3WifiDB::radusergroup')->search({UserName => $conta->login})->delete_all();
 }
 
@@ -523,36 +518,6 @@ sub excluir_conta : Local {
 	$c->forward('lista');
 }
 
-=head2 aviso_do
-
-Coloca o cliente na lista de aviso de falta de pagamento.
-
-=cut
-
-sub aviso_do : Local {
-	my ($self, $c, $uid) = @_;
-	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
-	$cliente->update({aviso => 1});
-	$c->stash->{status_msg} = 'O cliente foi adicionado na lista de aviso de falta de pagamento.';
-	&radius_user_update($c, $cliente);
-	$c->forward('lista');
-}
-
-=head2 aviso_undo
-
-Retira o cliente da lista de aviso de falta de pagamento.
-
-=cut
-
-sub aviso_undo : Local {
-	my ($self, $c, $uid) = @_;
-	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
-	$cliente->update({aviso => 0});
-	$c->stash->{status_msg} = 'O cliente foi removido da lista de aviso de falta de pagamento.';
-	&radius_user_update($c, $cliente);
-	$c->forward('lista');
-}
-
 =head2 bloqueio_do
 
 Coloca o cliente na lista de bloqueio.
@@ -565,7 +530,7 @@ sub bloqueio_do : Local {
 	$cliente->update({bloqueado => 1});
 	&radius_user_update($c, $cliente);
 	$c->stash->{status_msg} = 'O cliente foi bloqueado.';
-	$c->forward('lista');
+	$c->forward('lista/1');
 }
 
 =head2 bloqueio_undo
@@ -577,10 +542,10 @@ Retira o cliente da lista de bloqueio.
 sub bloqueio_undo : Local {
 	my ($self, $c, $uid) = @_;
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
-	$cliente->update({bloqueado => 0, aviso => 0});
+	$cliente->update({bloqueado => 0});
 	&radius_user_update($c, $cliente);
-	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio e da lista de aviso.';
-	$c->forward('lista');
+	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio.';
+	$c->forward('lista/1');
 }
 
 =head2 exportar

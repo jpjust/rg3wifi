@@ -12,7 +12,7 @@ __PACKAGE__->add_columns(qw/id id_fabricante nome/);
 __PACKAGE__->set_primary_key(qw/id/);
 
 # Add some attributes
-__PACKAGE__->resultset_attributes({order_by => 'nome'});
+__PACKAGE__->resultset_attributes({order_by => 'id_fabricante'});
 
 #
 # Set relationships:

@@ -28,7 +28,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 # Configure the application. 
 #
@@ -66,17 +66,11 @@ __PACKAGE__->deny_access("/cadastro/excluir_conta");
 __PACKAGE__->allow_access_if("/cadastro/remake_users",		[qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/remake_users");
 
-# Cadastro (aviso)
-__PACKAGE__->allow_access_if("/cadastro/aviso_do", 			[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/aviso_do");
-__PACKAGE__->allow_access_if("/cadastro/aviso_undo", 		[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/aviso_undo");
-
 # Cadastro (bloqueio)
 __PACKAGE__->allow_access_if("/cadastro/bloqueio_do", 		[qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/bloqueio_do");
 __PACKAGE__->allow_access_if("/cadastro/bloqueio_undo", 	[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/aviso_undo");
+__PACKAGE__->deny_access("/cadastro/bloqueio_undo");
 __PACKAGE__->allow_access_if("/cadastro/remake_users",		[qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/remake_users");
 

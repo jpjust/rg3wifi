@@ -19,8 +19,7 @@
 <h4>
 Endereço IP: <a href="http://[% base.ip %]" target="_blank">[% base.ip %]</a><br>
 Endereço MAC: [% base.mac %]<br>
-Banda: [% base.banda.nome %]<br>
-Preâmbulo: [% base.preambulo.nome %]
+Banda: [% base.banda.nome %]
 </h4>
 
 <table width="100%">
