@@ -85,8 +85,7 @@ sub user_add : Private {
 	if (!$conta)	{ return 2; }
 	
 	# Pool de IP
-	my $pool;
-	$pool = $conta->plano->pool_name;
+	my $pool = $conta->plano->pool_name;
 	
 	# Tabela radcheck
 	$c->model('RG3WifiDB::radcheck')->create({
@@ -94,12 +93,30 @@ sub user_add : Private {
 		Attribute	=> 'Password',
 		Value		=> $conta->senha,
 	});
+	
 	$c->model('RG3WifiDB::radcheck')->create({
 		UserName	=> $conta->login,
 		Attribute	=> 'Pool-Name',
 		op			=> ':=',
 		Value		=> $pool,
 	});
+	
+	# Tabela radreply
+	$c->model('RG3WifiDB::radreply')->create({
+		UserName	=> $conta->login,
+		Attribute	=> 'Plano',
+		op			=> '=',
+		Value		=> $conta->id_plano,
+	});
+	
+	if ($conta->ip) {
+		$c->model('RG3WifiDB::radreply')->create({
+			UserName	=> $conta->login,
+			Attribute	=> 'Framed-IP-Address',
+			op			=> '=',
+			Value		=> $conta->ip,
+		});
+	}
 	
 	# Tabela radusergroup
 	$c->model('RG3WifiDB::radusergroup')->create({
@@ -123,6 +140,7 @@ sub user_del : Private {
 	if (!$conta)	{ return 2; }
 	
 	$c->model('RG3WifiDB::radcheck')->search({UserName => $conta->login})->delete_all();
+	$c->model('RG3WifiDB::radreply')->search({UserName => $conta->login})->delete_all();
 	$c->model('RG3WifiDB::radusergroup')->search({UserName => $conta->login})->delete_all();
 }
 
@@ -137,6 +155,7 @@ sub remake_users : Local {
 	
 	# Limpa os dados atuais
 	$c->model('RG3WifiDB::radcheck')->delete_all();
+	$c->model('RG3WifiDB::radreply')->delete_all();
 	$c->model('RG3WifiDB::radusergroup')->delete_all();
 	
 	# Popula as tabelas
@@ -384,7 +403,7 @@ sub cadastro_conta_do : Local {
 		uid				=> $p->{uid}					|| -1,
 		id_cliente		=> $cliente->uid				|| undef,
 		login			=> $p->{login}					|| undef,
-		ip				=> '',
+		ip				=> $p->{ip}						|| undef,
 		id_plano		=> $p->{plano}					|| undef,
 		id_grupo		=> $cliente->id_grupo			|| 3,
 	};
