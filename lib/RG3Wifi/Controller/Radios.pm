@@ -7,6 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/../..";
 use EasyCat;
 use Data::FormValidator;
+use Net::Ping::External qw(ping);
 
 =head1 NAME
 
@@ -96,13 +97,35 @@ Adiciona os MACs de todos os rádios no RADIUS.
 sub mac_add_all : Local {
 	my ($self, $c) = @_;
 	
+	my $i = 0;
+	
+	# Para cada rádio, iremos verificar se o MAC é válido antes de adicionar
 	foreach my $radio ($c->model('RG3WifiDB::Radios')->all) {
-		&mac_add($c, $radio->mac);
+		if (&verifica_mac($radio->mac)) {
+			&mac_add($c, uc($radio->mac));
+			$i++;
+		}
 	}
 	
 	# Exibe mensagem de conclusão
-	$c->stash->{status_msg} = 'Todos os MACs foram adicionados!';
+	$c->stash->{status_msg} = "$i MACs foram adicionados!";
 	$c->forward('lista');
+}
+
+=head2 verifica_mac
+
+Verifica se o MAC adicionado está na forma correta.
+
+=cut
+
+sub verifica_mac : Private {
+	my ($mac) = @_;
+	
+	if ($mac !~ /^([0-9a-fA-F]{2}\:){5}[0-9a-fA-F]{2}$/) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
 
 =head2 lista
@@ -282,7 +305,7 @@ sub novo_rad_do : Local {
 		id_modelo		=> $p->{modelo}								|| undef,
 		id_base			=> $p->{base}								|| undef,
 		id_tipo			=> $p->{tipo}								|| undef,
-		mac				=> $p->{mac}								|| undef,
+		mac				=> uc($p->{mac})							|| undef,
 		comodato		=> $p->{comodato}							|| 0,
 		data_instalacao	=> &EasyCat::data2sql($p->{data_instalacao})|| undef,
 		localizacao		=> $p->{localizacao}						|| undef,
@@ -297,6 +320,9 @@ sub novo_rad_do : Local {
 	} else {
 		$dados->{essid} = undef;
 	}
+	
+	# Verifica o formato do MAC
+	unless(&verifica_mac($dados->{mac})) { $dados->{mac} = undef; }
 	
 	# Valida formulário
 	my $val = Data::FormValidator->check(
@@ -421,7 +447,7 @@ sub teste_rad : Local {
 
 =head2 teste_rad_do
 
-Efetua o teste dos rádios.
+Efetua o teste de todos os rádios.
 
 =cut
 
@@ -435,16 +461,13 @@ sub teste_rad_do : Local {
 	foreach my $radio ($c->model('RG3WifiDB::Radios')->all) {
 		my $host = $radio->ip;
 		next unless ($host);
-		my $res;
 
-		{
-			local $SIG{CHLD} = 'DEFAULT';
-			#$res = ping(host => $host, count => $count, size => $size);
-			$res = system('/sbin/ping', '-c', $count, $host);
-		}
+		# Efetua o teste
+		print "Testando " . $radio->ip . "...\n";	# Apache Keep-alive
+		my $alive = ping(host => $radio->ip);
 
 		my $teste = ({
-			falhou	=> $res,
+			falhou	=> !$alive,
 			radio	=> $radio,
 		});
 		
@@ -466,9 +489,7 @@ Efetua o teste de um rádio específico.
 sub teste1_rad_do : Local {
 	my ($self, $c, $id) = @_;
 	
-	my $count = 5;
-	my $size = 56;
-
+	# Pega os dados do rádio
 	my $radio = $c->model('RG3WifiDB::Radios')->search({id => $id})->first;
 	if (!$radio) {
 		$c->stash->{error_msg} = 'Rádio inexistente!';
@@ -476,13 +497,13 @@ sub teste1_rad_do : Local {
 		return;
 	}
 	
-	my $res;
-	{
-		local $SIG{CHLD} = 'DEFAULT';
-		$res = system('/bin/ping', '-c', $count, $radio->ip);
+	# Efetua o teste
+	my $alive = ping(host => $radio->ip);
+	
+	# Exibe o resultado
+	if (!$alive) {
+		$c->stash->{falhou} = 1;
 	}
-
-	$c->stash->{falhou} = $res;
 	$c->stash->{radio} = $radio;
 	$c->stash->{template} = 'radios/teste1.tt2';
 }

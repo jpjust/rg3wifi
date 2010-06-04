@@ -38,17 +38,27 @@
 	<input type="submit" value="Filtrar">
 	</form>
 	
+	<!-- Busca -->
+	<form action="[% Catalyst.uri_for('/cadastro/busca') %]" method="POST">
+	<strong>Busca:</strong>
+	<input type="text" name="termo" size="30" value="[% termo %]">
+	<input type="submit" value="Procurar">
+	</form>
+	
 	<!-- Situação -->
 	<strong>Situação:</strong> 
 		<a href="[% Catalyst.uri_for('lista/') _ 1 %]"><img src="/static/images/user_green.png" align="top">Ativos</a>
 		:: <a href="[% Catalyst.uri_for('lista/') _ 2 %]"><img src="/static/images/user_orange.png" align="top">Suspensos</a>
 		:: <a href="[% Catalyst.uri_for('lista/') _ 3 %]"><img src="/static/images/user_red.png" align="top">Cancelados</a>
-	
+		:: <a href="[% Catalyst.uri_for('lista/') _ 4 %]"><img src="/static/images/user.png" align="top">Cortesia</a>
 </div>
 
 <p>
 	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Cadastrar cliente</a>
 	:: <a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir cadastros</a>
+	[% IF Catalyst.check_any_user_role('admin') %]
+	:: <a href="[% Catalyst.uri_for('stats') %]"><img src="/static/images/report.png" align="top">Exibir estatísticas</a>
+	[% END %]
 </p>
 
 <p>Clientes listados: [% clientes.size %]</p>

@@ -28,7 +28,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.09';
+our $VERSION = '0.18';
 
 # Configure the application. 
 #
@@ -50,6 +50,10 @@ __PACKAGE__->setup;
 # Auditoria (geral)
 __PACKAGE__->allow_access_if("/auditoria",					[qw/admin/]);
 __PACKAGE__->deny_access("/auditoria");
+
+# Caixa (geral)
+__PACKAGE__->allow_access_if("/caixa",						[qw/admin/]);
+__PACKAGE__->deny_access("/caixa");
 
 # Cadastro (geral)
 __PACKAGE__->allow_access_if("/cadastro",					[qw/admin/]);
@@ -73,6 +77,10 @@ __PACKAGE__->allow_access_if("/cadastro/bloqueio_undo", 	[qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/bloqueio_undo");
 __PACKAGE__->allow_access_if("/cadastro/remake_users",		[qw/admin/]);
 __PACKAGE__->deny_access("/cadastro/remake_users");
+
+# Cadastro (estatísticas)
+__PACKAGE__->allow_access_if("/cadastro/stats",			[qw/admin/]);
+__PACKAGE__->deny_access("/cadastro/stats");
 
 # Rádios (geral)
 __PACKAGE__->allow_access_if("/radios",						[qw/admin/]);

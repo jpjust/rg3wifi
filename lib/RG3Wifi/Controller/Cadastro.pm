@@ -9,6 +9,8 @@ use EasyCat;
 use Data::FormValidator;
 use Business::BR::Ids;
 use Text::Unaccent;
+use Chart::Pie;
+use Chart::Bars;
 
 =head1 NAME
 
@@ -54,7 +56,7 @@ sub radius_user_update : Private {
 	my ($c, $cliente) = @_;
 	
 	# Se estiver ativo e desbloqueado, adiciona
-	if (($cliente->id_situacao == 1) && ($cliente->bloqueado == 0)) {
+	if (($cliente->id_situacao == 1 || $cliente->id_situacao == 4) && ($cliente->bloqueado == 0)) {
 		foreach my $conta ($cliente->contas) {
 			&user_add($c, $conta->uid);
 		}
@@ -297,6 +299,7 @@ sub cadastro_do : Local {
 		cabo			=> $p->{cabo}									|| undef,
 		valor_instalacao => $p->{valor_instalacao}						|| undef,
 		valor_mensalidade => $p->{valor_mensalidade}					|| undef,
+		vencimento		=> $p->{vencimento}								|| undef,
 	};
 	
 	# O usuário admin pode escolher o grupo e a situação
@@ -308,7 +311,7 @@ sub cadastro_do : Local {
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
-		{required => [qw(nome doc data_nascimento endereco bairro cep telefone cabo valor_instalacao valor_mensalidade)]}
+		{required => [qw(nome doc data_nascimento endereco bairro cep telefone cabo valor_instalacao valor_mensalidade vencimento)]}
 	);
 	
 	if (!$val->success()) {
@@ -515,7 +518,7 @@ sub excluir_conta : Local {
 	&user_del($c, $conta->uid);
 	$conta->delete();
 	$c->stash->{status_msg} = 'Conta excluída com sucesso.';
-	$c->forward('lista');
+	$c->forward('lista', ['1']);
 }
 
 =head2 bloqueio_do
@@ -530,7 +533,7 @@ sub bloqueio_do : Local {
 	$cliente->update({bloqueado => 1});
 	&radius_user_update($c, $cliente);
 	$c->stash->{status_msg} = 'O cliente foi bloqueado.';
-	$c->forward('lista/1');
+	$c->forward('lista', ['1']);
 }
 
 =head2 bloqueio_undo
@@ -545,7 +548,7 @@ sub bloqueio_undo : Local {
 	$cliente->update({bloqueado => 0});
 	&radius_user_update($c, $cliente);
 	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio.';
-	$c->forward('lista/1');
+	$c->forward('lista', ['1']);
 }
 
 =head2 exportar
@@ -592,6 +595,246 @@ sub exportar : Local {
 	
 	$c->stash->{saida} = $saida;
 	$c->stash->{template} = 'cadastro/exportacao.tt2';
+}
+
+=head2 gerar_boletos
+
+Gera os boletos de todos os clientes ativos para o OBBPlus.
+
+=cut
+
+sub gerar_boletos : Local {
+	my ($self, $c) = @_;
+	
+	my $saida = undef;
+	
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
+		# Apenas para não dar time-out
+		print '.';
+		
+		# Remove formatação do CPF, CNPJ, data e mensalidade
+		my $doc = $cliente->{doc};
+		$doc =~ s/\.//g;
+		$doc =~ s/\-//g;
+		$doc =~ s/\///g;
+		
+		my (@data) = localtime(); 
+		my $data_atual = abs($data[5] + 1900) . $data[4] . $data [3];
+		
+		my $mensalidade = $cliente->{mensalidade};
+		$mensalidade =~ s/\.//g;
+		$mensalidade =~ s/\,//g;
+		
+		# Inclui na variável
+		$saida .= sprintf("%-10.10s%-11.11s%-15.15s%-15.15s%-1.1s%-2.2s%-1.1s%-3.3s%-25.25s%-80.80s%-80.80s%-80.80s%-80.80s%-8.8s%-8.8s%-8.8s%-8.8s%-17.17s%-17.17s%-6.6s%-6.6s%-6.6s%-6.6s%-6.6s%-40.40s%-45.45s\n",
+			'0',									# Número do título
+			'0',									# Nosso número
+			$doc,									# Código do sacado (15)
+			'0',									# Código do sacador avalista
+			'E',									# Local de impressão
+			'01',									# Espécie
+			'0',									# Aceite do título
+			'030',									# Prazo protesto
+			'',										# Número controle participante
+			'',										# Mensagem 1
+			'',										# Mensagem 2
+			'',										# Mensagem 3
+			'',										# Mensagem 4
+			'20091230',								# Data de vencimento
+			'',										# Data do desconto
+			$data_atual,							# Data do documento
+			$data_atual,							# Data do processamento
+			$mensalidade,							# Valor do titulo (sem vírgula)
+			'0',									# Valor do abatimento
+			'0',									# Percentual bonificação
+			'0',									# Percentual desconto
+			'0',									# Percentual IOF
+			'1000',									# Percentual mora mes (1 %)
+			'2000',									# Percentual multa (2 %)
+			$cliente->{nome},						# Nome do sacado
+			'');									# Nome do sacador avalista
+	}
+	
+	$c->stash->{saida} = $saida;
+	$c->stash->{template} = 'cadastro/exportacao.tt2';
+}
+
+=head2 abrir_chamado
+
+Abre um novo chamado com os dados deste cliente.
+
+=cut
+
+sub abrir_chamado : Local {
+	my ($self, $c, $uid) = @_;
+
+	# Busca os dados do cliente
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
+
+	# Preenche os campos do formulário de chamados
+	my $dados = ({
+		cliente		=> $cliente->nome								|| undef,
+		endereco	=> $cliente->endereco . ', ' . $cliente->bairro	|| undef,
+		telefone	=> $cliente->telefone							|| undef,
+	});
+	
+	# Envia para o método de novo chamado
+	$c->stash->{chamado} = $dados;
+	$c->forward('/chamados/novo');
+}
+
+=head2 stats
+
+Mostra as estatísticas de clientes.
+
+=cut
+
+sub stats : Local {
+	my ($self, $c) = @_;
+	
+	# Lista de clientes ativos
+	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})];
+	
+	# Tempo de conexao
+	#$c->stash->{top10_tempo} = [$c->model('RG3WifiDB::radacct')->search(undef, {order_by => 'AcctSessionTime DESC', rows => 10})];
+	
+	# Download
+	#$c->stash->{top10_down} = [$c->model('RG3WifiDB::radacct')->search(undef, {order_by => 'AcctOutputOctets DESC', rows => 10})];
+
+	# Upload
+	#$c->stash->{top10_up} = [$c->model('RG3WifiDB::radacct')->search(undef, {order_by => 'AcctInputOctets DESC', rows => 10})];
+
+	# Exibe página
+	$c->stash->{template} = 'cadastro/stats.tt2';
+}
+
+=head2 chart_mensalidade
+
+Gera um gráfico das mensalidades.
+
+=cut
+
+sub chart_mensalidade : Local {
+	my ($self, $c) = @_;
+	
+	# Primeiro, criamos os delimitadores de mensalidades
+	my @grupos = (30, 40, 50, 75, 100, 150, 250, 350, 500, 1000, 1500, 2000);
+	my @valores = ();
+	my @legendas = ();
+	
+	# Pesquisamos no BD quantos clientes estão em cada grupo
+	my ($v1, $v2) = undef;
+	foreach my $grupo (@grupos) {
+		$v1 = $v2 | 0;
+		$v2 = $grupo;
+		my $total = $c->model('RG3WifiDB::Usuarios')->count({id_situacao => 1, valor_mensalidade => {-between => [$v1 + 1, $v2]}});
+		push(@legendas, "Ate R\$ $v2:");
+		push(@valores, $total);
+	}
+	
+	# Monta o gráfico
+	my $grafico = Chart::Pie->new(800, 600);
+	my @dados = (\@legendas, \@valores);
+	$grafico->set(
+		'title' => 'Usuarios por mensalidades',
+		'sub_title' => 'Quantos usuarios pagam ate o valor X',
+		'png_border' => 1,
+	);
+	$grafico->cgi_png(\@dados);
+}
+
+=head2 chart_planos
+
+Gera um gráfico dos planos de acesso.
+
+=cut
+
+sub chart_planos : Local {
+	my ($self, $c) = @_;
+	
+	# Primeiro, criamos os delimitadores de mensalidades
+	my @grupos = ();
+	my @valores = ();
+	
+	# Pesquisamos no BD quantos pontos em cada plano
+	foreach my $plano ($c->model('RG3WifiDB::Planos')->all) {
+		my $total = $c->model('RG3WifiDB::Contas')->count({id_plano => $plano->id, id_situacao => 1}, {join => 'cliente'});
+		push(@grupos, $plano->nome . ':');
+		push(@valores, $total);
+	}
+	
+	# Monta o gráfico
+	my $grafico = Chart::Pie->new(800, 600);
+	my @dados = (\@grupos, \@valores);
+	$grafico->set(
+		'title' => 'Contas por planos de acesso',
+		'sub_title' => 'Quantas contas estao inseridas em cada plano de acesso',
+	);
+	$grafico->cgi_png(\@dados);
+}
+
+=head2 chart_instalacoes
+
+Gera um gráfico da quantidade de instalações por mês.
+
+=cut
+
+sub chart_instalacoes : Local {
+	my ($self, $c) = @_;
+	
+	# Pesquisa no BD quantas instalações foram feitas no último ano
+	my @grupos = ();
+	my @valores = ();
+	my @hora = localtime(time);
+	my $mes_atual = $hora[4];
+	my $ano_atual = $hora[5] + 1900;
+	my @meses = qw( Jan Fev Mar Abr Mai Jun Jul Ago Set Out Nov Dez );
+	for (my $i = 11; $i >= 0; $i--) {
+		my $mes = ($mes_atual - $i) % 12;
+		my $ano = ($mes_atual - $i) >= 0 ? $ano_atual : $ano_atual - 1;
+		my $data1 = $ano . '-' . abs($mes + 1) . '-01';
+		my $data2 = $ano . '-' . abs($mes + 1) . '-31';
+		my $total = $c->model('RG3WifiDB::Usuarios')->count({id_situacao => 1, data_adesao => {-between => [$data1, $data2]}});
+		push(@grupos, "$meses[$mes]/$ano");
+		push(@valores, $total);
+	}
+	
+	# Monta o gráfico
+	my $grafico = Chart::Bars->new(800, 600);
+	my @dados = (\@grupos, \@valores);
+	$grafico->set(
+		'title' => 'Instalacoes por mes',
+		'legend' => 'none',
+		'include_zero' => 'true',
+		'precision' => 0,
+	);
+	$grafico->cgi_png(\@dados);	
+}
+
+=head2 busca
+
+Faz uma busca no sistema.
+
+=cut
+
+sub busca : Local {
+	my ($self, $c) = @_;
+
+	# Parâmetros
+	my $p = $c->request->params;
+	my $termo = $p->{termo};
+	
+	# Efetua a busca
+	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({
+		-or => [
+			nome => {'like', "%$termo%"},
+			endereco => {'like', "%$termo%"},
+			bairro => {'like', "%$termo%"},
+		],
+	})];
+	
+	$c->stash->{termo} = $termo;
+	$c->stash->{template} = 'cadastro/lista.tt2';
 }
 
 =head1 AUTHOR

@@ -1,0 +1,86 @@
+[% PROCESS site/macros %]
+
+<h2>Inclusão de lançamento</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
+
+[% IF val.has_missing() %]
+	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
+[% END %]
+
+<form action="[% Catalyst.uri_for('novo_do') %]" method="POST">
+<input type="hidden" name="id" value="[% lancamento.id %]">
+<input type="hidden" name="acao" value="[% acao %]">
+
+<table>
+	<tr>
+		<th colspan="2">Dados do lançamento</th>
+	</tr>
+	<tr>
+		<td>Descrição:</td>
+		<td><input type="text" name="descricao" size="50" value="[% lancamento.descricao %]" [% IF val.missing('descricao') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Favorecido/Debitado:</td>
+		<td><input type="text" name="favorecido" size="50" value="[% lancamento.favorecido %]" [% IF val.missing('favorecido') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Categoria:</td>
+		<td>
+			<select name="categoria">
+				[% FOREACH categoria IN categorias %]
+				<option value="[% categoria.id %]" [% IF lancamento.id_categoria == categoria.id %]selected[% END %]>[% categoria.nome %]</option>
+				[% END %]
+			</select>
+			<img src="/static/images/star.png">
+		</td>
+	</tr>
+	<tr>
+		<td>Data:</td>
+		<td>
+			<input type="text" name="data" id="data" size="8" value="[% data2normal(lancamento.data) || datahoje %]" [% IF val.missing('data') %]class="missing"[% END %]>
+			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+			<script type="text/javascript">
+				Calendar.setup(
+					{
+						inputField  : "data",		// ID of the input field
+						ifFormat    : "%d/%m/%Y",	// the date format
+						button      : "t_rec"		// ID of the button
+					}
+				);
+			</script>
+			<img src="/static/images/star.png">
+		</td>
+	</tr>
+	<tr>
+		<td>Crédito?:</td>
+		<td><input type="checkbox" name="credito" value="1" [% IF lancamento.credito == 1 %]checked[% END %]>Sim</td>
+	</tr>
+	<tr>
+		<td>Forma de pagamento/recebimento:</td>
+		<td>
+			<select name="forma">
+				[% FOREACH forma IN formas %]
+				<option value="[% forma.id %]" [% IF lancamento.id_forma == forma.id %]selected[% END %]>[% forma.nome %]</option>
+				[% END %]
+			</select>
+			<img src="/static/images/star.png">
+		</td>
+	</tr>
+	<tr>
+		<td>Valor: (R$)</td>
+		<td><input type="text" name="valor" size="10" value="[% lancamento.valor %]" [% IF val.missing('valor') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Lançamento futuro?:</td>
+		<td><input type="checkbox" name="lancamento_futuro" value="1" [% IF lancamento.lancamento_futuro == 1 %]checked[% END %]>Sim</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="OK"></td>
+	</tr>
+</table>
+
+</form>

@@ -1,0 +1,120 @@
+[% PROCESS site/macros %]
+
+<h2>Clientes RG3.Net - Estatísticas</h2>
+
+<h3 align="center">Clientes e mensalidades</h3>
+
+[% # Vamos somar os clientes
+	desbloqueados = 0
+	desbloqueados_valor = 0
+	bloqueados = 0
+	bloqueados_valor = 0
+%]
+
+[% FOREACH cliente IN clientes %]
+	[% IF cliente.bloqueado == 1 %]
+		[% bloqueados_valor = bloqueados_valor + cliente.valor_mensalidade
+		   bloqueados = bloqueados + 1
+		%]
+	[% ELSE %]
+		[% desbloqueados_valor = desbloqueados_valor + cliente.valor_mensalidade
+		   desbloqueados = desbloqueados + 1
+		%]
+	[% END %]
+[% END %]
+	
+<table align="center">
+	<tr>
+		<th>&nbsp;</th>
+		<th align="right">Total</th>
+		<th align="right">Mensalidades somadas</th>
+	</tr>
+	<tr class="lista">
+		<td>Clientes desbloqueados</td>
+		<td align="right">[% desbloqueados %]</td>
+		<td align="right">[% moeda(desbloqueados_valor) %]</td>
+	</tr>
+	<tr class="lista">
+		<td>Clientes bloqueados</td>
+		<td align="right">[% bloqueados %]</td>
+		<td align="right">[% moeda(bloqueados_valor) %]</td>
+	</tr>
+	<tr class="lista">
+		<td><strong>Total</strong></td>
+		<td align="right"><strong>[% desbloqueados + bloqueados %]</strong></td>
+		<td align="right"><strong>[% moeda(desbloqueados_valor + bloqueados_valor) %]</strong></td>
+	</tr>
+</table>
+
+<h3 align="center">Gráfico de mensalidades</h3>
+
+<p align="center"><img src="[% Catalyst.uri_for('/cadastro/chart_mensalidade') %]" alt="Gráfico de mensalidades"></p>
+
+<h3 align="center">Gráfico de planos de acesso</h3>
+
+<p align="center"><img src="[% Catalyst.uri_for('/cadastro/chart_planos') %]" alt="Gráfico de planos de acesso"></p>
+
+<h3 align="center">Gráfico financeiro</h3>
+
+<p align="center"><img src="[% Catalyst.uri_for('/caixa/chart_movimentacao') %]" alt="Gráfico de entrada e saída por mês"></p>
+
+<h3 align="center">Gráfico de instalações</h3>
+
+<p align="center"><img src="[% Catalyst.uri_for('/cadastro/chart_instalacoes') %]" alt="Gráfico de instalações"></p>
+
+<h3 align="center">Gráfico de chamados de suporte</h3>
+
+<p align="center"><img src="[% Catalyst.uri_for('/chamados/chart_suporte') %]" alt="Gráfico de chamados de suporte"></p>
+
+<!--
+<h3 align="center">Top 10 em tempo de conexão</h3>
+
+<table align="center">
+	<tr>
+		<th>Login</th>
+		<th>Data da conexão</th>
+		<th>Duração da conexão</th>
+	</tr>
+	[% FOREACH conexao IN top10_tempo %]
+	<tr class="lista">
+		<td>[% conexao.UserName %]</td>
+		<td align="right">[% data2normal(conexao.AcctStartTime) %]
+		<td align="right">[% seg2hora(conexao.AcctSessionTime) %]</td>
+	</tr>
+	[% END %]
+</table>
+
+<h3 align="center">Top 10 em download</h3>
+
+<table align="center">
+	<tr>
+		<th>Login</th>
+		<th>Data da conexão</th>
+		<th>Download efetuado</th>
+	</tr>
+	[% FOREACH conexao IN top10_down %]
+	<tr class="lista">
+		<td>[% conexao.UserName %]</td>
+		<td align="right">[% data2normal(conexao.AcctStartTime) %]
+		<td align="right">[% bytes2human(conexao.AcctOutputOctets) %]</td>
+	</tr>
+	[% END %]
+</table>
+
+<h3 align="center">Top 10 em upload</h3>
+
+<table align="center">
+	<tr>
+		<th>Login</th>
+		<th>Data da conexão</th>
+		<th>Upload efetuado</th>
+	</tr>
+	[% FOREACH conexao IN top10_up %]
+	<tr class="lista">
+		<td>[% conexao.UserName %]</td>
+		<td align="right">[% data2normal(conexao.AcctStartTime) %]
+		<td align="right">[% bytes2human(conexao.AcctInputOctets) %]</td>
+	</tr>
+	[% END %]
+</table>
+-->

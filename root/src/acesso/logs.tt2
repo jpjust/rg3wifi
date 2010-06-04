@@ -23,6 +23,9 @@ Cliente: <strong>[% cliente %]</strong></p>
 		<th>Início</th>
 		<th>Fim</th>
 		<th>Duração</th>
+		<th>Download</th>
+		<th>Upload</th>
+		<th>MAC</th>
 	</tr>
 	
 	[% FOREACH conexao IN conexoes %]
@@ -33,6 +36,9 @@ Cliente: <strong>[% cliente %]</strong></p>
 		<td>[% data2normal(conexao.AcctStartTime) %]</td>
 		<td>[% data2normal(conexao.AcctStopTime) %]</td>
 		<td>[% seg2hora(conexao.AcctSessionTime) %]</td>
+		<td align="right">[% bytes2human(conexao.AcctOutputOctets) %]</td>
+		<td align="right">[% bytes2human(conexao.AcctInputOctets) %]</td>
+		<td>[% conexao.CallingStationId %]</td>
 	</tr>
 	[% END %]
 	

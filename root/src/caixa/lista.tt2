@@ -1,0 +1,122 @@
+[% PROCESS site/macros %]
+
+[%
+	credito = 0
+	debito = 0
+%]
+
+<h2>Movimentação do Caixa</h2>
+
+<p><strong><a href="javascript:void(0)" onClick="javascript:showbox('box_filtros');"><img src="/static/images/find.png" align="top">Filtros</a></strong></p>
+<div class="mytextbox_green" style="display: none;" id="box_filtros">
+
+	<!-- Período -->
+	<form action="[% Catalyst.uri_for('/caixa/filtro') %]" method="POST">
+	<input type="hidden" name="tipo" value="0">
+	<strong>Período:</strong> Entre
+	
+	<input type="text" name="data1" id="data1" size="10">
+	<img src="/static/images/calendar.png" id="t_rec1" style="cursor: pointer;" alt="Calendário">
+	<script type="text/javascript">
+		Calendar.setup(
+			{
+				inputField  : "data1",   	   // ID of the input field
+				ifFormat    : "%d/%m/%Y",      // the date format
+				button      : "t_rec1",		   // ID of the button
+				showsTime	: false
+			}
+		);
+	</script>
+	e
+	<input type="text" name="data2" id="data2" size="10">
+	<img src="/static/images/calendar.png" id="t_rec2" style="cursor: pointer;" alt="Calendário">
+	<script type="text/javascript">
+		Calendar.setup(
+			{
+				inputField  : "data2",         // ID of the input field
+				ifFormat    : "%d/%m/%Y",      // the date format
+				button      : "t_rec2",		   // ID of the button
+				showsTime	: false
+			}
+		);
+	</script>
+	<input type="submit" value="Filtrar">
+	</form>
+</div>
+
+<p>
+	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Incluir lançamento</a>
+	<!-- :: <a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir relatório</a> -->
+</p>
+
+<p>Lançamentos listados: [% lancamentos.size %]<br>
+Período: [% data1 %] a [% data2 %]</p>
+
+<table width="100%">
+	<tr>
+		<th>Descrição</th>
+		<th>Favorecido/Debitado</th>
+		<th>Categoria</th>
+		<th>Data</th>
+		<th>Valor</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH lancamento IN lancamentos %]
+	
+	[% # Cores da lista, de acordo com o status %]
+	[% IF lancamento.lancamento_futuro == 1 %]
+		[% bgcolor = '#ffffaa' %]
+	[% ELSE %]
+		[% bgcolor = '#ffffff' %]
+	[% END %]
+	
+	<tr class="lista" bgcolor="[% bgcolor %]">
+		<td>[% lancamento.descricao %]</td>
+		<td>[% lancamento.favorecido %]</td>
+		<td>[% lancamento.categoria.nome %]</td>
+		<td>[% data2normal(lancamento.data) %]</td>
+		<td><strong><font
+			[% IF lancamento.credito == 1 %]
+				color="#0000ff">[% moeda(lancamento.valor) %]
+				[% credito = credito + lancamento.valor %]
+			[% ELSE %]
+				color="#ff0000">([% moeda(lancamento.valor) %])
+				[% debito = debito + lancamento.valor %]
+			[% END %]
+			</font></strong>
+		</td>
+		<td nowrap>
+			<a href="[% Catalyst.uri_for('editar/') _ lancamento.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir esse lançamento?', '[% Catalyst.uri_for('excluir/') _ lancamento.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
+		</td>
+	</tr>
+	[% END %]
+	
+</table>
+
+<p>Total em crédito: <font color="#0000ff">[% moeda(credito) %]</font><br>
+Total em débito: <font color="#ff0000">[% moeda(debito) %]</font><br>
+Saldo no período: [% moeda(credito - debito) %]</p>
+
+<h3>Resumo</h3>
+
+[% total_geral = credito + debito %]
+
+<table align="center">
+	<tr>
+		<th>Categoria</th>
+		<th>Valor</th>
+		<th width="300">Porcentagem</th>
+	</tr>
+	
+	[% FOREACH categoria IN categorias %]
+	[% pct = (categoria.valor / total_geral) * 100 %]
+	<tr>
+		<td>[% categoria.nome %]</td>
+		<td>[% moeda(categoria.valor) %]</td>
+		<td><img src="/static/images/barra_azul.png" alt="[% pct %] %" width="[% pct * 3 %]" height="16"></td>
+	</tr>
+	[% END %]
+</table>
+

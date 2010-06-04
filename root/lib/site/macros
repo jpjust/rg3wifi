@@ -57,6 +57,17 @@
 	[% valor FILTER format('%.1f') FILTER replace('\.', ',') %] %
 [% END %]
 
+[% # Formatação de valor bytes para leitura humana %]
+[% MACRO bytes2human(valor) BLOCK %]
+	[% medidas = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'] %]
+	[% i = 0 %]
+	[% WHILE valor > 1024 %]
+		[% valor = valor / 1024 %]
+		[% i = i + 1 %]
+	[% END %]
+	[% valor FILTER format('%.2f') FILTER replace('\.', ',') %] [% medidas.$i %]
+[% END %]
+
 [% ### JavaScripts %]
 <script type="text/javascript">
 // Caixa de diálogo de confirmação

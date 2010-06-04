@@ -10,7 +10,7 @@
 	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
 [% END %]
 
-<form action="[% Catalyst.uri_for('novo_do') %]" method="POST">
+<form action="[% Catalyst.uri_for('/chamados/novo_do') %]" method="POST">
 <input type="hidden" name="id" value="[% chamado.id %]">
 <input type="hidden" name="acao" value="[% acao %]">
 <input type="hidden" name="estado" value="[% estado %]">

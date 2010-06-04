@@ -33,6 +33,9 @@ __PACKAGE__->load_classes({
 		Radios
 		RadiosTipo
 		RadiosBanda
+		Caixa
+		CaixaCategoria
+		CaixaForma
 		radacct
 		radcheck
 		radreply

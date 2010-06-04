@@ -7,6 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/../..";
 use EasyCat;
 use Data::FormValidator;
+use Chart::Bars;
 
 =head1 NAME
 
@@ -193,6 +194,43 @@ sub detalhes : Local {
 	$c->stash->{template} = 'chamados/detalhes.tt2';
 }
 
+=head2 chart_suporte
+
+Gera um gráfico da quantidade de instalações por mês.
+
+=cut
+
+sub chart_suporte : Local {
+	my ($self, $c) = @_;
+	
+	# Pesquisa no BD quantos chamados de suporte foram feitos no último ano
+	my @grupos = ();
+	my @valores = ();
+	my @hora = localtime(time);
+	my $mes_atual = $hora[4];
+	my $ano_atual = $hora[5] + 1900;
+	my @meses = qw( Jan Fev Mar Abr Mai Jun Jul Ago Set Out Nov Dez );
+	for (my $i = 11; $i >= 0; $i--) {
+		my $mes = ($mes_atual - $i) % 12;
+		my $ano = ($mes_atual - $i) >= 0 ? $ano_atual : $ano_atual - 1;
+		my $data1 = $ano . '-' . abs($mes + 1) . '-01';
+		my $data2 = $ano . '-' . abs($mes + 1) . '-31';
+		my $total = $c->model('RG3WifiDB::Chamados')->count({id_tipo => 1, data_chamado => {-between => [$data1, $data2]}});
+		push(@grupos, "$meses[$mes]/$ano");
+		push(@valores, $total);
+	}
+	
+	# Monta o gráfico
+	my $grafico = Chart::Bars->new(800, 600);
+	my @dados = (\@grupos, \@valores);
+	$grafico->set(
+		'title' => 'Chamados por mes',
+		'legend' => 'none',
+		'include_zero' => 'true',
+		'precision' => 0,
+	);
+	$grafico->cgi_png(\@dados);	
+}
 
 =head1 AUTHOR
 
