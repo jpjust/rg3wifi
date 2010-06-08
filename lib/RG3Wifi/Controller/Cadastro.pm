@@ -85,7 +85,8 @@ sub user_add : Private {
 	if (!$conta)	{ return 2; }
 	
 	# Pool de IP
-	my $pool = $conta->plano->pool_name;
+	#my $pool = $conta->plano->pool_name;
+	my $pool = 'pool_rg3';
 	
 	# Tabela radcheck
 	$c->model('RG3WifiDB::radcheck')->create({
