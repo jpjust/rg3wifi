@@ -630,38 +630,39 @@ sub gerar_boletos : Local {
 	
 	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
 		# Apenas para não dar time-out
-		print '.';
+		#print "\n";
 		
 		# Remove formatação do CPF, CNPJ, data e mensalidade
-		my $doc = $cliente->{doc};
+		my $doc = $cliente->doc;
 		$doc =~ s/\.//g;
 		$doc =~ s/\-//g;
 		$doc =~ s/\///g;
 		
-		my (@data) = localtime(); 
-		my $data_atual = abs($data[5] + 1900) . $data[4] . $data [3];
+		my (@data) = localtime();
+		my $data_atual = abs($data[5] + 1900) . sprintf("%02s", $data[4]) . sprintf("%02s", $data[3]);
 		
-		my $mensalidade = $cliente->{mensalidade};
+		# Deve incluir as casas decimais
+		my $mensalidade = sprintf("%.2f", $cliente->valor_mensalidade);
 		$mensalidade =~ s/\.//g;
 		$mensalidade =~ s/\,//g;
 		
 		# Inclui na variável
 		$saida .= sprintf("%-10.10s%-11.11s%-15.15s%-15.15s%-1.1s%-2.2s%-1.1s%-3.3s%-25.25s%-80.80s%-80.80s%-80.80s%-80.80s%-8.8s%-8.8s%-8.8s%-8.8s%-17.17s%-17.17s%-6.6s%-6.6s%-6.6s%-6.6s%-6.6s%-40.40s%-45.45s\n",
-			'0',									# Número do título
-			'0',									# Nosso número
+			'NULL',									# Número do título
+			' ',									# Nosso número
 			$doc,									# Código do sacado (15)
-			'0',									# Código do sacador avalista
+			' ',									# Código do sacador avalista
 			'E',									# Local de impressão
 			'01',									# Espécie
 			'0',									# Aceite do título
-			'030',									# Prazo protesto
-			'',										# Número controle participante
-			'',										# Mensagem 1
-			'',										# Mensagem 2
-			'',										# Mensagem 3
-			'',										# Mensagem 4
-			'20091230',								# Data de vencimento
-			'',										# Data do desconto
+			'0',									# Prazo protesto
+			' ',									# Número controle participante
+			'Referente a',							# Mensagem 1
+			' ',									# Mensagem 2
+			' ',									# Mensagem 3
+			' ',									# Mensagem 4
+			'20101230',								# Data de vencimento
+			' ',									# Data do desconto
 			$data_atual,							# Data do documento
 			$data_atual,							# Data do processamento
 			$mensalidade,							# Valor do titulo (sem vírgula)
@@ -671,8 +672,8 @@ sub gerar_boletos : Local {
 			'0',									# Percentual IOF
 			'1000',									# Percentual mora mes (1 %)
 			'2000',									# Percentual multa (2 %)
-			$cliente->{nome},						# Nome do sacado
-			'');									# Nome do sacador avalista
+			$cliente->nome,							# Nome do sacado
+			' ');									# Nome do sacador avalista
 	}
 	
 	$c->stash->{saida} = $saida;
