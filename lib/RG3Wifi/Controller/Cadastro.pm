@@ -619,19 +619,44 @@ sub exportar : Local {
 
 =head2 gerar_boletos
 
-Gera os boletos de todos os clientes ativos para o OBBPlus.
+Exibe página para geração de boletos.
 
 =cut
 
 sub gerar_boletos : Local {
+	my ($self, $c, $uid) = @_;
+	$c->stash->{template} = 'cadastro/gerar_boletos.tt2';
+}
+
+=head2 gerar_boletos_do
+
+Gera os boletos de todos os clientes ativos para o OBBPlus.
+
+=cut
+
+sub gerar_boletos_do : Local {
 	my ($self, $c) = @_;
 	
 	my $saida = undef;
 	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$p,
+		{required => [qw(mes ano)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{p} = $p;
+		#$c->forward($p->{acao} . '/' . $p->{uid});
+		return;
+	}
+	
+	# Gera a linha de boleto para cada cliente
 	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
-		# Apenas para não dar time-out
-		#print "\n";
-		
 		# Remove formatação do CPF, CNPJ, data e mensalidade
 		my $doc = $cliente->doc;
 		$doc =~ s/\.//g;
@@ -640,6 +665,7 @@ sub gerar_boletos : Local {
 		
 		my (@data) = localtime();
 		my $data_atual = abs($data[5] + 1900) . sprintf("%02s", $data[4]) . sprintf("%02s", $data[3]);
+		my $data_venc = abs($data[5] + 1900) . sprintf("%02s", $p->{mes}) . sprintf("%02s", $cliente->vencimento);
 		
 		# Deve incluir as casas decimais
 		my $mensalidade = sprintf("%.2f", $cliente->valor_mensalidade);
@@ -657,11 +683,12 @@ sub gerar_boletos : Local {
 			'0',									# Aceite do título
 			'0',									# Prazo protesto
 			' ',									# Número controle participante
-			'Referente a',							# Mensagem 1
+			'Referente ao uso no mês ' . abs($p->{mes} - 1) . ' de ' . $p->{ano},
+													# Mensagem 1
 			' ',									# Mensagem 2
 			' ',									# Mensagem 3
 			' ',									# Mensagem 4
-			'20101230',								# Data de vencimento
+			$data_venc,								# Data de vencimento
 			' ',									# Data do desconto
 			$data_atual,							# Data do documento
 			$data_atual,							# Data do processamento
@@ -678,6 +705,44 @@ sub gerar_boletos : Local {
 	
 	$c->stash->{saida} = $saida;
 	$c->stash->{template} = 'cadastro/exportacao.tt2';
+}
+
+=head2 gerar_planilha_do
+
+Gera a planilha de pagamento.
+
+=cut
+
+sub gerar_planilha_do : Local {
+	my ($self, $c) = @_;
+	
+	my $saida = ",\"Entrada e saída de faturas\"\n";
+	$saida .= ",\"Mês:\"\n\n";
+	$saida .= "\"\",\"Cliente\",\"Mens.\",\"Venc.\",\"Loja\",\"Banco\",\"Data pag.\",\"Observações\",\"Não pago\",\"Pago\"\n";
+	
+	# Gera a linha da planilha para cada cliente
+	my $i = 5;
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
+		# Formata mensalidade
+		my $mensalidade = $cliente->valor_mensalidade;
+		$mensalidade =~ s/\./,/g;
+		
+		# Inclui na variável
+		$saida .= sprintf(",\"%s\",\"%s\",%d,,,,,=IF(AND(E$i=\"\";F$i=\"\");1;\"\"),=IF(OR(E$i<>\"\";F$i<>\"\");1;\"\")\n",
+			$cliente->nome,							# Nome do cliente
+			$mensalidade,							# Mensalidade do cliente
+			$cliente->vencimento,					# Dia do vencimento
+		);
+		
+		$i++;
+	}
+	
+	# Adiciona a última linha com os totais
+	my $total = $i - 1;
+	$saida .= ",\"TOTAL\",=SUM(C5:C$total),,=SUM(E5:E$total),=SUM(F5:F$total),,,=SUM(I5:I$total),=SUM(J5:J$total)\n";
+	
+	$c->stash->{saida} = $saida;
+	$c->stash->{template} = 'cadastro/planilha.tt2';
 }
 
 =head2 abrir_chamado
