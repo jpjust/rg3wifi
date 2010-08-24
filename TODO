@@ -7,7 +7,8 @@
   algums informações extras.
 - Associar o cliente ao seu rádio.
 - Mostrar no relatório de uso a velocidade que foi usada
-  em cada conexão.
+  em cada conexão. Além disso, guardar na auditoria
+  a data que a velocidade foi alterada.
 
 Mais urgentes:
 - Fazer o sistema exportar os boletos pro OBBPlus.
