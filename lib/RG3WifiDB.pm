@@ -36,6 +36,8 @@ __PACKAGE__->load_classes({
 		Caixa
 		CaixaCategoria
 		CaixaForma
+		Faturas
+		FaturasSituacao
 		radacct
 		radcheck
 		radreply

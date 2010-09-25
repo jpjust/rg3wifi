@@ -307,6 +307,7 @@ sub cadastro_do : Local {
 		uid				=> $p->{uid}									|| -1,
 		id_grupo		=> 3,
 		id_situacao		=> 1,
+		nao_bloqueia	=> $p->{nao_bloqueia}							|| 0,
 		nome			=> $p->{nome}									|| undef,
 		doc				=> $p->{doc}									|| undef,
 		data_nascimento	=> &EasyCat::data2sql($p->{data_nascimento})	|| undef,
@@ -538,7 +539,10 @@ sub excluir_conta : Local {
 	&user_del($c, $conta->uid);
 	$conta->delete();
 	$c->stash->{status_msg} = 'Conta excluída com sucesso.';
-	$c->forward('lista', ['1']);
+	
+	# Altera o parametro
+	$_[2] = $conta->id_cliente;
+	$c->forward('lista', $_[2]);
 }
 
 =head2 bloqueio_do
@@ -569,6 +573,39 @@ sub bloqueio_undo : Local {
 	&radius_user_update($c, $cliente);
 	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio.';
 	$c->forward('lista', ['1']);
+}
+
+=head2 bloqueio_automatico
+
+Faz o bloqueio automático dos clientes inadimplentes.
+
+=cut
+
+sub bloqueio_automatico : Local {
+	my ($self, $c) = @_;
+	
+	# Os usuários com mais de 15 dias de atraso devem ser bloqueados
+	my $segundos = 15 * 24 * 60 * 60;
+	my (@data_limite) = localtime(time - $segundos);
+	my $datasql = &EasyCat::data2sql($data_limite[3] . '/' . abs($data_limite[4] + 1) . '/' . $data_limite[5]);
+	my $i = 0;
+	
+	# Fiscaliza cada cliente
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
+		# Procura se há faturas em aberto
+		if ($c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, id_situacao => 1, data_vencimento => {'<', $datasql}})->count > 0) {
+			# Bloqueia o cliente, a não ser que esteja marcado para não bloquear
+			if (!$cliente->nao_bloqueia) {
+				$cliente->update({bloqueado => 1});
+				&radius_user_update($c, $cliente);
+				$i++;
+			}
+		}
+	}
+	
+	# Exibe a lista de clientes bloqueados
+	$c->stash->{status_msg} = "$i clientes foram bloqueados por falta de pagamento.";
+	$c->forward('lista');
 }
 
 =head2 exportar
@@ -921,6 +958,230 @@ sub busca : Local {
 	
 	$c->stash->{termo} = $termo;
 	$c->stash->{template} = 'cadastro/lista.tt2';
+}
+
+=head2 gerar_faturas
+
+Exibe a tela para geração de faturas.
+
+=cut
+
+sub gerar_faturas : Local {
+	my ($self, $c) = @_;
+	$c->stash->{template} = 'cadastro/gerar_faturas.tt2';
+}
+
+=head2 gerar_faturas_do
+
+Gera as faturas para pagamento das mensalidades.
+
+=cut
+
+sub gerar_faturas_do : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	my $i = 0;
+	
+	# Cria uma fatura para cada cliente
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
+		# Alguns valores
+		my $vencimento = &EasyCat::data2sql($cliente->vencimento . '/' . $p->{mes} . '/' . $p->{ano});
+		my (@data_atual) = localtime();
+		
+		# Primeiro verifica se já existe uma fatura para este cliente neste mês
+		my $busca = $c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, data_vencimento => $vencimento})->first;
+		
+		if (!$busca) {
+			my $fatura = {
+				id_cliente		=> $cliente->uid,
+				data_lancamento	=> &EasyCat::data2sql($data_atual[3] . '/' . abs($data_atual[4] + 1) . '/' . $data_atual[5]),
+				data_vencimento	=> $vencimento,
+				descricao		=> "Referente ao uso no mês $p->{mes}/$p->{ano}",
+				valor			=> $cliente->valor_mensalidade,
+				id_situacao		=> 1,
+			};
+			
+			# Faz as devidas inserções no banco de dados
+			eval {
+				# Cria nova fatura
+				$c->model('RG3WifiDB::Faturas')->update_or_create($fatura);
+				$i++;
+			};
+			
+			if ($@) {
+				$c->stash->{error_msg} = 'Erro ao criar uma fatura: ' . $@;
+				$c->stash->{template} = 'erro.tt2';
+				return;
+			}
+		}
+	}
+	
+	$c->stash->{status_msg} = "$i faturas geradas com sucesso!";
+	$c->forward('lista/');
+}
+
+=head2 nova_fatura
+
+Exibe a página para gerar uma fatura manualmente.
+
+=cut
+
+sub nova_fatura : Local {
+	my ($self, $c, $uid) = @_;
+	$c->stash->{fatura} = {id_cliente => $uid} unless $c->stash->{fatura};
+	$c->stash->{template} = 'cadastro/nova_fatura.tt2';
+}
+
+=head2 editar_fatura
+
+Exibe a página para editar uma fatura.
+
+=cut
+
+sub editar_fatura : Local {
+	my ($self, $c, $id) = @_;
+	$c->stash->{fatura} = $c->model('RG3WifiDB::Faturas')->search({id => $id})->first;
+	$c->forward('nova_fatura');
+}
+
+=head2 nova_fatura_do
+
+Gerar uma nova fatura manualmente.
+
+=cut
+
+sub nova_fatura_do : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Efetua o cadastro
+	my $fatura = {
+		id				=> $p->{id}										|| -1,
+		id_cliente		=> $p->{id_cliente}								|| undef,
+		data_vencimento	=> &EasyCat::data2sql($p->{data_vencimento})	|| undef,
+		valor			=> $p->{valor}									|| undef,
+		descricao		=> $p->{descricao}								|| undef,
+		id_situacao		=> 1,
+	};
+	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$fatura,
+		{required => [qw(id_cliente data_vencimento valor)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{fatura} = $fatura;
+		$c->forward('nova_fatura');
+		return;
+	}
+
+	# Faz as devidas inserções no banco de dados
+	eval {
+		# Gera fatura
+		$c->model('RG3WifiDB::Faturas')->update_or_create($fatura);
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao criar fatura: ' . $@;
+		$c->stash->{template} = 'erro.tt2';
+		return;
+	}
+
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Fatura criada com sucesso.';
+	$c->forward('editar/' . $p->{id_cliente});
+}
+
+=head2 liquidar_fatura
+
+Exibe a página para liquidar uma fatura.
+
+=cut
+
+sub liquidar_fatura : Local {
+	my ($self, $c, $id) = @_;
+	$c->stash->{fatura} = $c->model('RG3WifiDB::Faturas')->search({id => $id})->first unless $c->stash->{fatura};
+	$c->stash->{template} = 'cadastro/liquidar_fatura.tt2';
+}
+
+=head2 liquidar_fatura_do
+
+Liquida uma fatura.
+
+=cut
+
+sub liquidar_fatura_do : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Efetua o cadastro
+	my $fatura = {
+		id				=> $p->{id}										|| undef,
+		data_liquidacao	=> &EasyCat::data2sql($p->{data_liquidacao})	|| undef,
+		valor_pago		=> $p->{valor_pago}								|| undef,
+		id_situacao		=> 2,
+	};
+	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$fatura,
+		{required => [qw(id)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{fatura} = $fatura;
+		$c->forward('liquidar_fatura');
+		return;
+	}
+	
+	# Verifica se está liquidada
+	if ($fatura->{valor_pago} == 0) {
+		$fatura->{id_situacao} = 1;
+		$fatura->{data_liquidacao} = undef;
+		$fatura->{valor_pago} = undef;
+	}
+
+	# Faz as devidas inserções no banco de dados
+	eval {
+		# Liquida fatura
+		$c->model('RG3WifiDB::Faturas')->update_or_create($fatura);
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $@;
+		$c->stash->{template} = 'erro.tt2';
+		return;
+	}
+
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Fatura liquidada com sucesso.';
+	$c->forward('editar/' . $p->{id_cliente});
+}
+
+=head2 excluir_fatura
+
+Exclui uma fatura.
+
+=cut
+
+sub excluir_fatura : Local {
+	my ($self, $c, $id) = @_;
+	my $fatura = $c->model('RG3WifiDB::Faturas')->search({id => $id})->first;
+	$fatura->delete();
+	$c->stash->{status_msg} = 'Fatura excluída com sucesso.';
+	
+	# Altera o parametro
+	$_[2] = $fatura->id_cliente;
+	$c->forward('editar', $_[2]);
 }
 
 =head1 AUTHOR

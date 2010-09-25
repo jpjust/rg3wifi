@@ -92,7 +92,12 @@
 				<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir o usuário?', '[% Catalyst.uri_for('excluir/') _ cliente.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
 
 				[% IF cliente.bloqueado == 0 %]
-					<br><a href="[% Catalyst.uri_for('bloqueio_do/') _ cliente.id %]"><img src="/static/images/disconnect.png" align="top">Bloquear</a>
+					<br>
+					[% IF cliente.nao_bloqueia %]
+						<a href="javascript:void(0)" onClick="javascript:askuser('Este cliente está marcado para não bloquear. Tem certeza que deseja bloqueá-lo?', '[% Catalyst.uri_for('bloqueio_do/') _ cliente.id %]');"><img src="/static/images/disconnect.png" align="top">Bloquear</a>
+					[% ELSE %]
+						<a href="[% Catalyst.uri_for('bloqueio_do/') _ cliente.id %]"><img src="/static/images/disconnect.png" align="top">Bloquear</a>
+					[% END %]
 				[% ELSE %]
 					<br><a href="[% Catalyst.uri_for('bloqueio_undo/') _ cliente.id %]"><img src="/static/images/connect.png" align="top">Desbloquear</a>
 				[% END %]

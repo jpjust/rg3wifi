@@ -28,7 +28,7 @@ Converte data de formato normal para SQL
 
 sub data2sql {
 	my ($dia, $mes, $ano, $hora, $minuto) = split(/[^0-9]/, $_[0]);
-	$ano = 1900 + abs($ano) if ($ano < 100);
+	$ano = 1900 + abs($ano) if ($ano < 1900);
 	$mes = '0' . abs($mes) if ($mes < 10);
 	$dia = '0' . abs($dia) if ($dia < 10);
 

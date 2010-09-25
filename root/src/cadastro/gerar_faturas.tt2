@@ -1,0 +1,21 @@
+[% PROCESS site/macros %]
+
+<h2>Geração de faturas</h2>
+
+<p><a href="javascript:document.history(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
+
+[% IF val.has_missing() %]
+	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
+[% END %]
+
+<form action="[% Catalyst.uri_for('gerar_faturas_do') %]" method="POST">
+
+<p>Qual o mês de vencimento? <input type="text" name="mes" size="2" value="[% p.mes %]" [% IF val.missing('mes') %]class="missing"[% END %]><img src="/static/images/star.png"></p>
+
+<p>Qual o ano do vencimento? <input type="text" name="ano" size="2" value="[% p.ano %]" [% IF val.missing('ano') %]class="missing"[% END %]><img src="/static/images/star.png"></p>
+
+<p><input type="submit" value="Gerar faturas"></p>
+
+</form>

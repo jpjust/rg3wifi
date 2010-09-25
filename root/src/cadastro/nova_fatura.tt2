@@ -1,0 +1,48 @@
+[% PROCESS site/macros %]
+
+<h2>Nova fatura</h2>
+
+<p><a href="javascript:document.history(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
+
+[% IF val.has_missing() %]
+	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
+[% END %]
+
+<form action="[% Catalyst.uri_for('nova_fatura_do') %]" method="POST">
+<input type="hidden" name="id" value="[% fatura.id %]">
+<input type="hidden" name="id_cliente" value="[% fatura.id_cliente %]">
+
+<table>
+	<tr>
+		<td>Data de vencimento:</td>
+		<td>
+			<input type="text" name="data_vencimento" id="data_vencimento" size="8" value="[% data2normal(fatura.data_vencimento) || datahoje %]" [% IF val.missing('data_vencimento') %]class="missing"[% END %]>
+			<img src="/static/images/calendar.png" id="t_rec" style="cursor: pointer;" alt="Calendário">
+			<script type="text/javascript">
+				Calendar.setup(
+					{
+						inputField  : "data_vencimento",	// ID of the input field
+						ifFormat    : "%d/%m/%Y",			// the date format
+						button      : "t_rec"				// ID of the button
+					}
+				);
+			</script>
+			<img src="/static/images/star.png">
+		</td>
+	</tr>
+	<tr>
+		<td>Valor: (R$)</td>
+		<td><input type="text" name="valor" size="10" value="[% fatura.valor %]" [% IF val.missing('valor') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Descrição:</td>
+		<td><input type="text" name="descricao" size="40" value="[% fatura.descricao %]"></td>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="Salvar"></td>
+	</tr>
+</table>
+
+</form>

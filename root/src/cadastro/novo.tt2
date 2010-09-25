@@ -115,6 +115,10 @@
 		<td>Data de vencimento:</td>
 		<td><input type="text" name="vencimento" size="4" value="[% cliente.vencimento %]" [% IF val.missing('vencimento') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
+	<tr>
+		<td>Não bloquear?</td>
+		<td><input type="checkbox" name="nao_bloqueia" value="1" [% IF cliente.nao_bloqueia == 1 %]checked[% END %]>Sim</td>
+	</tr>
 
 	<tr>
 		<td>&nbsp;</td>
@@ -146,6 +150,47 @@
 			<a href="[% Catalyst.uri_for('editar_conta/') _ conta.uid %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
 			<br><a href="[% Catalyst.uri_for('/acesso/logs/') _ conta.uid %]"><img src="/static/images/report.png" align="top">Relatório</a>
 			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir a conta do usuário?', '[% Catalyst.uri_for('excluir_conta/') _ conta.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
+		</td>
+	</tr>
+	[% END %]
+</table>
+
+
+<h3>Faturas</h3>
+
+<p><a href="[% Catalyst.uri_for('nova_fatura/') _ cliente.uid %]"><img src="/static/images/add.png" align="top">Criar nova fatura</a></p>
+
+<table width="100%">
+	<tr>
+		<th>Data de vencimento</th>
+		<th>Valor</th>
+		<th>Descrição</th>
+		<th>Situação</th>
+		<th>Data da liquidação/baixa</th>
+		<th>Valor pago</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH fatura IN cliente.faturas %]
+	
+	[% # Cores da lista, de acordo com o status %]
+	[% IF fatura.id_situacao == 1 %]
+		[% bgcolor = '#ffaaaa' %]
+	[% ELSE %]
+		[% bgcolor = '#ffffff' %]
+	[% END %]
+
+	<tr class="lista" bgcolor="[% bgcolor %]">
+		<td>[% data2normal(fatura.data_vencimento) %]</td>
+		<td>[% moeda(fatura.valor) %]</td>
+		<td>[% fatura.descricao %]</td>
+		<td>[% fatura.situacao.nome %]</td>
+		<td>[% data2normal(fatura.data_liquidacao) %]</td>
+		<td>[% moeda(fatura.valor_pago) %]</td>
+		<td nowrap>
+			<a href="[% Catalyst.uri_for('editar_fatura/') _ fatura.id %]"><img src="/static/images/table_edit.png" align="top">Alterar dados</a>
+			<br><a href="[% Catalyst.uri_for('liquidar_fatura/') _ fatura.id %]"><img src="/static/images/money.png" align="top">Alterar liquidação</a>
+			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir essa fatura?', '[% Catalyst.uri_for('excluir_fatura/') _ fatura.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
 		</td>
 	</tr>
 	[% END %]

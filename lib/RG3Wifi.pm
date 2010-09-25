@@ -14,6 +14,7 @@ use Catalyst::Runtime '5.70';
 #                 directory
 
 use Catalyst qw/
+	-Debug
 	ConfigLoader
 	Static::Simple
 	
@@ -28,7 +29,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 # Configure the application. 
 #
@@ -48,61 +49,73 @@ __PACKAGE__->setup;
 # O controller Acesso é liberado pra todo mundo.
 
 # Auditoria (geral)
-__PACKAGE__->allow_access_if("/auditoria",					[qw/admin/]);
+__PACKAGE__->allow_access_if("/auditoria",						[qw/admin/]);
 __PACKAGE__->deny_access("/auditoria");
 
+
+
 # Caixa (geral)
-__PACKAGE__->allow_access_if("/caixa",						[qw/admin/]);
+__PACKAGE__->allow_access_if("/caixa",							[qw/admin/]);
 __PACKAGE__->deny_access("/caixa");
 
-# Cadastro (geral)
-__PACKAGE__->allow_access_if("/cadastro",					[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro",					[qw/operador/]);
-__PACKAGE__->deny_access("/cadastro");
+
+
+# Cadastro (início)
+__PACKAGE__->allow_access_if("/cadastro",						[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro",						[qw/operador/]);
 
 # Cadastro (exclusão)
-__PACKAGE__->allow_access_if("/cadastro/excluir",			[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/excluir");
-
-__PACKAGE__->allow_access_if("/cadastro/excluir_conta",		[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/excluir_conta");
-
-__PACKAGE__->allow_access_if("/cadastro/remake_users",		[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/remake_users");
+__PACKAGE__->allow_access_if("/cadastro/excluir",				[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/excluir_conta",			[qw/admin/]);
 
 # Cadastro (bloqueio)
-__PACKAGE__->allow_access_if("/cadastro/bloqueio_do", 		[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/bloqueio_do");
-__PACKAGE__->allow_access_if("/cadastro/bloqueio_undo", 	[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/bloqueio_undo");
-__PACKAGE__->allow_access_if("/cadastro/remake_users",		[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/remake_users");
+__PACKAGE__->allow_access_if("/cadastro/bloqueio_do", 			[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/bloqueio_undo", 		[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/bloqueio_automatico",	[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/remake_users",			[qw/admin/]);
 
 # Cadastro (estatísticas)
-__PACKAGE__->allow_access_if("/cadastro/stats",			[qw/admin/]);
-__PACKAGE__->deny_access("/cadastro/stats");
+__PACKAGE__->allow_access_if("/cadastro/stats",					[qw/admin/]);
 
-# Rádios (geral)
-__PACKAGE__->allow_access_if("/radios",						[qw/admin/]);
-__PACKAGE__->allow_access_if("/radios",						[qw/operador/]);
-__PACKAGE__->deny_access("/radios");
+# Cadastro (faturas)
+__PACKAGE__->allow_access_if("/cadastro/gerar_faturas",			[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/gerar_faturas_do",		[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/nova_fatura",			[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/editar_fatura",			[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/nova_fatura_do",		[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/liquidar_fatura",		[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/liquidar_fatura_do",	[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/excluir_fatura",		[qw/admin/]);
+__PACKAGE__->allow_access_if("/cadastro/editar_fatura",			[qw/admin/]);
+
+# Cadastro (fim)
+__PACKAGE__->deny_access("/cadastro");
+
+
+
+# Rádios (início)
+__PACKAGE__->allow_access_if("/radios",							[qw/admin/]);
+__PACKAGE__->allow_access_if("/radios",							[qw/operador/]);
 
 # Rádios (exclusão)
-__PACKAGE__->allow_access_if("/radios/excluir_fab",			[qw/admin/]);
-__PACKAGE__->deny_access("/radios/excluir_fab");
-__PACKAGE__->allow_access_if("/radios/excluir_mod",			[qw/admin/]);
-__PACKAGE__->deny_access("/radios/excluir_mod");
-__PACKAGE__->allow_access_if("/radios/excluir_rad",			[qw/admin/]);
-__PACKAGE__->deny_access("/radios/excluir_rad");
+__PACKAGE__->allow_access_if("/radios/excluir_fab",				[qw/admin/]);
+__PACKAGE__->allow_access_if("/radios/excluir_mod",				[qw/admin/]);
+__PACKAGE__->allow_access_if("/radios/excluir_rad",				[qw/admin/]);
 
-# Chamados (geral)
-__PACKAGE__->allow_access_if("/chamados",					[qw/admin/]);
-__PACKAGE__->allow_access_if("/chamados",					[qw/operador/]);
-__PACKAGE__->deny_access("/chamados");
+# Rádios (fim)
+__PACKAGE__->deny_access("/radios");
+
+
+
+# Chamados (início)
+__PACKAGE__->allow_access_if("/chamados",						[qw/admin/]);
+__PACKAGE__->allow_access_if("/chamados",						[qw/operador/]);
 
 # Chamados (exclusão)
-__PACKAGE__->allow_access_if("/chamados/excluir",			[qw/admin/]);
-__PACKAGE__->deny_access("/chamados/excluir");
+__PACKAGE__->allow_access_if("/chamados/excluir",				[qw/admin/]);
+
+# Chamados (fim)
+__PACKAGE__->deny_access("/chamados");
 
 
 =head1 NAME
