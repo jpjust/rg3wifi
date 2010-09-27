@@ -29,7 +29,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 
 # Configure the application. 
 #
@@ -60,35 +60,25 @@ __PACKAGE__->deny_access("/caixa");
 
 
 
-# Cadastro (início)
+# Cadastro (admin)
 __PACKAGE__->allow_access_if("/cadastro",						[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro",						[qw/operador/]);
 
-# Cadastro (exclusão)
-__PACKAGE__->allow_access_if("/cadastro/excluir",				[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/excluir_conta",			[qw/admin/]);
+# Cadastro (operador)
+__PACKAGE__->allow_access_if("/cadastro/abrir_chamado",			[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/busca",					[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/cadastro_conta_do",		[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/cadastro_do",			[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/editar",				[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/editar_conta",			[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/filtro",				[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/imprimir",				[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/index",					[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/lista",					[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/lista_p",				[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/nova_conta",			[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/novo",					[qw/operador/]);
 
-# Cadastro (bloqueio)
-__PACKAGE__->allow_access_if("/cadastro/bloqueio_do", 			[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/bloqueio_undo", 		[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/bloqueio_automatico",	[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/remake_users",			[qw/admin/]);
-
-# Cadastro (estatísticas)
-__PACKAGE__->allow_access_if("/cadastro/stats",					[qw/admin/]);
-
-# Cadastro (faturas)
-__PACKAGE__->allow_access_if("/cadastro/gerar_faturas",			[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/gerar_faturas_do",		[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/nova_fatura",			[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/editar_fatura",			[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/nova_fatura_do",		[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/liquidar_fatura",		[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/liquidar_fatura_do",	[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/excluir_fatura",		[qw/admin/]);
-__PACKAGE__->allow_access_if("/cadastro/editar_fatura",			[qw/admin/]);
-
-# Cadastro (fim)
+# Cadastro (outros)
 __PACKAGE__->deny_access("/cadastro");
 
 

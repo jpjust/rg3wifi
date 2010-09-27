@@ -10,5 +10,8 @@
   em cada conexão. Além disso, guardar na auditoria
   a data que a velocidade foi alterada.
 
+- Fazer uma tabela para liquidação em massa.
+- Consertar as ACLs.
+
 Mais urgentes:
 - Fazer o sistema exportar os boletos pro OBBPlus.

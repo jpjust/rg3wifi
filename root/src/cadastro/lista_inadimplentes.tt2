@@ -1,0 +1,28 @@
+[% PROCESS site/macros %]
+
+<h2>Clientes inadimplentes</h2>
+
+<p><a href="[% Catalyst.uri_for('lista/') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Clientes listados: [% inadimplentes.size %]</p>
+
+<table width="100%">
+	<tr>
+		<th>Nome</th>
+		<th>Faturas em aberto</th>
+		<th>Valor total</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH inadimplente IN inadimplentes %]
+	<tr class="lista">
+		<td>[% inadimplente.nome %]</td>
+		<td>[% inadimplente.total %]</td>
+		<td>[% moeda(inadimplente.valor) %]</td>
+		<td nowrap>
+			<a href="[% Catalyst.uri_for('editar/') _ inadimplente.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+		</td>
+	</tr>
+	[% END %]
+	
+</table>

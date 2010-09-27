@@ -1,0 +1,9 @@
+[% PROCESS site/macros %]
+
+<h2>Relatório de bloqueio automático</h2>
+
+<p><a href="[% Catalyst.uri_for('lista/') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p><strong>[% total %] clientes foram bloqueados por falta de pagamento:</strong></p>
+
+<p>[% clientes_bloqueados %]</p>

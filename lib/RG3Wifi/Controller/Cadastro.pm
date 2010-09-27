@@ -46,6 +46,44 @@ sub access_denied : Private {
 	$c->forward('RG3Wifi::Controller::Acesso', 'inicio');
 }
 
+=head2 verifica_inadimplencia
+
+Verifica se um cliente está inadimplente.
+
+=cut
+
+sub verifica_inadimplencia : Private {
+	my ($c, $cliente) = @_;
+	
+	# Os usuários com mais de 15 dias de atraso são inadimplentes
+	my $segundos = 15 * 24 * 60 * 60;
+	my (@data_limite) = localtime(time - $segundos);
+	my $datasql = &EasyCat::data2sql($data_limite[3] . '/' . abs($data_limite[4] + 1) . '/' . $data_limite[5]);
+	
+	# Retorna a lista de faturas em aberto
+	return $c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, data_vencimento => {'<', $datasql}});
+}
+
+=head2 atualiza_inadimplencia
+
+Verifica se um cliente está inadimplente e atualiza seu estado.
+
+=cut
+
+sub atualiza_inadimplencia : Private {
+	my ($c, $id_cliente) = @_;
+	
+	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $id_cliente})->first;
+	
+	if ($cliente) {
+		if (&verifica_inadimplencia($c, $cliente)->count > 0) {
+			$cliente->update({inadimplente => 1});
+		} else {
+			$cliente->update({inadimplente => 0});
+		}
+	}
+}
+
 =head2 radius_user_update
 
 Atualiza cliente PPPoE no RADIUS (adiciona ou remove de acordo com situação e outros estados).
@@ -584,28 +622,27 @@ Faz o bloqueio automático dos clientes inadimplentes.
 sub bloqueio_automatico : Local {
 	my ($self, $c) = @_;
 	
-	# Os usuários com mais de 15 dias de atraso devem ser bloqueados
-	my $segundos = 15 * 24 * 60 * 60;
-	my (@data_limite) = localtime(time - $segundos);
-	my $datasql = &EasyCat::data2sql($data_limite[3] . '/' . abs($data_limite[4] + 1) . '/' . $data_limite[5]);
 	my $i = 0;
+	my $clientes_bloqueados;
 	
 	# Fiscaliza cada cliente
 	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
 		# Procura se há faturas em aberto
-		if ($c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, id_situacao => 1, data_vencimento => {'<', $datasql}})->count > 0) {
+		if (&verifica_inadimplencia($c, $cliente)->count > 0) {
 			# Bloqueia o cliente, a não ser que esteja marcado para não bloquear
-			if (!$cliente->nao_bloqueia) {
-				$cliente->update({bloqueado => 1});
+			if (!$cliente->nao_bloqueia && !$cliente->bloqueado) {
+				$cliente->update({bloqueado => 1, inadimplente => 1});
 				&radius_user_update($c, $cliente);
 				$i++;
+				$clientes_bloqueados .= $cliente->nome . '<br>';
 			}
 		}
 	}
 	
 	# Exibe a lista de clientes bloqueados
-	$c->stash->{status_msg} = "$i clientes foram bloqueados por falta de pagamento.";
-	$c->forward('lista');
+	$c->stash->{total} = $i;
+	$c->stash->{clientes_bloqueados} = $clientes_bloqueados;
+	$c->stash->{template} = 'cadastro/relatorio_bloqueio.tt2';
 }
 
 =head2 exportar
@@ -1092,6 +1129,9 @@ sub nova_fatura_do : Local {
 		$c->stash->{template} = 'erro.tt2';
 		return;
 	}
+	
+	# Após excluir a fatura, verifica se ainda existem faturas em aberto
+	&atualiza_inadimplencia($c, $p->{id_cliente});
 
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Fatura criada com sucesso.';
@@ -1161,6 +1201,9 @@ sub liquidar_fatura_do : Local {
 		$c->stash->{template} = 'erro.tt2';
 		return;
 	}
+	
+	# Após alterar a liquidação, verifica se ainda existem faturas em aberto
+	&atualiza_inadimplencia($c, $p->{id_cliente});
 
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Fatura liquidada com sucesso.';
@@ -1178,10 +1221,46 @@ sub excluir_fatura : Local {
 	my $fatura = $c->model('RG3WifiDB::Faturas')->search({id => $id})->first;
 	$fatura->delete();
 	$c->stash->{status_msg} = 'Fatura excluída com sucesso.';
+
+	# Após excluir a fatura, verifica se ainda existem faturas em aberto
+	&atualiza_inadimplencia($c, $fatura->id_cliente);
 	
 	# Altera o parametro
 	$_[2] = $fatura->id_cliente;
 	$c->forward('editar', $_[2]);
+}
+
+=head2 lista_inadimplentes
+
+Exibe uma lista com os dados dos inadimplentes.
+
+=cut
+
+sub lista_inadimplentes : Local {
+	my ($self, $c) = @_;
+	
+	my @inadimplentes;
+	
+	foreach my $inadimplente ($c->model('RG3WifiDB::Usuarios')->search({inadimplente => 1})) {
+		my @faturas = &verifica_inadimplencia($c, $inadimplente);
+		my $valor_total = 0;
+		
+		foreach my $fatura (@faturas) {
+			$valor_total += $fatura->valor;
+		}
+		
+		my $dados = {
+			nome	=> $inadimplente->nome,
+			total	=> scalar(@faturas),
+			valor	=> $valor_total,
+			id		=> $inadimplente->uid,
+		};
+
+		push(@inadimplentes, $dados);
+	}
+	
+	$c->stash->{inadimplentes} = [@inadimplentes];
+	$c->stash->{template} = 'cadastro/lista_inadimplentes.tt2';
 }
 
 =head1 AUTHOR
