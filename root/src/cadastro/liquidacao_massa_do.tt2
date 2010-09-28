@@ -1,0 +1,52 @@
+[% PROCESS site/macros %]
+
+<h2>Liquidação de faturas</h2>
+
+<p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Selecione as faturas que deseja liquidar. Os campos de data de pagamento já estão preenchidos com a data de ontem.</p>
+
+<form action="[% Catalyst.uri_for('liquidacao_massa_do') %]" method="POST">
+<input type="hidden" name="total" value="[% faturas.size %]">
+
+[% i = 1 %]
+
+<table width="100%">
+	<tr>
+		<th>&nbsp;</th>
+		<th>Cliente</th>
+		<th>Vencimento</th>
+		<th>Valor</th>
+		<th>Data de pagamento</th>
+		<th>Valor pago</th>
+	</tr>
+	
+	[% FOREACH fatura IN faturas %]
+	<tr class="lista">
+		<td><input type="checkbox" name="fatura_[% i %]" value="[% fatura.id %]"></td>
+		<td>[% fatura.cliente.nome %]</td>
+		<td>[% data2normal(fatura.data_vencimento) %]</td>
+		<td>[% moeda(fatura.valor) %]</td>
+		<td>
+			<input type="text" name="data_pagamento_[% i %]" id="data_pagamento_[% i %]" size="10" value="[% ontem %]">
+			<img src="/static/images/calendar.png" id="t_data_pagamento_[% i %]" style="cursor: pointer;" alt="Calendário">
+			<script type="text/javascript">
+				Calendar.setup(
+					{
+						inputField  : "data_pagamento_[% i %]",	// ID of the input field
+						ifFormat    : "%d/%m/%Y",				// the date format
+						button      : "t_data_pagamento_[% i %]"	// ID of the button
+					}
+				);
+			</script>
+		</td>
+		<td><input type="text" name="valor_pago_[% i %]" value="[% fatura.valor %]" size="10"></td>
+	</tr>
+	[% i = i + 1 %]
+	[% END %]
+	
+</table>
+
+<p><input type="submit" value="Salvar alterações"></p>
+
+</form>

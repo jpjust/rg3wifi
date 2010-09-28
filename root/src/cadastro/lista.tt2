@@ -58,8 +58,9 @@
 	:: <a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir cadastros</a>
 	[% IF Catalyst.check_any_user_role('admin') %]
 	:: <a href="[% Catalyst.uri_for('stats') %]"><img src="/static/images/report.png" align="top">Exibir estatísticas</a>
+	:: <a href="[% Catalyst.uri_for('liquidacao_massa') %]"><img src="/static/images/money.png" align="top">Liquidar faturas</a>
 	:: <a href="[% Catalyst.uri_for('bloqueio_automatico') %]"><img src="/static/images/disconnect.png" align="top">Bloquear inadimplentes</a>
-	:: <a href="[% Catalyst.uri_for('lista_inadimplentes') %]"><img src="/static/images/money.png" align="top">Listar inadimplentes</a>
+	:: <a href="[% Catalyst.uri_for('lista_inadimplentes') %]"><img src="/static/images/table_edit.png" align="top">Listar inadimplentes</a>
 	[% END %]
 </p>
 

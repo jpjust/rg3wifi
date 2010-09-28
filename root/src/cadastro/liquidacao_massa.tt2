@@ -1,0 +1,43 @@
+[% PROCESS site/macros %]
+
+<h2>Liquidação de faturas</h2>
+
+<p><a href="javascript:document.history(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Informa as datas de início e fim para listar apenas as faturas que vencem nesse período.</p>
+
+<form action="[% Catalyst.uri_for('liquidacao_massa_lista') %]" method="POST">
+
+<p>
+	Data de início:
+	<input type="text" name="inicio" id="inicio" size="8" value="[% datahoje %]">
+	<img src="/static/images/calendar.png" id="t_inicio" style="cursor: pointer;" alt="Calendário">
+	<script type="text/javascript">
+		Calendar.setup(
+			{
+				inputField  : "inicio",		// ID of the input field
+				ifFormat    : "%d/%m/%Y",	// the date format
+				button      : "t_inicio"	// ID of the button
+			}
+		);
+	</script>
+</p>
+
+<p>
+	Data fim:
+	<input type="text" name="fim" id="fim" size="8" value="[% datahoje %]">
+	<img src="/static/images/calendar.png" id="t_fim" style="cursor: pointer;" alt="Calendário">
+	<script type="text/javascript">
+		Calendar.setup(
+			{
+				inputField  : "fim",		// ID of the input field
+				ifFormat    : "%d/%m/%Y",	// the date format
+				button      : "t_fim"		// ID of the button
+			}
+		);
+	</script>
+</p>
+
+<p><input type="submit" value="Gerar lista"></p>
+
+</form>

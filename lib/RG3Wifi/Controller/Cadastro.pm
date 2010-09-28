@@ -61,7 +61,7 @@ sub verifica_inadimplencia : Private {
 	my $datasql = &EasyCat::data2sql($data_limite[3] . '/' . abs($data_limite[4] + 1) . '/' . $data_limite[5]);
 	
 	# Retorna a lista de faturas em aberto
-	return $c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, data_vencimento => {'<', $datasql}});
+	return $c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, data_vencimento => {'<', $datasql}, id_situacao => 1});
 }
 
 =head2 atualiza_inadimplencia
@@ -1117,11 +1117,12 @@ sub nova_fatura_do : Local {
 		$c->forward('nova_fatura');
 		return;
 	}
-
+	
 	# Faz as devidas inserções no banco de dados
 	eval {
-		# Gera fatura
+		# Gera fatura e atualiza a inadimplencia
 		$c->model('RG3WifiDB::Faturas')->update_or_create($fatura);
+		&atualiza_inadimplencia($c, $p->{id_cliente});
 	};
 	
 	if ($@) {
@@ -1228,6 +1229,81 @@ sub excluir_fatura : Local {
 	# Altera o parametro
 	$_[2] = $fatura->id_cliente;
 	$c->forward('editar', $_[2]);
+}
+
+=head2 liquidacao_massa
+
+Exibe uma lista com as faturas em aberto para liquidação em massa.
+
+=cut
+
+=head2 gerar_faturas
+
+Exibe a tela para geração de faturas.
+
+=cut
+
+sub liquidacao_massa : Local {
+	my ($self, $c) = @_;
+	$c->stash->{template} = 'cadastro/liquidacao_massa.tt2';
+}
+
+=head2 liquidacao_massa_lista
+
+Exibe a lista para liquidação em massa.
+
+=cut
+
+sub liquidacao_massa_lista : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Filtro por data de vencimento
+	$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({data_vencimento => {
+		-between => [&EasyCat::data2sql($p->{inicio}), &EasyCat::data2sql($p->{fim})]
+	}, id_situacao => 1})];
+
+	# Pra facilitar, a data de pagamento já será preenchida com a data de ontem
+	my $ontem = DateTime->now()->subtract(days => 1)->dmy('/');
+	$c->stash->{ontem} = $ontem;
+	$c->stash->{template} = 'cadastro/liquidacao_massa_do.tt2';
+}
+
+=head2 liquidacao_massa_do
+
+Efetua a liquidação em massa.
+
+=cut
+
+sub liquidacao_massa_do : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+
+	# Verifica quais as faturas foram marcadas
+	for (my $i = 1; $i <= $p->{total}; $i++) {
+		if ($p->{"fatura_$i"}) {
+			# Liquida a fatura
+			my $fatura = $c->model('RG3WifiDB::Faturas')->search({id => $p->{"fatura_$i"}})->first;
+			if ($fatura && $p->{"data_pagamento_$i"} && $p->{"valor_pago_$i"}) {
+				$fatura->update({
+					id_situacao => 2,
+					data_liquidacao => &EasyCat::data2sql($p->{"data_pagamento_$i"}),
+					valor_pago => $p->{"valor_pago_$i"},
+				});
+				
+				# Atualiza o cliente
+				&atualiza_inadimplencia($c, $fatura->id_cliente);
+			}
+		}
+	}
+	
+	# Pronto!
+	$c->stash->{status_msg} = 'As faturas selecionadas foram liquidadas!';
+	$c->forward('lista/');
 }
 
 =head2 lista_inadimplentes
