@@ -207,6 +207,19 @@ sub remake_users : Local {
 	$c->forward('lista');
 }
 
+=head2 limpa_pppoe
+
+Limpa as conexões travadas do PPPoE.
+
+=cut
+
+sub limpa_pppoe : Local {
+	my ($self, $c) = @_;
+	$c->model('RG3WifiDB::radacct')->search({acctstoptime => undef})->delete_all();
+	$c->stash->{status_msg} = 'As conexões travadas foram removidas.';
+	$c->forward('lista/');
+}
+
 =head2 lista
 
 Lista os clientes cadastrados.
@@ -214,9 +227,15 @@ Lista os clientes cadastrados.
 =cut
 
 sub lista : Local {
-	my ($self, $c, $situacao) = @_;
+	my ($self, $c, $situacao, $pagina) = @_;
 	$situacao = 1 unless $situacao;
-	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({id_situacao => $situacao})];
+	$pagina = 1 unless($pagina);
+	my $clientes = $c->model('RG3WifiDB::Usuarios')->search({id_situacao => $situacao})->page($pagina);
+	$c->stash->{clientes} = [$clientes->all];
+	$c->stash->{paginas} = $clientes->pager->last_page;
+	$c->stash->{total} = $clientes->pager->total_entries;
+	$c->stash->{pagina} = $pagina;
+	$c->stash->{situacao} = $situacao;
 	$c->stash->{template} = 'cadastro/lista.tt2';
 }
 
@@ -983,15 +1002,16 @@ sub busca : Local {
 	# Parâmetros
 	my $p = $c->request->params;
 	my $termo = $p->{termo};
+	my $termo_ua = unac_string('utf-8', $termo);
 	
 	# Efetua a busca
 	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({
 		-or => [
-			nome => {'like', "%$termo%"},
-			endereco => {'like', "%$termo%"},
-			bairro => {'like', "%$termo%"},
+			nome => {'like', "%$termo%"},		nome => {'like', "%$termo_ua%"},
+			endereco => {'like', "%$termo%"},	endereco => {'like', "%$termo_ua%"},
+			bairro => {'like', "%$termo%"},		bairro => {'like', "%$termo_ua%"},
 		],
-	})];
+	}, {rows => undef})];
 	
 	$c->stash->{termo} = $termo;
 	$c->stash->{template} = 'cadastro/lista.tt2';
@@ -1026,6 +1046,7 @@ sub gerar_faturas_do : Local {
 		# Alguns valores
 		my $vencimento = &EasyCat::data2sql($cliente->vencimento . '/' . $p->{mes} . '/' . $p->{ano});
 		my (@data_atual) = localtime();
+		my $descricao = 'Referente ao uso no mês ' . abs($p->{mes} - 1) . "/$p->{ano}";
 		
 		# Primeiro verifica se já existe uma fatura para este cliente neste mês
 		my $busca = $c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, data_vencimento => $vencimento})->first;
@@ -1035,7 +1056,7 @@ sub gerar_faturas_do : Local {
 				id_cliente		=> $cliente->uid,
 				data_lancamento	=> &EasyCat::data2sql($data_atual[3] . '/' . abs($data_atual[4] + 1) . '/' . $data_atual[5]),
 				data_vencimento	=> $vencimento,
-				descricao		=> "Referente ao uso no mês $p->{mes}/$p->{ano}",
+				descricao		=> $descricao,
 				valor			=> $cliente->valor_mensalidade,
 				id_situacao		=> 1,
 			};
@@ -1263,7 +1284,7 @@ sub liquidacao_massa_lista : Local {
 	# Filtro por data de vencimento
 	$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({data_vencimento => {
 		-between => [&EasyCat::data2sql($p->{inicio}), &EasyCat::data2sql($p->{fim})]
-	}, id_situacao => 1})];
+	}, 'me.id_situacao' => 1}, {join => 'cliente', order_by => 'cliente.nome ASC' })];
 
 	# Pra facilitar, a data de pagamento já será preenchida com a data de ontem
 	my $ontem = DateTime->now()->subtract(days => 1)->dmy('/');

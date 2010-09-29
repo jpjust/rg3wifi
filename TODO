@@ -9,8 +9,9 @@
 - Mostrar no relatório de uso a velocidade que foi usada
   em cada conexão. Além disso, guardar na auditoria
   a data que a velocidade foi alterada.
-- Paginar lista de clientes.
-- Fazer a opção para limpar conexões PPPoE.
+- Fazer paginação usando dropdown.
+- Ver a viabilidade de paginar os resultados da busca.
+- Busca na lista de rádios.
 
 - Consertar as ACLs.
 

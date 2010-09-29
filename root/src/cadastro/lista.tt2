@@ -58,6 +58,7 @@
 	:: <a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir cadastros</a>
 	[% IF Catalyst.check_any_user_role('admin') %]
 	:: <a href="[% Catalyst.uri_for('stats') %]"><img src="/static/images/report.png" align="top">Exibir estatísticas</a>
+	:: <a href="[% Catalyst.uri_for('limpa_pppoe') %]"><img src="/static/images/server_connect.png" align="top">Limpar conexões PPPoE</a>
 	:: <a href="[% Catalyst.uri_for('liquidacao_massa') %]"><img src="/static/images/money.png" align="top">Liquidar faturas</a>
 	:: <a href="[% Catalyst.uri_for('bloqueio_automatico') %]"><img src="/static/images/disconnect.png" align="top">Bloquear inadimplentes</a>
 	:: <a href="[% Catalyst.uri_for('lista_inadimplentes') %]"><img src="/static/images/table_edit.png" align="top">Listar inadimplentes</a>
@@ -65,6 +66,20 @@
 </p>
 
 <p>Clientes listados: [% clientes.size %]</p>
+[% IF pagina %]
+	<p>Total de clientes: [% total %]</p>
+	
+	<p>Exibindo a página <strong>[% pagina %]</strong>.</p>
+	
+	<p>Escolher página:
+	[% i = 1 %]
+	[% WHILE i <= paginas %]
+		<a href="[% Catalyst.uri_for('/cadastro/lista/') _ situacao _ '/' _ i %]">[% i %]</a>
+		[% i = i + 1 %]
+		[% IF i <= paginas %]-[% END %]
+	[% END %]
+	</p>
+[% END %]
 
 <table width="100%">
 	<tr>
