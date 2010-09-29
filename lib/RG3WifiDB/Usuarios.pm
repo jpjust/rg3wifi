@@ -12,7 +12,7 @@ __PACKAGE__->add_columns(qw/uid id_grupo id_situacao data_adesao bloqueado nao_b
 __PACKAGE__->set_primary_key(qw/uid/);
 
 # Add some attributes
-__PACKAGE__->resultset_attributes({order_by => 'nome', rows => 20});
+__PACKAGE__->resultset_attributes({order_by => 'nome', rows => 10});
 
 #
 # Set relationships:

@@ -68,6 +68,25 @@
 	[% valor FILTER format('%.2f') FILTER replace('\.', ',') %] [% medidas.$i %]
 [% END %]
 
+[% # Comandos de paginação %]
+[% MACRO paginacao(url_inicio, pagina_atual, url_fim, total_de_paginas, id_paginador) BLOCK %]
+	[% IF pagina_atual > 1 %]
+		<a href="[% url_inicio _ (pagina - 1) _ url_fim %]"><img src="/static/images/arrow_left.png" align="top">Anterior</a> ::
+	[% END %]
+	
+	Página <select name="pagina_select" onChange="document.location.href='[% url_inicio %]' + this.value + '[% url_fim %]';">
+		[% i = 1 %]
+		[% WHILE i <= paginas %]
+			<option value="[% i %]" [% IF i == pagina %]selected[% END %]>[% i %]</option>
+			[% i = i + 1 %]
+		[% END %]
+	</select>
+	
+	[% IF pagina < paginas %]
+		:: <a href="[% url_inicio _ (pagina + 1) _ url_fim %]">Próxima<img src="/static/images/arrow_right.png" align="top"></a>
+	[% END %]
+[% END %]
+
 [% ### JavaScripts %]
 <script type="text/javascript">
 // Caixa de diálogo de confirmação

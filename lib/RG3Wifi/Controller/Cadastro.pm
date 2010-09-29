@@ -872,7 +872,7 @@ sub stats : Local {
 	my ($self, $c) = @_;
 	
 	# Lista de clientes ativos
-	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})];
+	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1}, {rows => undef})];
 	
 	# Tempo de conexao
 	#$c->stash->{top10_tempo} = [$c->model('RG3WifiDB::radacct')->search(undef, {order_by => 'AcctSessionTime DESC', rows => 10})];
@@ -906,7 +906,7 @@ sub chart_mensalidade : Local {
 	foreach my $grupo (@grupos) {
 		$v1 = $v2 | 0;
 		$v2 = $grupo;
-		my $total = $c->model('RG3WifiDB::Usuarios')->count({id_situacao => 1, valor_mensalidade => {-between => [$v1 + 1, $v2]}});
+		my $total = $c->model('RG3WifiDB::Usuarios')->count({id_situacao => 1, valor_mensalidade => {-between => [$v1 + 1, $v2]}}, {rows => undef});
 		push(@legendas, "Ate R\$ $v2:");
 		push(@valores, $total);
 	}
@@ -973,7 +973,7 @@ sub chart_instalacoes : Local {
 		my $ano = ($mes_atual - $i) >= 0 ? $ano_atual : $ano_atual - 1;
 		my $data1 = $ano . '-' . abs($mes + 1) . '-01';
 		my $data2 = $ano . '-' . abs($mes + 1) . '-31';
-		my $total = $c->model('RG3WifiDB::Usuarios')->count({id_situacao => 1, data_adesao => {-between => [$data1, $data2]}});
+		my $total = $c->model('RG3WifiDB::Usuarios')->count({id_situacao => 1, data_adesao => {-between => [$data1, $data2]}}, {rows => undef});
 		push(@grupos, "$meses[$mes]/$ano");
 		push(@valores, $total);
 	}
@@ -1002,7 +1002,8 @@ sub busca : Local {
 	# Parâmetros
 	my $p = $c->request->params;
 	my $termo = $p->{termo};
-	my $termo_ua = unac_string('utf-8', $termo);
+	#my $termo_ua = unac_string('utf-8', $termo);
+	my $termo_ua = $termo;
 	
 	# Efetua a busca
 	$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({

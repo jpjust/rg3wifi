@@ -5,15 +5,8 @@
 <p>Login: <strong>[% login %]</strong><br>
 Cliente: <strong>[% cliente %]</strong></p>
 
-<p>Exibindo a página <strong>[% pagina %]</strong>.</p>
-
-<p>Escolher página:
-[% i = 1 %]
-[% WHILE i <= paginas %]
-	<a href="[% Catalyst.uri_for('/acesso/logs/') _ conta _ '/' _ i %]">[% i %]</a>
-	[% i = i + 1 %]
-	[% IF i <= paginas %]-[% END %]
-[% END %]
+<p align="center">
+	[% paginacao(Catalyst.uri_for('/acesso/logs/') _ conta _ '/', pagina, '', paginas) %]
 </p>
 
 <table width="100%">
@@ -43,3 +36,7 @@ Cliente: <strong>[% cliente %]</strong></p>
 	[% END %]
 	
 </table>
+
+<p align="center">
+	[% paginacao(Catalyst.uri_for('/acesso/logs/') _ conta _ '/', pagina, '', paginas) %]
+</p>
