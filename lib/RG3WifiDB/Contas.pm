@@ -7,7 +7,7 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
 __PACKAGE__->table('rg3_contas');
 # Set columns in table
-__PACKAGE__->add_columns(qw/uid id_cliente id_grupo id_plano login senha ip/);
+__PACKAGE__->add_columns(qw/uid id_cliente id_grupo id_plano bloqueado login senha ip/);
 # Set the primary key for the table
 __PACKAGE__->set_primary_key(qw/uid/);
 

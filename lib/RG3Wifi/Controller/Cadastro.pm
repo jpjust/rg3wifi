@@ -96,7 +96,11 @@ sub radius_user_update : Private {
 	# Se estiver ativo e desbloqueado, adiciona
 	if (($cliente->id_situacao == 1 || $cliente->id_situacao == 4) && ($cliente->bloqueado == 0)) {
 		foreach my $conta ($cliente->contas) {
-			&user_add($c, $conta->uid);
+			if ($conta->bloqueado == 0) {
+				&user_add($c, $conta->uid);
+			} else {
+				&user_del($c, $conta->uid);
+			}
 		}
 	# Caso contrário, remove
 	} else {
@@ -248,7 +252,7 @@ Lista os clientes com documentos inválidos.
 sub lista_doc : Local {
 	my ($self, $c) = @_;
 	
-	my @clientes = undef;
+	my @clientes;
 	
 	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->all) {
 		next if (test_id('cpf', $cliente->doc) || test_id('cnpj', $cliente->doc));
@@ -630,6 +634,36 @@ sub bloqueio_undo : Local {
 	&radius_user_update($c, $cliente);
 	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio.';
 	$c->forward('lista', ['1']);
+}
+
+=head2 bloqueio_pppoe_do
+
+Coloca uma conta PPPoE na lista de bloqueio.
+
+=cut
+
+sub bloqueio_pppoe_do : Local {
+	my ($self, $c, $uid) = @_;
+	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
+	$conta->update({bloqueado => 1});
+	&radius_user_update($c, $conta->cliente);
+	$c->stash->{status_msg} = 'A conta foi bloqueada.';
+	$c->forward('editar', [$conta->id_cliente]);
+}
+
+=head2 bloqueio_pppoe_undo
+
+Retira uma conta PPPoE da lista de bloqueio.
+
+=cut
+
+sub bloqueio_pppoe_undo : Local {
+	my ($self, $c, $uid) = @_;
+	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
+	$conta->update({bloqueado => 0});
+	&radius_user_update($c, $conta->cliente);
+	$c->stash->{status_msg} = 'A conta foi desbloqueada.';
+	$c->forward('editar', [$conta->id_cliente]);
 }
 
 =head2 bloqueio_automatico

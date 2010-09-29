@@ -138,17 +138,36 @@
 		<th>Login</th>
 		<th>Plano</th>
 		<th>IP</th>
-		<th>Ações</th>
+		<th colspan="2">Ações</th>
 	</tr>
 
 	[% FOREACH conta IN cliente.contas %]
-	<tr class="lista">
+	[% # Cores da lista, de acordo com o status %]
+	[% IF conta.bloqueado == 1 %]
+		[% bgcolor = '#ffaaaa' %]
+	[% ELSE %]
+		[% bgcolor = '#ffffff' %]
+	[% END %]
+	
+	<tr class="lista" bgcolor="[% bgcolor %]">
 		<td>[% conta.login %]</td>
 		<td>[% conta.plano.nome %]</td>
 		<td>[% conta.ip %]</td>
 		<td nowrap>
 			<a href="[% Catalyst.uri_for('editar_conta/') _ conta.uid %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
 			<br><a href="[% Catalyst.uri_for('/acesso/logs/') _ conta.uid %]"><img src="/static/images/report.png" align="top">Relatório</a>
+		</td>
+		<td nowrap>
+			[% IF conta.bloqueado == 0 %]
+				[% IF cliente.nao_bloqueia %]
+					<a href="javascript:void(0)" onClick="javascript:askuser('Este cliente está marcado para não bloquear. Tem certeza que deseja bloqueá-lo?', '[% Catalyst.uri_for('bloqueio_pppoe_do/') _ conta.id %]');"><img src="/static/images/disconnect.png" align="top">Bloquear</a>
+				[% ELSE %]
+					<a href="[% Catalyst.uri_for('bloqueio_pppoe_do/') _ conta.id %]"><img src="/static/images/disconnect.png" align="top">Bloquear</a>
+				[% END %]
+			[% ELSE %]
+				<a href="[% Catalyst.uri_for('bloqueio_pppoe_undo/') _ conta.id %]"><img src="/static/images/connect.png" align="top">Desbloquear</a>
+			[% END %]
+			
 			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir a conta do usuário?', '[% Catalyst.uri_for('excluir_conta/') _ conta.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
 		</td>
 	</tr>
