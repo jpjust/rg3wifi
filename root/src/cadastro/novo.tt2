@@ -135,10 +135,10 @@
 
 <table width="100%">
 	<tr>
-		<th>Login</th>
-		<th>Plano</th>
-		<th>IP</th>
-		<th colspan="2">Ações</th>
+		<th width="25%">Login</th>
+		<th width="25%">Plano</th>
+		<th width="25%">IP</th>
+		<th width="25%" colspan="2">Ações</th>
 	</tr>
 
 	[% FOREACH conta IN cliente.contas %]
