@@ -73,6 +73,7 @@ sub logs : Local {
 	$c->stash->{conta} = $conta;
 	$c->stash->{login} = $pppoe->login;
 	$c->stash->{cliente} = $pppoe->cliente->nome;
+	$c->stash->{pppoe} = $pppoe;
 	$c->stash->{template} = 'acesso/logs.tt2';
 }
 

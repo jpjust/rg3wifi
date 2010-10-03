@@ -291,7 +291,7 @@ sub filtro : Local {
 	if ($p->{tipo} eq '0') {
 		$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({data_adesao => {
 			-between => [&EasyCat::data2sql($p->{data_inst1}), &EasyCat::data2sql($p->{data_inst2})]
-		}})];
+		}}, {rows => undef})];
 	}
 	
 	$c->stash->{template} = 'cadastro/lista.tt2';
@@ -603,7 +603,7 @@ sub excluir_conta : Local {
 	
 	# Altera o parametro
 	$_[2] = $conta->id_cliente;
-	$c->forward('lista', $_[2]);
+	$c->forward('editar', $_[2]);
 }
 
 =head2 bloqueio_do

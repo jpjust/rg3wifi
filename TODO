@@ -10,8 +10,6 @@
   em cada conexão. Além disso, guardar na auditoria
   a data que a velocidade foi alterada.
 - Busca na lista de rádios.
-- No relatório de acessos, colocar um link para voltar
-  ao cadastro do usuário.
 
 - Consertar as ACLs.
 

@@ -2,6 +2,8 @@
 
 <h2>Relatório de acesso</h2>
 
+<p><a href="[% Catalyst.uri_for('/cadastro/editar/') _ pppoe.id_cliente %]"><img src="/static/images/arrow_left.png" align="top">Voltar ao cadastro</a></p>
+
 <p>Login: <strong>[% login %]</strong><br>
 Cliente: <strong>[% cliente %]</strong></p>
 
