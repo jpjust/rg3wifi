@@ -849,7 +849,7 @@ sub gerar_planilha_do : Local {
 	
 	# Gera a linha da planilha para cada cliente
 	my $i = 5;
-	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1}, {rows => undef})) {
 		# Formata mensalidade
 		my $mensalidade = $cliente->valor_mensalidade;
 		$mensalidade =~ s/\./,/g;
@@ -1077,7 +1077,7 @@ sub gerar_faturas_do : Local {
 	my $i = 0;
 	
 	# Cria uma fatura para cada cliente
-	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1}, {rows => undef})) {
 		# Alguns valores
 		my $vencimento = &EasyCat::data2sql($cliente->vencimento . '/' . $p->{mes} . '/' . $p->{ano});
 		my (@data_atual) = localtime();
