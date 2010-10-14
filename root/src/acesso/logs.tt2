@@ -2,7 +2,8 @@
 
 <h2>Relatório de acesso</h2>
 
-<p><a href="[% Catalyst.uri_for('/cadastro/editar/') _ pppoe.id_cliente %]"><img src="/static/images/arrow_left.png" align="top">Voltar ao cadastro</a></p>
+<p><a href="[% Catalyst.uri_for('/cadastro/editar/') _ pppoe.id_cliente %]"><img src="/static/images/arrow_left.png" align="top">Voltar ao cadastro</a>
+:: <a href="[% Catalyst.uri_for('/cadastro/limpa_pppoe1/') _ login _ '/' _ pppoe.uid %]"><img src="/static/images/server_connect.png" align="top">Limpar esta conexão</a></p>
 
 <p>Login: <strong>[% login %]</strong><br>
 Cliente: <strong>[% cliente %]</strong></p>

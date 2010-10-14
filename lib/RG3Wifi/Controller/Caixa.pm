@@ -229,7 +229,8 @@ sub chart_movimentacao : Local {
 	my $mes_atual = $hora[4];
 	my $ano_atual = $hora[5] + 1900;
 	my @meses = qw( Jan Fev Mar Abr Mai Jun Jul Ago Set Out Nov Dez );
-	for (my $i = 11; $i >= 0; $i--) {
+	
+	for (my $i = 12; $i > 0; $i--) {
 		my $mes = ($mes_atual - $i) % 12;
 		my $ano = ($mes_atual - $i) >= 0 ? $ano_atual : $ano_atual - 1;
 		my $data1 = $ano . '-' . abs($mes + 1) . '-01';

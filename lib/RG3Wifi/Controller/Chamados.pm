@@ -213,8 +213,8 @@ sub chart_suporte : Local {
 	for (my $i = 11; $i >= 0; $i--) {
 		my $mes = ($mes_atual - $i) % 12;
 		my $ano = ($mes_atual - $i) >= 0 ? $ano_atual : $ano_atual - 1;
-		my $data1 = $ano . '-' . abs($mes + 1) . '-01';
-		my $data2 = $ano . '-' . abs($mes + 1) . '-31';
+		my $data1 = $ano . '-' . abs($mes + 1) . '-01 00:00';
+		my $data2 = $ano . '-' . abs($mes + 1) . '-31 23:59';
 		my $total = $c->model('RG3WifiDB::Chamados')->count({id_tipo => 1, data_chamado => {-between => [$data1, $data2]}});
 		push(@grupos, "$meses[$mes]/$ano");
 		push(@valores, $total);

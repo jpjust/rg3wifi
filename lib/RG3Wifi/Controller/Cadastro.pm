@@ -224,6 +224,19 @@ sub limpa_pppoe : Local {
 	$c->forward('lista/');
 }
 
+=head2 limpa_pppoe1
+
+Limpa uma conexão específica.
+
+=cut
+
+sub limpa_pppoe1 : Local {
+	my ($self, $c, $username, $uid) = @_;
+	$c->model('RG3WifiDB::radacct')->search({username => $username, acctstoptime => undef})->delete_all();
+	$c->stash->{status_msg} = 'As conexões travadas foram removidas.';
+	$c->forward('/acesso/logs', [$uid]);
+}
+
 =head2 lista
 
 Lista os clientes cadastrados.
@@ -290,7 +303,7 @@ sub filtro : Local {
 	# Filtro por data de instalação
 	if ($p->{tipo} eq '0') {
 		$c->stash->{clientes} = [$c->model('RG3WifiDB::Usuarios')->search({data_adesao => {
-			-between => [&EasyCat::data2sql($p->{data_inst1}), &EasyCat::data2sql($p->{data_inst2})]
+			-between => [&EasyCat::data2sql($p->{data_inst1} . ' 00:00'), &EasyCat::data2sql($p->{data_inst2} . ' 23:59')]
 		}}, {rows => undef})];
 	}
 	
@@ -1005,8 +1018,8 @@ sub chart_instalacoes : Local {
 	for (my $i = 11; $i >= 0; $i--) {
 		my $mes = ($mes_atual - $i) % 12;
 		my $ano = ($mes_atual - $i) >= 0 ? $ano_atual : $ano_atual - 1;
-		my $data1 = $ano . '-' . abs($mes + 1) . '-01';
-		my $data2 = $ano . '-' . abs($mes + 1) . '-31';
+		my $data1 = $ano . '-' . abs($mes + 1) . '-01 00:00';
+		my $data2 = $ano . '-' . abs($mes + 1) . '-31 23:59';
 		my $total = $c->model('RG3WifiDB::Usuarios')->count({id_situacao => 1, data_adesao => {-between => [$data1, $data2]}}, {rows => undef});
 		push(@grupos, "$meses[$mes]/$ano");
 		push(@valores, $total);
