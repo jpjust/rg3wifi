@@ -1108,6 +1108,9 @@ sub gerar_faturas_do : Local {
 				$c->stash->{template} = 'erro.tt2';
 				return;
 			}
+			
+			# Atualiza a situação deste cliente
+			&atualiza_inadimplencia($c, $cliente->uid);
 		}
 	}
 	
@@ -1178,7 +1181,6 @@ sub nova_fatura_do : Local {
 	eval {
 		# Gera fatura e atualiza a inadimplencia
 		$c->model('RG3WifiDB::Faturas')->update_or_create($fatura);
-		&atualiza_inadimplencia($c, $p->{id_cliente});
 	};
 	
 	if ($@) {
@@ -1187,7 +1189,7 @@ sub nova_fatura_do : Local {
 		return;
 	}
 	
-	# Após excluir a fatura, verifica se ainda existem faturas em aberto
+	# Após criar a fatura, verifica se ainda existem faturas em aberto
 	&atualiza_inadimplencia($c, $p->{id_cliente});
 
 	# Exibe mensagem de conclusão
@@ -1383,6 +1385,7 @@ sub lista_inadimplentes : Local {
 		
 		my $dados = {
 			nome	=> $inadimplente->nome,
+			telefone=> $inadimplente->telefone,
 			total	=> scalar(@faturas),
 			valor	=> $valor_total,
 			id		=> $inadimplente->uid,
@@ -1393,6 +1396,30 @@ sub lista_inadimplentes : Local {
 	
 	$c->stash->{inadimplentes} = [@inadimplentes];
 	$c->stash->{template} = 'cadastro/lista_inadimplentes.tt2';
+}
+
+=head2 lista_faturas_abertas
+
+Lista os clientes com faturas em aberto.
+
+=cut
+
+sub lista_faturas_abertas : Local {
+	# SQL:
+	# select distinct(rg3_usuarios.uid) from rg3_usuarios,rg3_faturas where rg3_faturas.data_vencimento < NOW() and rg3_faturas.id_situacao = 1 and rg3_faturas.id_cliente = rg3_usuarios.uid;
+	
+	my ($self, $c) = @_;
+	my @devedores;
+
+	foreach my $fatura ($c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => 1},
+		{join => 'cliente', order_by => 'cliente.nome ASC'})) {
+		
+		push(@devedores, $fatura->cliente);
+	}
+	
+	$c->stash->{devedores} = [@devedores];
+	$c->stash->{template} = 'cadastro/lista_devedores.tt2';
+
 }
 
 =head1 AUTHOR

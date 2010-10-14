@@ -65,6 +65,7 @@
 	:: <a href="[% Catalyst.uri_for('liquidacao_massa') %]"><img src="/static/images/money.png" align="top">Liquidar faturas</a>
 	:: <a href="[% Catalyst.uri_for('bloqueio_automatico') %]"><img src="/static/images/disconnect.png" align="top">Bloquear inadimplentes</a>
 	:: <a href="[% Catalyst.uri_for('lista_inadimplentes') %]"><img src="/static/images/table_edit.png" align="top">Listar inadimplentes</a>
+	:: <a href="[% Catalyst.uri_for('lista_faturas_abertas') %]"><img src="/static/images/table_edit.png" align="top">Faturas vencidas</a>
 </p>
 [% END %]
 

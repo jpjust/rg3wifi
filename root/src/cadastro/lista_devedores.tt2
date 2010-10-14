@@ -1,0 +1,28 @@
+[% PROCESS site/macros %]
+
+<h2>Clientes com faturas vencidas</h2>
+
+<p><a href="[% Catalyst.uri_for('lista/') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p><strong>Cada cliente desta lista tem pelo menos uma fatura vencida, não necessariamente inadimplente (com 15 dias de atraso).</strong></p>
+
+<p>Clientes listados: [% devedores.size %]</p>
+
+<table width="100%">
+	<tr>
+		<th>Nome</th>
+		<th>Telefone</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH devedor IN devedores %]
+	<tr class="lista">
+		<td>[% devedor.nome %]</td>
+		<td>[% devedor.telefone %]</td>
+		<td nowrap>
+			<a href="[% Catalyst.uri_for('editar/') _ devedor.uid %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+		</td>
+	</tr>
+	[% END %]
+	
+</table>

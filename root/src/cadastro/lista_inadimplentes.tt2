@@ -4,11 +4,14 @@
 
 <p><a href="[% Catalyst.uri_for('lista/') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
+<p><strong>Cada cliente desta lista tem pelo menos uma fatura com mais de 15 dias de atraso.</strong></p>
+
 <p>Clientes listados: [% inadimplentes.size %]</p>
 
 <table width="100%">
 	<tr>
 		<th>Nome</th>
+		<th>Telefone</th>
 		<th>Faturas em aberto</th>
 		<th>Valor total</th>
 		<th>Ações</th>
@@ -17,6 +20,7 @@
 	[% FOREACH inadimplente IN inadimplentes %]
 	<tr class="lista">
 		<td>[% inadimplente.nome %]</td>
+		<td>[% inadimplente.telefone %]</td>
 		<td>[% inadimplente.total %]</td>
 		<td>[% moeda(inadimplente.valor) %]</td>
 		<td nowrap>
