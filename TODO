@@ -1,7 +1,6 @@
 - Colocar mensagens de erro quando CPF/CNPJ
   estiverem incorretos ou quando algum campo único já
   existir (ex.: login já cadastrado).
-/ Colocar a contagem de itens listados em cada tabela
 - Criar uma opção pra imprimir o contrato
 - Quando passar o mouse sobre o nome do cliente, mostrar
   algums informações extras.
@@ -9,9 +8,6 @@
 - Mostrar no relatório de uso a velocidade que foi usada
   em cada conexão. Além disso, guardar na auditoria
   a data que a velocidade foi alterada.
-- Busca na lista de rádios.
-
-- Consertar as ACLs.
-
-Mais urgentes:
-- Fazer o sistema exportar os boletos pro OBBPlus.
+- Verificar um método melhor de listar chamados, pois
+  pode acabar ficando pesado.
+  

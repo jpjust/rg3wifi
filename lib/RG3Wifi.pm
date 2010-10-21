@@ -29,7 +29,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 
 # Configure the application. 
 #
@@ -48,19 +48,11 @@ __PACKAGE__->setup;
 # Authorization::ACL Rules
 # O controller Acesso é liberado pra todo mundo.
 
-# Auditoria (geral)
+##### Auditoria (geral)
 __PACKAGE__->allow_access_if("/auditoria",						[qw/admin/]);
 __PACKAGE__->deny_access("/auditoria");
 
-
-
-# Caixa (geral)
-__PACKAGE__->allow_access_if("/caixa",							[qw/admin/]);
-__PACKAGE__->deny_access("/caixa");
-
-
-
-# Cadastro (admin)
+##### Cadastro (admin)
 __PACKAGE__->allow_access_if("/cadastro",						[qw/admin/]);
 
 # Cadastro (operador)
@@ -77,36 +69,29 @@ __PACKAGE__->allow_access_if("/cadastro/lista",					[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/lista_p",				[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/nova_conta",			[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/novo",					[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/limpa_pppoe",			[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/limpa_pppoe1",			[qw/operador/]);
 
 # Cadastro (outros)
 __PACKAGE__->deny_access("/cadastro");
 
+##### Caixa (geral)
+__PACKAGE__->allow_access_if("/caixa",							[qw/admin/]);
+__PACKAGE__->deny_access("/caixa");
 
-
-# Rádios (início)
-__PACKAGE__->allow_access_if("/radios",							[qw/admin/]);
-__PACKAGE__->allow_access_if("/radios",							[qw/operador/]);
-
-# Rádios (exclusão)
-__PACKAGE__->allow_access_if("/radios/excluir_fab",				[qw/admin/]);
-__PACKAGE__->allow_access_if("/radios/excluir_mod",				[qw/admin/]);
-__PACKAGE__->allow_access_if("/radios/excluir_rad",				[qw/admin/]);
-
-# Rádios (fim)
-__PACKAGE__->deny_access("/radios");
-
-
-
-# Chamados (início)
+##### Chamados (admin, operador)
 __PACKAGE__->allow_access_if("/chamados",						[qw/admin/]);
 __PACKAGE__->allow_access_if("/chamados",						[qw/operador/]);
 
-# Chamados (exclusão)
-__PACKAGE__->allow_access_if("/chamados/excluir",				[qw/admin/]);
-
-# Chamados (fim)
+# Chamados (outros)
 __PACKAGE__->deny_access("/chamados");
 
+###### Rádios (admin, operador)
+__PACKAGE__->allow_access_if("/radios",							[qw/admin/]);
+__PACKAGE__->allow_access_if("/radios",							[qw/operador/]);
+
+# Rádios (outros)
+__PACKAGE__->deny_access("/radios");
 
 =head1 NAME
 

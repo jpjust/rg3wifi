@@ -1,6 +1,6 @@
 [% PROCESS site/macros %]
 
-<h2>Lista de rádios</h2>
+<h2>Lista de rádios - Busca</h2>
 
 <p><strong><a href="javascript:void(0)" onClick="javascript:showbox('box_filtros');"><img src="/static/images/find.png" align="top">Filtros</a></strong></p>
 <div class="mytextbox_green" style="display: none;" id="box_filtros">
@@ -11,29 +11,13 @@
 	<input type="submit" value="Procurar">
 </div>
 
-<p><a href="[% Catalyst.uri_for('novo_rad') %]"><img src="/static/images/add.png" align="top">Cadastrar rádio</a></p>
-
-[% FOREACH base IN bases %]
-
-<h3><a href="javascript:void(0)" onClick="javascript:showbox('box_[% base.essid %]');">[% base.essid %] ([% base.estacoes_rs.count %])</a></h3>
-
-<div class="mytextbox" style="display: none;" id="box_[% base.essid %]">
-
-<p>
-	<a href="[% Catalyst.uri_for('editar_rad/') _ base.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-	:: <a href="[% Catalyst.uri_for('teste1_rad_do/') _ base.id %]"><img src="/static/images/table_edit.png" align="top">Testar</a>
-	[% IF Catalyst.check_any_user_role('admin') %]:: <a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir a base?', '[% Catalyst.uri_for('excluir_rad/') _ base.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
-</p>
-
-<h4>
-Endereço IP: <a href="http://[% base.ip %]" target="_blank">[% base.ip %]</a><br>
-Endereço MAC: [% base.mac %]<br>
-Banda: [% base.banda.nome %]
-</h4>
+<p><a href="[% Catalyst.uri_for('novo_rad') %]"><img src="/static/images/add.png" align="top">Cadastrar rádio</a>
+:: <a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/table_edit.png" align="top">Listar todos</a></p>
 
 <table width="100%">
 	<tr>
 		<th>Localização</th>
+		<th>Base</th>
 		<th>IP</th>
 		<th>MAC</th>
 		<th>Comodato</th>
@@ -42,9 +26,10 @@ Banda: [% base.banda.nome %]
 		<th>Ações</th>
 	</tr>
 	
-	[% FOREACH radio IN base.estacoes %]
+	[% FOREACH radio IN radios %]
 	<tr class="lista">
 		<td>[% radio.localizacao %]</td>
+		<td>[% radio.base.essid %]</td>
 		<td><a href="http://[% radio.ip %]" target="_blank">[% radio.ip %]</a></td>
 		<td>[% radio.mac %]</td>
 		<td>[% IF radio.comodato %]Sim[% ELSE %]Não[% END %]</td>
@@ -60,4 +45,3 @@ Banda: [% base.banda.nome %]
 </table>
 
 </div>
-[% END %]

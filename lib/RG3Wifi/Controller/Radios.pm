@@ -28,7 +28,7 @@ Catalyst Controller.
 
 sub index : Private {
 	my ($self, $c) = @_;
-	$c->forward('lista');
+	$c->forward('form_busca');
 }
 
 =head2 access_denied
@@ -128,6 +128,17 @@ sub verifica_mac : Private {
 	}
 }
 
+=head2 form_busca
+
+Exibe o formulário de busca.
+
+=cut
+
+sub form_busca : Local {
+	my ($self, $c) = @_;
+	$c->stash->{template} = 'radios/lista_radios_busca.tt2';
+}
+
 =head2 lista
 
 Lista os rádios cadastrados.
@@ -137,7 +148,6 @@ Lista os rádios cadastrados.
 sub lista : Local {
 	my ($self, $c) = @_;
 	$c->stash->{bases} = [$c->model('RG3WifiDB::Radios')->search({id_tipo => 2})];
-	$c->stash->{radiosloja} = [$c->model('RG3WifiDB::Radios')->search({id_tipo => 1})];
 	$c->stash->{template} = 'radios/lista_radios.tt2';
 }
 
@@ -506,6 +516,35 @@ sub teste1_rad_do : Local {
 	}
 	$c->stash->{radio} = $radio;
 	$c->stash->{template} = 'radios/teste1.tt2';
+}
+
+=head2 busca
+
+Faz uma busca na lista de rádios.
+
+=cut
+
+sub busca : Local {
+	my ($self, $c) = @_;
+
+	# Parâmetros
+	my $p = $c->request->params;
+	my $termo = $p->{termo};
+	#my $termo_ua = unac_string('utf-8', $termo);
+	my $termo_ua = $termo;
+	
+	# Efetua a busca
+	$c->stash->{radios} = [$c->model('RG3WifiDB::Radios')->search({
+		-or => [
+			mac => {'like', "%$termo%"},			mac => {'like', "%$termo_ua%"},
+			localizacao => {'like', "%$termo%"},	localizacao => {'like', "%$termo_ua%"},
+			ip => {'like', "%$termo%"},				ip => {'like', "%$termo_ua%"},
+			essid => {'like', "%$termo%"},			essid => {'like', "%$termo_ua%"},
+		],
+	}, {rows => undef})];
+	
+	$c->stash->{termo} = $termo;
+	$c->stash->{template} = 'radios/lista_radios_busca.tt2';
 }
 
 =head1 AUTHOR

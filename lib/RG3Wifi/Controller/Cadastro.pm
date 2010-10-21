@@ -74,14 +74,18 @@ sub atualiza_inadimplencia : Private {
 	my ($c, $id_cliente) = @_;
 	
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $id_cliente})->first;
+	my @faturas = &verifica_inadimplencia($c, $cliente);
 	
 	if ($cliente) {
-		if (&verifica_inadimplencia($c, $cliente)->count > 0) {
+		if (@faturas > 0) {
 			$cliente->update({inadimplente => 1});
 		} else {
 			$cliente->update({inadimplente => 0});
 		}
 	}
+	
+	# Retorna as faturas em aberto, assim como o verifica_inadimplencia()
+	return @faturas;
 }
 
 =head2 radius_user_update
@@ -1388,8 +1392,9 @@ sub lista_inadimplentes : Local {
 	
 	my @inadimplentes;
 	
-	foreach my $inadimplente ($c->model('RG3WifiDB::Usuarios')->search({inadimplente => 1})) {
-		my @faturas = &verifica_inadimplencia($c, $inadimplente);
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({}, {rows => undef})) {
+		my @faturas = &atualiza_inadimplencia($c, $cliente->uid);
+		next if (@faturas == 0);
 		my $valor_total = 0;
 		
 		foreach my $fatura (@faturas) {
@@ -1397,11 +1402,11 @@ sub lista_inadimplentes : Local {
 		}
 		
 		my $dados = {
-			nome	=> $inadimplente->nome,
-			telefone=> $inadimplente->telefone,
+			nome	=> $cliente->nome,
+			telefone=> $cliente->telefone,
 			total	=> scalar(@faturas),
 			valor	=> $valor_total,
-			id		=> $inadimplente->uid,
+			id		=> $cliente->uid,
 		};
 
 		push(@inadimplentes, $dados);
