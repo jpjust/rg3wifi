@@ -695,17 +695,14 @@ sub bloqueio_automatico : Local {
 	my $i = 0;
 	my $clientes_bloqueados;
 	
-	# Fiscaliza cada cliente
-	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
-		# Procura se há faturas em aberto
-		if (&verifica_inadimplencia($c, $cliente)->count > 0) {
-			# Bloqueia o cliente, a não ser que esteja marcado para não bloquear
-			if (!$cliente->nao_bloqueia && !$cliente->bloqueado) {
-				$cliente->update({bloqueado => 1, inadimplente => 1});
-				&radius_user_update($c, $cliente);
-				$i++;
-				$clientes_bloqueados .= $cliente->nome . '<br>';
-			}
+	# Busca os clientes inadimplentes
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1, inadimplente => 1}, {rows => undef})) {
+		# Bloqueia o cliente, a não ser que esteja marcado para não bloquear
+		if (!$cliente->nao_bloqueia && !$cliente->bloqueado) {
+			$cliente->update({bloqueado => 1});
+			&radius_user_update($c, $cliente);
+			$i++;
+			$clientes_bloqueados .= $cliente->nome . '<br>';
 		}
 	}
 	
