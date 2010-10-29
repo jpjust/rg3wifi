@@ -13,6 +13,7 @@
 <form action="[% Catalyst.uri_for('novo_do') %]" method="POST">
 <input type="hidden" name="id" value="[% lancamento.id %]">
 <input type="hidden" name="acao" value="[% acao %]">
+<input type="hidden" name="banco" value="[% id_banco || banco %]">
 
 <table>
 	<tr>

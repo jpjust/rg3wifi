@@ -101,7 +101,7 @@ Saldo no período: [% moeda(credito - debito) %]</p>
 
 <h3>Resumo</h3>
 
-[% total_geral = credito + debito %]
+[% total_geral = credito + debito + 1 %]
 
 <table align="center">
 	<tr>

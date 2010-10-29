@@ -85,7 +85,7 @@ img {
 	text-align: center;
 	color: white;
 	border-top: 1px solid #001100;
-	position: relative;
+	position: fixed;
 	bottom: 0;
 	left: 0;
 	width: 100%;

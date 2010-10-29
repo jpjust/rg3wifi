@@ -51,13 +51,12 @@ Gera a lista de movimentações de acordo com as datas.
 =cut
 
 sub gera_lista : Local {
-	my ($self, $c, $data1, $data2) = @_;
+	my ($self, $c, $data1, $data2, $banco) = @_;
 	
-	my $lancamentos = [$c->model('RG3WifiDB::Caixa')->search({data => {
+	$c->stash->{lancamentos} = [$c->model('RG3WifiDB::Caixa')->search({data => {
 			-between => [&EasyCat::data2sql($data1), &EasyCat::data2sql($data2)]
-		}})];
-	$c->stash->{lancamentos} = $lancamentos;
-		
+		}, id_banco => $banco})];
+	
 	# Calcula o total de cada categoria
 	my @categorias;
 	foreach my $categoria ($c->model('RG3WifiDB::CaixaCategoria')->all) {
@@ -65,6 +64,7 @@ sub gera_lista : Local {
 		{
 			data			=> {-between => [&EasyCat::data2sql($data1), &EasyCat::data2sql($data2)]},
 			id_categoria	=> $categoria->id,
+			id_banco		=> $banco,
 		}, {
 			select	=> [{sum => 'valor'}],
 			as		=> ['valor_total'],
@@ -83,7 +83,9 @@ sub gera_lista : Local {
 	$c->stash->{template} = 'caixa/lista.tt2';
 }
 
-=head2 lista 
+=head2 lista
+
+Lista as movimentações no banco.
 
 =cut
 
@@ -100,7 +102,29 @@ sub lista : Local {
 	$data1 = $data1->dmy('/');
 	$data2 = $data2->dmy('/');
 	
-	&gera_lista($self, $c, $data1, $data2);
+	&gera_lista($self, $c, $data1, $data2, 1);
+}
+
+=head2 lista_loja
+
+Lista as movimentações na loja.
+
+=cut
+
+sub lista_loja : Local {
+    my ($self, $c, $data) = @_;
+    my ($data1, $data2);
+    
+	# Se $data estiver definido, use. Senão, use a data atual.
+	if ($data) {
+		$data1 = $data;
+		$data2 = $data;
+	} else {
+		$data1 = DateTime->now()->dmy('/');
+		$data2 = DateTime->now()->dmy('/');
+	}
+	
+	&gera_lista($self, $c, $data1, $data2, 1);
 }
 
 =head2 filtro
@@ -115,7 +139,7 @@ sub filtro : Local {
 	# Parâmetros
 	my $p = $c->request->params;
 	
-	&gera_lista($self, $c, $p->{data1}, $p->{data2});
+	&gera_lista($self, $c, $p->{data1}, $p->{data2}, 1);
 }
 
 =head2 novo
@@ -129,6 +153,7 @@ sub novo : Local {
 	$c->stash->{categorias} = [$c->model('RG3WifiDB::CaixaCategoria')->all];
 	$c->stash->{formas} = [$c->model('RG3WifiDB::CaixaForma')->all];
 	$c->stash->{acao} = 'novo';
+	$c->stash->{banco} = 1;
 	$c->stash->{template} = 'caixa/novo.tt2';
 }
 
@@ -162,6 +187,7 @@ sub novo_do : Local {
 		id					=> $p->{id}					|| -1,
 		id_categoria		=> $p->{categoria}			|| undef,
 		id_forma			=> $p->{forma}				|| undef,
+		id_banco			=> $p->{banco}				|| undef,
 		data				=> &EasyCat::data2sql($p->{data})	|| undef,
 		valor				=> $p->{valor}				|| undef,
 		credito				=> $p->{credito}			|| 0,

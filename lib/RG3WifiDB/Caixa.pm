@@ -7,7 +7,7 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
 __PACKAGE__->table('rg3_caixa');
 # Set columns in table
-__PACKAGE__->add_columns(qw/id id_categoria id_forma data valor credito lancamento_futuro descricao favorecido/);
+__PACKAGE__->add_columns(qw/id id_banco id_categoria id_forma data valor credito lancamento_futuro descricao favorecido/);
 # Set the primary key for the table
 __PACKAGE__->set_primary_key(qw/id/);
 
