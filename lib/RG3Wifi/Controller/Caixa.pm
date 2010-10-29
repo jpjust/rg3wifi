@@ -51,11 +51,11 @@ Gera a lista de movimentações de acordo com as datas.
 =cut
 
 sub gera_lista : Local {
-	my ($self, $c, $data1, $data2, $banco) = @_;
+	my ($self, $c, $data1, $data2, $id_banco) = @_;
 	
 	$c->stash->{lancamentos} = [$c->model('RG3WifiDB::Caixa')->search({data => {
 			-between => [&EasyCat::data2sql($data1), &EasyCat::data2sql($data2)]
-		}, id_banco => $banco})];
+		}, id_banco => $id_banco})];
 	
 	# Calcula o total de cada categoria
 	my @categorias;
@@ -64,7 +64,7 @@ sub gera_lista : Local {
 		{
 			data			=> {-between => [&EasyCat::data2sql($data1), &EasyCat::data2sql($data2)]},
 			id_categoria	=> $categoria->id,
-			id_banco		=> $banco,
+			id_banco		=> $id_banco,
 		}, {
 			select	=> [{sum => 'valor'}],
 			as		=> ['valor_total'],
@@ -76,9 +76,14 @@ sub gera_lista : Local {
 		});
 		push(@categorias, $dados);
 	}
+	
+	# Se a listagem for pro caixa da loja, atualiza o saldo do dia
+	&atualiza_saldo($self, $c, $data1);
 
 	$c->stash->{data1} = $data1;
 	$c->stash->{data2} = $data2;
+	$c->stash->{banco} = $c->model('RG3WifiDB::Bancos')->find($id_banco);
+	$c->stash->{bancos} = [$c->model('RG3WifiDB::Bancos')->all];
 	$c->stash->{categorias} = [@categorias];
 	$c->stash->{template} = 'caixa/lista.tt2';
 }
@@ -90,7 +95,13 @@ Lista as movimentações no banco.
 =cut
 
 sub lista : Local {
-    my ($self, $c) = @_;
+    my ($self, $c, $banco) = @_;
+    
+    # Se o banco não for especificado, usa o caixa da loja
+    unless ($banco) {
+    	&lista_loja($self, $c);
+    	return;
+    }
     
 	# Lista apenas a última semana e a semana seguinte
 	my $data1 = DateTime->now();
@@ -102,7 +113,7 @@ sub lista : Local {
 	$data1 = $data1->dmy('/');
 	$data2 = $data2->dmy('/');
 	
-	&gera_lista($self, $c, $data1, $data2, 1);
+	&gera_lista($self, $c, $data1, $data2, $banco);
 }
 
 =head2 lista_loja
@@ -124,7 +135,7 @@ sub lista_loja : Local {
 		$data2 = DateTime->now()->dmy('/');
 	}
 	
-	&gera_lista($self, $c, $data1, $data2, 1);
+	&gera_lista($self, $c, $data1, $data2, 0);
 }
 
 =head2 filtro
@@ -138,8 +149,9 @@ sub filtro : Local {
 	
 	# Parâmetros
 	my $p = $c->request->params;
+	$p->{data2} = $p->{data1} if ($p->{data2} == undef || $p->{banco} == 0);
 	
-	&gera_lista($self, $c, $p->{data1}, $p->{data2}, 1);
+	&gera_lista($self, $c, $p->{data1}, $p->{data2}, $p->{banco});
 }
 
 =head2 novo
@@ -153,7 +165,7 @@ sub novo : Local {
 	$c->stash->{categorias} = [$c->model('RG3WifiDB::CaixaCategoria')->all];
 	$c->stash->{formas} = [$c->model('RG3WifiDB::CaixaForma')->all];
 	$c->stash->{acao} = 'novo';
-	$c->stash->{banco} = 1;
+	$c->stash->{bancos} = [$c->model('RG3WifiDB::Bancos')->all];
 	$c->stash->{template} = 'caixa/novo.tt2';
 }
 
@@ -187,7 +199,7 @@ sub novo_do : Local {
 		id					=> $p->{id}					|| -1,
 		id_categoria		=> $p->{categoria}			|| undef,
 		id_forma			=> $p->{forma}				|| undef,
-		id_banco			=> $p->{banco}				|| undef,
+		id_banco			=> $p->{banco}				|| 0,
 		data				=> &EasyCat::data2sql($p->{data})	|| undef,
 		valor				=> $p->{valor}				|| undef,
 		credito				=> $p->{credito}			|| 0,
@@ -279,6 +291,33 @@ sub chart_movimentacao : Local {
 		'precision' => 2,
 	);
 	$grafico->cgi_png(\@dados);	
+}
+
+=head2 atualiza_saldo
+
+Atualiza o saldo do dia para o caixa da loja.
+
+=cut
+
+sub atualiza_saldo : Private {
+	my ($self, $c, $data) = @_;
+	
+	# Calcula a movimentação do dia
+	my $saldo_dia = 0;
+	foreach my $movimento ($c->model('RG3WifiDB::Caixa')->search({id_banco => 0, data => &EasyCat::data2sql($data)})) {
+		if ($movimento->credito) {
+			$saldo_dia += $movimento->valor;
+		} else {
+			$saldo_dia -= $movimento->valor;
+		}
+	}
+	
+	# Atualiza o saldo atual
+	my $dados = ({
+		data => &EasyCat::data2sql($data),
+		saldo => $saldo_dia,
+	});
+	$c->model('RG3WifiDB::CaixaLoja')->update_or_create($dados);
 }
 
 =head1 AUTHOR

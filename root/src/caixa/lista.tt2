@@ -5,7 +5,7 @@
 	debito = 0
 %]
 
-<h2>Movimentação do Caixa</h2>
+<h2>Movimentação do Caixa - [% banco.nome %] ([% banco.ag %]-[% banco.ag_dv %]/[% banco.cc %]-[% banco.cc_dv %])</h2>
 
 <p><strong><a href="javascript:void(0)" onClick="javascript:showbox('box_filtros');"><img src="/static/images/find.png" align="top">Filtros</a></strong></p>
 <div class="mytextbox_green" style="display: none;" id="box_filtros">
@@ -13,9 +13,10 @@
 	<!-- Período -->
 	<form action="[% Catalyst.uri_for('/caixa/filtro') %]" method="POST">
 	<input type="hidden" name="tipo" value="0">
-	<strong>Período:</strong> Entre
+	<input type="hidden" name="banco" value="[% banco.id %]">
+	<p><strong>Período:</strong> Entre
 	
-	<input type="text" name="data1" id="data1" size="10">
+	<input type="text" name="data1" id="data1" size="10" value="[% data1 %]">
 	<img src="/static/images/calendar.png" id="t_rec1" style="cursor: pointer;" alt="Calendário">
 	<script type="text/javascript">
 		Calendar.setup(
@@ -28,7 +29,7 @@
 		);
 	</script>
 	e
-	<input type="text" name="data2" id="data2" size="10">
+	<input type="text" name="data2" id="data2" size="10" value="[% data2 %]">
 	<img src="/static/images/calendar.png" id="t_rec2" style="cursor: pointer;" alt="Calendário">
 	<script type="text/javascript">
 		Calendar.setup(
@@ -42,12 +43,25 @@
 	</script>
 	<input type="submit" value="Filtrar">
 	</form>
+	</p>
+	
+	<p><strong>Mudar de banco:</strong>
+	<select name="banco_select" onChange="document.location.href='[% Catalyst.uri_for('/caixa/lista/') %]' + this.value;">
+		[% FOREACH banco_i IN bancos %]
+			<option value="[% banco_i.id %]" [% IF banco.id == banco_i.id %]selected[% END %]>[% banco_i.nome %]</option>
+		[% END %]
+	</select></p>	
 </div>
 
 <p>
 	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Incluir lançamento</a>
 	<!-- :: <a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir relatório</a> -->
 </p>
+
+[% # Se for o caixa da loja, exibe o saldo anterior %] 
+[% IF banco.id == 0 %]
+	<p><strong>Saldo anterior: </strong></p>
+[% END %]
 
 <p>Lançamentos listados: [% lancamentos.size %]<br>
 Período: [% data1 %] a [% data2 %]</p>

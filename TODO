@@ -10,4 +10,10 @@
   a data que a velocidade foi alterada.
 - Verificar um método melhor de listar chamados, pois
   pode acabar ficando pesado.
-  
+
+- Falta ver como vai ficar o saldo inicial e final de cada
+  dia do caixa da loja. Uma idéia é, calcular o saldo
+  final automaticamente com base no movimento e replicar
+  os dados desse saldo final (inclusive valor em cédulas,
+  moedas e cheques) para uma linha do próximo dia na
+  tabela, nos campos de saldo inicial deste dia seguinte.

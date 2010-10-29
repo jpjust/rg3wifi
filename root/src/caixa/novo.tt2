@@ -13,11 +13,21 @@
 <form action="[% Catalyst.uri_for('novo_do') %]" method="POST">
 <input type="hidden" name="id" value="[% lancamento.id %]">
 <input type="hidden" name="acao" value="[% acao %]">
-<input type="hidden" name="banco" value="[% id_banco || banco %]">
 
 <table>
 	<tr>
 		<th colspan="2">Dados do lançamento</th>
+	</tr>
+	<tr>
+		<td>Banco:</td>
+		<td>
+			<select name="banco">
+				[% FOREACH banco IN bancos %]
+				<option value="[% banco.id %]" [% IF lancamento.id_banco == banco.id %]selected[% END %]>[% banco.nome %]</option>
+				[% END %]
+			</select>
+			<img src="/static/images/star.png">
+		</td>
 	</tr>
 	<tr>
 		<td>Descrição:</td>
