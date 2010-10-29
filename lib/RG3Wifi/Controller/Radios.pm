@@ -240,7 +240,7 @@ sub novo_fab_do : Local {
 	
 	if ($@) {
 		$c->stash->{error_msg} = 'Erro ao cadastrar/editar fabricante: ' . $@;
-		$c->stash->{template} = 'erro.tt2';
+		$c->stash->{template} = 'error.tt2';
 		return;
 	}
 	
@@ -288,7 +288,7 @@ sub novo_mod_do : Local {
 	
 	if ($@) {
 		$c->stash->{error_msg} = 'Erro ao cadastrar/editar modelo: ' . $@;
-		$c->stash->{template} = 'erro.tt2';
+		$c->stash->{template} = 'error.tt2';
 		return;
 	}
 	
@@ -354,7 +354,7 @@ sub novo_rad_do : Local {
 	
 	if ($@) {
 		$c->stash->{error_msg} = 'Erro ao cadastrar/editar rádio: ' . $@;
-		$c->stash->{template} = 'erro.tt2';
+		$c->stash->{template} = 'error.tt2';
 		return;
 	}
 	

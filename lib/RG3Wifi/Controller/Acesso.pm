@@ -160,7 +160,7 @@ sub senha_do : Local {
 	
 	if ($@) {
 		$c->stash->{error_msg} = 'Erro ao alterar senha: ' . $@;
-		$c->stash->{template} = 'erro.tt2';
+		$c->stash->{template} = 'error.tt2';
 		return;
 	}
 	

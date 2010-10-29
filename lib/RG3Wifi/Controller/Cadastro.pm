@@ -450,7 +450,7 @@ sub cadastro_do : Local {
 	
 	if ($@) {
 		$c->stash->{error_msg} = 'Erro ao cadastrar/editar cliente: ' . $@;
-		$c->stash->{template} = 'erro.tt2';
+		$c->stash->{template} = 'error.tt2';
 		return;
 	}
 	
@@ -523,7 +523,7 @@ sub cadastro_conta_do : Local {
 	
 	if ($@) {
 		$c->stash->{error_msg} = 'Erro ao cadastrar/editar conta PPPoE: ' . $@;
-		$c->stash->{template} = 'erro.tt2';
+		$c->stash->{template} = 'error.tt2';
 		return;
 	}
 	
@@ -1119,7 +1119,7 @@ sub gerar_faturas_do : Local {
 			
 			if ($@) {
 				$c->stash->{error_msg} = 'Erro ao criar uma fatura: ' . $@;
-				$c->stash->{template} = 'erro.tt2';
+				$c->stash->{template} = 'error.tt2';
 				return;
 			}
 			
@@ -1199,7 +1199,7 @@ sub nova_fatura_do : Local {
 	
 	if ($@) {
 		$c->stash->{error_msg} = 'Erro ao criar fatura: ' . $@;
-		$c->stash->{template} = 'erro.tt2';
+		$c->stash->{template} = 'error.tt2';
 		return;
 	}
 	
@@ -1271,7 +1271,7 @@ sub liquidar_fatura_do : Local {
 	
 	if ($@) {
 		$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $@;
-		$c->stash->{template} = 'erro.tt2';
+		$c->stash->{template} = 'error.tt2';
 		return;
 	}
 	

@@ -130,7 +130,7 @@ sub novo_do : Local {
 	
 	if ($@) {
 		$c->stash->{error_msg} = 'Erro ao cadastrar/editar chamado: ' . $@;
-		$c->stash->{template} = 'erro.tt2';
+		$c->stash->{template} = 'error.tt2';
 		return;
 	}
 	
