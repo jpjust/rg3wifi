@@ -78,12 +78,14 @@ sub gera_lista : Local {
 	}
 	
 	# Se a listagem for pro caixa da loja, atualiza o saldo do dia
-	&atualiza_saldo($self, $c, $data1);
+	#&atualiza_saldo($self, $c, $data1);
 
 	$c->stash->{data1} = $data1;
 	$c->stash->{data2} = $data2;
 	$c->stash->{banco} = $c->model('RG3WifiDB::Bancos')->find($id_banco);
 	$c->stash->{bancos} = [$c->model('RG3WifiDB::Bancos')->all];
+	$c->stash->{saldo} = $c->model('RG3WifiDB::CaixaLoja')->find({data => &EasyCat::data2sql($data1)});
+	$c->stash->{saldo_anterior} = $c->model('RG3WifiDB::CaixaLoja')->search({data => {'<', &EasyCat::data2sql($data1)}}, {order_by => 'data DESC'})->first;
 	$c->stash->{categorias} = [@categorias];
 	$c->stash->{template} = 'caixa/lista.tt2';
 }
@@ -302,6 +304,11 @@ Atualiza o saldo do dia para o caixa da loja.
 sub atualiza_saldo : Private {
 	my ($self, $c, $data) = @_;
 	
+	# Obtem o saldo inicial
+	my $saldo_inicial = 0;
+	my $rs = $c->model('RG3WifiDB::CaixaLoja')->find({data => &EasyCat::data2sql($data)});
+	$saldo_inicial += $rs->saldo_inicial if ($rs);
+	
 	# Calcula a movimentação do dia
 	my $saldo_dia = 0;
 	foreach my $movimento ($c->model('RG3WifiDB::Caixa')->search({id_banco => 0, data => &EasyCat::data2sql($data)})) {
@@ -313,11 +320,85 @@ sub atualiza_saldo : Private {
 	}
 	
 	# Atualiza o saldo atual
+	my $saldo_atual = $saldo_inicial + $saldo_dia;
 	my $dados = ({
 		data => &EasyCat::data2sql($data),
-		saldo => $saldo_dia,
+		saldo_final => $saldo_atual,
 	});
+	
 	$c->model('RG3WifiDB::CaixaLoja')->update_or_create($dados);
+}
+
+=head2 saldo_anterior_do
+
+Salva alterações na informação de saldo anterior.
+
+=cut
+
+sub saldo_anterior_do : Local {
+	my ($self, $c) = @_;
+
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Efetua o cadastro
+	my $saldo = ({
+		data			=> &EasyCat::data2sql($p->{data})	|| undef,
+		cedulas_i		=> $p->{cedulas}					|| 0,
+		moedas_i		=> $p->{moedas}						|| 0,
+		cheques_i		=> $p->{cheques}					|| 0,
+		saldo_inicial	=> $p->{total}						|| 0,
+	});
+	
+	# Atualiza o saldo atual
+	eval {
+		$c->model('RG3WifiDB::CaixaLoja')->update_or_create($saldo);
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao alterar saldo anterior: ' . $@;
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
+	$c->stash->{status_msg} = 'Saldo anterior alterado.';
+	&gera_lista($self, $c, $p->{data}, $p->{data}, 0);
+}
+
+=head2 saldo_atual_do
+
+Salva alterações na informação de saldo atual.
+
+=cut
+
+sub saldo_atual_do : Local {
+	my ($self, $c) = @_;
+
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Efetua o cadastro
+	my $saldo = ({
+		data			=> &EasyCat::data2sql($p->{data})	|| undef,
+		cedulas_f		=> $p->{cedulas}					|| 0,
+		moedas_f		=> $p->{moedas}						|| 0,
+		cheques_f		=> $p->{cheques}					|| 0,
+		saldo_final		=> $p->{total}						|| 0,
+	});
+	
+	# Atualiza o saldo atual
+	eval {
+		$c->model('RG3WifiDB::CaixaLoja')->update_or_create($saldo);
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao alterar saldo atual: ' . $@;
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
+	$c->stash->{status_msg} = 'Saldo atual alterado.';
+	&gera_lista($self, $c, $p->{data}, $p->{data}, 0);
 }
 
 =head1 AUTHOR

@@ -1,7 +1,17 @@
 [% PROCESS site/macros %]
 
+<!-- JavaScript para copiar dados do saldo anterior -->
+<script type="text/javascript">
+function copiar_saldo_anterior() {
+	document.frm_saldo_anterior.cedulas.value = [% saldo_anterior.cedulas_f %];
+	document.frm_saldo_anterior.moedas.value = [% saldo_anterior.moedas_f %];
+	document.frm_saldo_anterior.cheques.value = [% saldo_anterior.cheques_f %];
+	document.frm_saldo_anterior.total.value = [% saldo_anterior.saldo_final %];
+}
+</script>
+
 [%
-	credito = 0
+	credito = 0 + saldo.saldo_inicial
 	debito = 0
 %]
 
@@ -58,13 +68,36 @@
 	<!-- :: <a href="[% Catalyst.uri_for('lista_p') %]"><img src="/static/images/printer.png" align="top">Imprimir relatório</a> -->
 </p>
 
-[% # Se for o caixa da loja, exibe o saldo anterior %] 
-[% IF banco.id == 0 %]
-	<p><strong>Saldo anterior: </strong></p>
-[% END %]
-
 <p>Lançamentos listados: [% lancamentos.size %]<br>
 Período: [% data1 %] a [% data2 %]</p>
+
+[% # Se for o caixa da loja, exibe o saldo anterior %] 
+[% IF banco.id == 0 %]
+	<form name="frm_saldo_anterior" action="[% Catalyst.uri_for('saldo_anterior_do') %]" method="POST">
+	<input type="hidden" name="data" value="[% data1 %]">
+	<table>
+		<tr>
+			<th>&nbsp;</th>
+			<th>Cédulas</th>
+			<th>Moedas</th>
+			<th>Cheques</th>
+			<th>Total</th>
+			<th>&nbsp;</th>
+		</tr>
+		<tr>
+			<td>Saldo inicial:</td>
+			<td><input type="text" name="cedulas" size="7" value="[% saldo.cedulas_i %]"></td>
+			<td><input type="text" name="moedas" size="7" value="[% saldo.moedas_i %]"></td>
+			<td><input type="text" name="cheques" size="7" value="[% saldo.cheques_i %]"></td>
+			<td><input type="text" name="total" size="7" value="[% saldo.saldo_inicial %]"></td>
+			<td>
+				<input type="submit" value="Salvar saldo">
+				<a href="javascript:copiar_saldo_anterior();"><img src="/static/images/arrow_left.png">Copiar do dia anterior</a>
+			</td>
+		</tr>
+	</table>
+	</form>
+[% END %]
 
 <table width="100%">
 	<tr>
@@ -112,6 +145,34 @@ Período: [% data1 %] a [% data2 %]</p>
 <p>Total em crédito: <font color="#0000ff">[% moeda(credito) %]</font><br>
 Total em débito: <font color="#ff0000">[% moeda(debito) %]</font><br>
 Saldo no período: [% moeda(credito - debito) %]</p>
+
+[% # Se for o caixa da loja, exibe o saldo do dia %] 
+[% IF banco.id == 0 %]
+	<form name="frm_saldo_atual" action="[% Catalyst.uri_for('saldo_atual_do') %]" method="POST">
+	<input type="hidden" name="data" value="[% data1 %]">
+	<input type="hidden" name="total" value="[% (credito - debito) %]">
+	<table>
+		<tr>
+			<th>&nbsp;</th>
+			<th>Cédulas</th>
+			<th>Moedas</th>
+			<th>Cheques</th>
+			<th>Total</th>
+			<th>&nbsp;</th>
+		</tr>
+		<tr>
+			<td>Saldo final:</td>
+			<td><input type="text" name="cedulas" size="7" value="[% saldo.cedulas_f %]"></td>
+			<td><input type="text" name="moedas" size="7" value="[% saldo.moedas_f %]"></td>
+			<td><input type="text" name="cheques" size="7" value="[% saldo.cheques_f %]"></td>
+			<td>[% moeda(credito - debito) %]</td>
+			<td>
+				<input type="submit" value="Salvar saldo">
+			</td>
+		</tr>
+	</table>
+	</form>
+[% END %]
 
 <h3>Resumo</h3>
 

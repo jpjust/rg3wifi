@@ -124,11 +124,21 @@ img {
 }
 
 .message {
-	color: #00aa00;
+	background-color: #eeffee;
+	color: #003300;
+	border-style: solid;
+	border-color: #003300;
+	border-width: 1px;
+	padding: 10px;
 }
 
 .error {
-	color: #aa0000;
+	background-color: #ffeeee;
+	color: #330000;
+	border-style: solid;
+	border-color: #330000;
+	border-width: 1px;
+	padding: 10px;
 }
 
 .menu {

@@ -1,8 +1,15 @@
 <div id="header" class="dontprint">[% PROCESS site/header %]</div>
 
 <div id="content">
-<div class="message">[% status_msg %]</div>
-<div class="error">[% error_msg %]</div>
+
+[% IF status_msg %]
+	<div class="message">[% status_msg %]</div>
+[% END %]
+
+[% IF error_msg %]
+	<div class="error">[% error_msg %]</div>
+[% END %]
+
 [% content %]
 </div>
 
