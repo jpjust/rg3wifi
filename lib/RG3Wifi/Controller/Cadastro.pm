@@ -11,6 +11,9 @@ use Business::BR::Ids;
 use Text::Unaccent;
 use Chart::Pie;
 use Chart::Bars;
+use DateTime;
+use DateTime::Format::MySQL;
+use GD::Barcode::ITF;
 
 =head1 NAME
 
@@ -44,6 +47,59 @@ sub access_denied : Private {
 	my ($self, $c) = @_;
 	$c->stash->{error_msg} = 'Você não tem permissão para acessar este recurso.';
 	$c->forward('RG3Wifi::Controller::Acesso', 'inicio');
+}
+
+=head2 modulo11
+
+Calcula o módulo 11 de um número.
+
+=cut
+
+sub modulo11 : Private {
+	my @n = split(/ */, reverse $_[0]);
+	my $f = 2;
+	my $soma = 0;
+	
+	foreach (@n) {
+		$soma += $_ * $f;
+		$f++;
+		$f = 2 if ($f > 9);
+	}
+	
+	my $dac = 11 - ($soma % 11);
+	$dac = 1 if ($dac == 0 || $dac > 9);
+	return $dac;	
+}
+
+=head2 modulo10
+
+Calcula o módulo 10 de um número.
+
+=cut
+
+sub modulo10 : Private {
+	my @n = split(/ */, reverse $_[0]);
+	my $f = 2;
+	my $m = '';
+	my $soma = 0;
+	
+	foreach (@n) {
+		$m .= sprintf('%d', $_ * $f);
+		if ($f == 2) {
+			$f = 1;
+		} else {
+			$f = 2;
+		}
+	}
+	
+	my @num = split(/ */, $m);
+	foreach (@num) {
+		$soma += $_;
+	}
+	
+	my $dac = 10 - ($soma % 10);
+	$dac = 0 if ($dac == 10);
+	return $dac;	
 }
 
 =head2 verifica_inadimplencia
@@ -1309,12 +1365,6 @@ Exibe uma lista com as faturas em aberto para liquidação em massa.
 
 =cut
 
-=head2 gerar_faturas
-
-Exibe a tela para geração de faturas.
-
-=cut
-
 sub liquidacao_massa : Local {
 	my ($self, $c) = @_;
 	$c->stash->{template} = 'cadastro/liquidacao_massa.tt2';
@@ -1376,6 +1426,91 @@ sub liquidacao_massa_do : Local {
 	# Pronto!
 	$c->stash->{status_msg} = 'As faturas selecionadas foram liquidadas!';
 	$c->forward('lista/');
+}
+
+=head2 emitir_boleto
+
+Emite um boleto referente a uma fatura específica.
+
+=cut
+
+sub emite_boleto : Local {
+	my ($self, $c, $id_fatura, $id_banco) = @_;
+	
+	# Obtém a fatura e o banco
+	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id_fatura);
+	my $banco = $c->model('RG3WifiDB::Bancos')->find($id_banco);
+	
+	# Datas
+	my $dt_base = DateTime->new(year => 1997, month => 10, day => 7);
+	my $dt_fatura = DateTime::Format::MySQL->parse_date($fatura->data_vencimento);
+	my $fator_vencimento = $dt_fatura->delta_days($dt_base);
+	
+	# Gera os dados do código de barras
+	my $moeda = 9;	# Código da moeda para R$
+	my $campo_livre = sprintf('%025s', $fatura->id);
+	my $codigo = sprintf('%03s%d%04d%011.2f%025s',
+		$banco->numero,
+		$moeda,
+		$fator_vencimento->delta_days,
+		$fatura->valor,
+		$campo_livre);
+	$codigo =~ s/\.//;
+	
+	# Calcula o módulo 11
+	my $dac = modulo11($codigo);
+	$codigo = substr($codigo, 0, 4) . $dac . substr($codigo, 4);
+	
+	# Exibe o boleto
+	$c->stash->{codigo_barras} = $codigo;
+	$c->stash->{linha_digitavel} = &linha_digitavel($banco->numero, $moeda, $campo_livre, $fator_vencimento->delta_days, $fatura->valor);
+	$c->stash->{template} = 'cadastro/boleto.tt2';
+	
+}
+
+=head2 linha_digitavel
+
+Gera a linha digitável de um boleto.
+
+=cut
+
+sub linha_digitavel : Private {
+	my ($banco, $moeda, $campo_livre, $fator_vencimento, $valor) = @_;
+	
+	# Gera os campos
+	my $campo1 = sprintf('%03s%d%s', $banco, $moeda, substr($campo_livre, 0, 5));
+	my $campo2 = substr($campo_livre, 5, 10);
+	my $campo3 = substr($campo_livre, 15, 10);
+	my $campo5 = sprintf('%04s%011.2f', $fator_vencimento, $valor);
+	
+	# Gera os DACs
+	$campo1 = $campo1 . &modulo10($campo1);
+	$campo2 = $campo2 . &modulo10($campo2);
+	$campo3 = $campo3 . &modulo10($campo3);
+	my $campo4 = &modulo11($campo1 . $campo2 . $campo3 . $campo5);
+	
+	# Gera a linha
+	my $linha = sprintf('%s.%s %s.%s %s.%s %s %s',
+		substr($campo1, 0, 5), substr($campo1, 5),
+		substr($campo2, 0, 5), substr($campo2, 5),
+		substr($campo3, 0, 5), substr($campo3, 5),
+		$campo4,
+		$campo5);
+	
+	return $linha;
+}
+
+=head2 codigo_barras
+
+Exibe o código de barras de um determinado número.
+
+=cut
+
+sub codigo_barras : Local {
+	my ($self, $c, $codigo) = @_;
+	#binmode(STDOUT);
+	#print "Content-Type: image/png\n\n";
+	GD::Barcode::ITF->new($codigo)->plot->png;
 }
 
 =head2 lista_inadimplentes

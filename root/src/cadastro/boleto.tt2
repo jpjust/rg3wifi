@@ -1,0 +1,9 @@
+[% PROCESS site/macros %]
+
+<h2>Boleto</h2>
+
+<p>[% codigo_barras %]</p>
+
+<p>[% linha_digitavel %]</p>
+
+<p><img src="[% Catalyst.uri_for('/cadastro/codigo_barras/') _ codigo_barras %]"></p>
