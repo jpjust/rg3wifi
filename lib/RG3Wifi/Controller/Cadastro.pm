@@ -1228,6 +1228,7 @@ sub nova_fatura_do : Local {
 	my $fatura = {
 		id				=> $p->{id}										|| -1,
 		id_cliente		=> $p->{id_cliente}								|| undef,
+		data_lancamento	=> $p->{data_lancamento}						|| DateTime->now()->ymd('-'),
 		data_vencimento	=> &EasyCat::data2sql($p->{data_vencimento})	|| undef,
 		valor			=> $p->{valor}									|| undef,
 		descricao		=> $p->{descricao}								|| undef,
@@ -1434,7 +1435,7 @@ Emite um boleto referente a uma fatura específica.
 
 =cut
 
-sub emite_boleto : Local {
+sub emitir_boleto : Local {
 	my ($self, $c, $id_fatura, $id_banco) = @_;
 	
 	# Obtém a fatura e o banco
@@ -1448,7 +1449,8 @@ sub emite_boleto : Local {
 	
 	# Gera os dados do código de barras
 	my $moeda = 9;	# Código da moeda para R$
-	my $campo_livre = sprintf('%025s', $fatura->id);
+	my $nosso_numero = $fatura->id . &modulo10($fatura->id);
+	my $campo_livre = &campo_livre($banco->numero, $nosso_numero, $banco->ag, $banco->cc);
 	my $codigo = sprintf('%03s%d%04d%011.2f%025s',
 		$banco->numero,
 		$moeda,
@@ -1458,14 +1460,35 @@ sub emite_boleto : Local {
 	$codigo =~ s/\.//;
 	
 	# Calcula o módulo 11
-	my $dac = modulo11($codigo);
+	my $dac = &modulo11($codigo);
 	$codigo = substr($codigo, 0, 4) . $dac . substr($codigo, 4);
 	
 	# Exibe o boleto
+	$c->stash->{banco} = $banco;
+	$c->stash->{banco_num} = sprintf('%03d-%1d', $banco->numero, &modulo11($banco->numero));
+	$c->stash->{fatura} = $fatura;
+	$c->stash->{nosso_numero} = $nosso_numero;
 	$c->stash->{codigo_barras} = $codigo;
-	$c->stash->{linha_digitavel} = &linha_digitavel($banco->numero, $moeda, $campo_livre, $fator_vencimento->delta_days, $fatura->valor);
-	$c->stash->{template} = 'cadastro/boleto.tt2';
+	$c->stash->{linha_digitavel} = &linha_digitavel($banco->numero, $moeda, $campo_livre, $fator_vencimento->delta_days, $fatura->valor, $dac);
+	$c->stash->{template} = 'cadastro/boleto_'. sprintf('%03d', $banco->numero) . '.tt2';
+}
+
+=head2 campo_livre
+
+Gera o campo livre do banco.
+
+=cut
+
+sub campo_livre : Private {
+	my ($banco, $nosso_numero, $ag, $cc) = @_;
 	
+	if ($banco == 1) {
+		return sprintf('%011d%04d%08d%02d', $nosso_numero, $ag, $cc, 18);
+	} elsif ($banco == 237) {
+		return sprintf('%04d%02d%011d%07d%1d', $ag, 9, $nosso_numero, $cc, 0);
+	} else {
+		return '';
+	}
 }
 
 =head2 linha_digitavel
@@ -1475,19 +1498,20 @@ Gera a linha digitável de um boleto.
 =cut
 
 sub linha_digitavel : Private {
-	my ($banco, $moeda, $campo_livre, $fator_vencimento, $valor) = @_;
+	my ($banco, $moeda, $campo_livre, $fator_vencimento, $valor, $dac) = @_;
 	
 	# Gera os campos
 	my $campo1 = sprintf('%03s%d%s', $banco, $moeda, substr($campo_livre, 0, 5));
 	my $campo2 = substr($campo_livre, 5, 10);
 	my $campo3 = substr($campo_livre, 15, 10);
+	my $campo4 = $dac;
 	my $campo5 = sprintf('%04s%011.2f', $fator_vencimento, $valor);
+	$campo5 =~ s/\.//;
 	
 	# Gera os DACs
 	$campo1 = $campo1 . &modulo10($campo1);
 	$campo2 = $campo2 . &modulo10($campo2);
 	$campo3 = $campo3 . &modulo10($campo3);
-	my $campo4 = &modulo11($campo1 . $campo2 . $campo3 . $campo5);
 	
 	# Gera a linha
 	my $linha = sprintf('%s.%s %s.%s %s.%s %s %s',
@@ -1508,9 +1532,9 @@ Exibe o código de barras de um determinado número.
 
 sub codigo_barras : Local {
 	my ($self, $c, $codigo) = @_;
-	#binmode(STDOUT);
-	#print "Content-Type: image/png\n\n";
-	GD::Barcode::ITF->new($codigo)->plot->png;
+	print "Content-type: image/png\n\n";
+	binmode STDOUT;
+	print STDOUT GD::Barcode::ITF->new($codigo)->plot(NoText => 1, Height => 55)->png;
 }
 
 =head2 lista_inadimplentes

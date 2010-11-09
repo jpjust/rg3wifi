@@ -207,7 +207,8 @@
 		<td>[% data2normal(fatura.data_liquidacao) %]</td>
 		<td>[% moeda(fatura.valor_pago) %]</td>
 		<td nowrap>
-			<a href="[% Catalyst.uri_for('editar_fatura/') _ fatura.id %]"><img src="/static/images/table_edit.png" align="top">Alterar dados</a>
+			<a href="[% Catalyst.uri_for('emitir_boleto/') _ fatura.id _ '/2' %]">Emitir boleto</a>
+			<br><a href="[% Catalyst.uri_for('editar_fatura/') _ fatura.id %]"><img src="/static/images/table_edit.png" align="top">Alterar dados</a>
 			<br><a href="[% Catalyst.uri_for('liquidar_fatura/') _ fatura.id %]"><img src="/static/images/money.png" align="top">Alterar liquidação</a>
 			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir essa fatura?', '[% Catalyst.uri_for('excluir_fatura/') _ fatura.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
 		</td>

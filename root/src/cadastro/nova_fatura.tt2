@@ -13,6 +13,7 @@
 <form action="[% Catalyst.uri_for('nova_fatura_do') %]" method="POST">
 <input type="hidden" name="id" value="[% fatura.id %]">
 <input type="hidden" name="id_cliente" value="[% fatura.id_cliente %]">
+<input type="hidden" name="data_lancamento" value="[% fatura.data_lancamento %]">
 
 <table>
 	<tr>
