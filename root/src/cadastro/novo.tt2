@@ -160,14 +160,15 @@
 		<td nowrap>
 			[% IF conta.bloqueado == 0 %]
 				[% IF cliente.nao_bloqueia %]
-					<a href="javascript:void(0)" onClick="javascript:askuser('Este cliente está marcado para não bloquear. Tem certeza que deseja bloqueá-lo?', '[% Catalyst.uri_for('bloqueio_pppoe_do/') _ conta.id %]');"><img src="/static/images/disconnect.png" align="top">Bloquear</a>
+					<a href="javascript:void(0)" onClick="javascript:askuser('Este cliente está marcado para não bloquear. Tem certeza que deseja bloqueá-lo?', '[% Catalyst.uri_for('bloqueio_pppoe_do/') _ conta.id %]');"><img src="/static/images/exclamation.png" align="top">Bloquear</a>
 				[% ELSE %]
-					<a href="[% Catalyst.uri_for('bloqueio_pppoe_do/') _ conta.id %]"><img src="/static/images/disconnect.png" align="top">Bloquear</a>
+					<a href="[% Catalyst.uri_for('bloqueio_pppoe_do/') _ conta.id %]"><img src="/static/images/exclamation.png" align="top">Bloquear</a>
 				[% END %]
 			[% ELSE %]
-				<a href="[% Catalyst.uri_for('bloqueio_pppoe_undo/') _ conta.id %]"><img src="/static/images/connect.png" align="top">Desbloquear</a>
+				<a href="[% Catalyst.uri_for('bloqueio_pppoe_undo/') _ conta.id %]"><img src="/static/images/accept.png" align="top">Desbloquear</a>
 			[% END %]
 			
+			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja derrubar esta conexão?', '[% Catalyst.uri_for('derrubar_pppoe_do/') _ conta.login %]');"><img src="/static/images/disconnect.png" align="top">Derrubar</a>
 			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir a conta do usuário?', '[% Catalyst.uri_for('excluir_conta/') _ conta.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
 		</td>
 	</tr>

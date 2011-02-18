@@ -709,6 +709,25 @@ sub bloqueio_undo : Local {
 	$c->forward('lista', ['1']);
 }
 
+=head2 derrubar_pppoe_do
+
+Derruba uma conexão PPPoE.
+
+=cut
+
+sub derrubar_pppoe_do : Local {
+	my ($self, $c, $login) = @_;
+	my $conexao = $c->model('RG3WifiDB::radacct')->search({UserName => $login})->first;
+	
+	# Se a conexão ainda está ativa, derruba!
+	if ($conexao->AcctStopTime == undef) {
+		$c->response->redirect('http://just:zdraed@10.11.1.1:5006/cmd?link%20em0-' . $conexao->NASPortId . '&close');
+	}
+
+	$c->stash->{error_msg} = 'Esta conexão não está ativa.';
+	$c->stash->{template} = 'error.tt2';
+}
+
 =head2 bloqueio_pppoe_do
 
 Coloca uma conta PPPoE na lista de bloqueio.
