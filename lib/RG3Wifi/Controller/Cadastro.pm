@@ -1466,9 +1466,9 @@ sub emitir_boleto : Local {
 	my $dt_fatura = DateTime::Format::MySQL->parse_date($fatura->data_vencimento);
 	my $fator_vencimento = $dt_fatura->delta_days($dt_base);
 	
-	# Gera os dados do código de barras
+	# Gera os dados do código de barras específicos do Banco do Brasil
 	my $moeda = 9;	# Código da moeda para R$
-	my $nosso_numero = $fatura->id . &modulo10($fatura->id);
+	my $nosso_numero = '280376' . sprintf('%05d', $fatura->id);
 	my $campo_livre = &campo_livre($banco->numero, $nosso_numero, $banco->ag, $banco->cc);
 	my $codigo = sprintf('%03s%d%04d%011.2f%025s',
 		$banco->numero,
