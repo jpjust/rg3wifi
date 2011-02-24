@@ -7,7 +7,7 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
 __PACKAGE__->table('rg3_usuarios');
 # Set columns in table
-__PACKAGE__->add_columns(qw/uid id_grupo id_situacao data_adesao bloqueado nao_bloqueia inadimplente nome doc data_nascimento telefone endereco bairro cep observacao kit_proprio cabo valor_instalacao valor_mensalidade vencimento/);
+__PACKAGE__->add_columns(qw/uid id_grupo id_situacao id_banco data_adesao bloqueado nao_bloqueia inadimplente nome doc data_nascimento telefone endereco bairro cidade id_estado cep observacao email kit_proprio cabo valor_instalacao valor_mensalidade vencimento/);
 # Set the primary key for the table
 __PACKAGE__->set_primary_key(qw/uid/);
 
@@ -25,6 +25,7 @@ __PACKAGE__->resultset_attributes({order_by => 'nome', rows => 10});
 #     3) Column name in *this* table
 __PACKAGE__->belongs_to(grupo => 'RG3WifiDB::Grupos', 'id_grupo');
 __PACKAGE__->belongs_to(situacao => 'RG3WifiDB::UsuariosSituacao', 'id_situacao');
+__PACKAGE__->belongs_to(estado => 'RG3WifiDB::Estados', 'id_estado');
 
 # has_many():
 #   args:

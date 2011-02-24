@@ -54,12 +54,31 @@
 		<td><input type="text" name="bairro" size="30" value="[% cliente.bairro %]" [% IF val.missing('bairro') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
+		<td>Cidade:</td>
+		<td><input type="text" name="cidade" size="30" value="[% cliente.cidade %]" [% IF val.missing('cidade') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Estado:</td>
+		<td>
+			<select name="id_estado">
+				[% FOREACH estado IN estados %]
+				<option value="[% estado.id %]" [% IF cliente.id_estado == estado.id %]selected[% END %]>[% estado.nome %]</option>
+				[% END %]
+			</select>
+			<img src="/static/images/star.png">
+		</td>
+	</tr>
+	<tr>
 		<td>CEP:</td>
 		<td><input type="text" name="cep" size="10" value="[% cliente.cep %]" [% IF val.missing('cep') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
 		<td>Telefone:</td>
 		<td><input type="text" name="telefone" size="10" value="[% cliente.telefone %]" [% IF val.missing('telefone') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>E-mail:</td>
+		<td><input type="text" name="email" size="30" value="[% cliente.email %]"></td>
 	</tr>
 	<tr>
 		<td>Observações:</td>
@@ -114,6 +133,18 @@
 	<tr>
 		<td>Data de vencimento:</td>
 		<td><input type="text" name="vencimento" size="4" value="[% cliente.vencimento %]" [% IF val.missing('vencimento') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	</tr>
+	<tr>
+		<td>Banco preferencial:</td>
+		<td>
+			<select name="id_banco">
+				[% FOREACH banco IN bancos %]
+				<option value="[% banco.id %]" [% IF cliente.id_banco == banco.id %]selected[% END %]>[% banco.nome %]</option>
+				[% END %]
+			</select>
+			<img src="/static/images/star.png">
+		</td>
 	</tr>
 	<tr>
 		<td>Não bloquear?</td>
@@ -208,7 +239,7 @@
 		<td>[% data2normal(fatura.data_liquidacao) %]</td>
 		<td>[% moeda(fatura.valor_pago) %]</td>
 		<td nowrap>
-			<a href="[% Catalyst.uri_for('emitir_boleto/') _ fatura.id _ '/2' %]">Emitir boleto</a>
+			<a href="[% Catalyst.uri_for('seleciona_banco/') _ fatura.id %]"><img src="/static/images/printer.png" align="top">Emitir boleto</a>
 			<br><a href="[% Catalyst.uri_for('editar_fatura/') _ fatura.id %]"><img src="/static/images/table_edit.png" align="top">Alterar dados</a>
 			<br><a href="[% Catalyst.uri_for('liquidar_fatura/') _ fatura.id %]"><img src="/static/images/money.png" align="top">Alterar liquidação</a>
 			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir essa fatura?', '[% Catalyst.uri_for('excluir_fatura/') _ fatura.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>

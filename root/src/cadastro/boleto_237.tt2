@@ -5,7 +5,7 @@
 <!-- Recibo do sacado -->
 <table width="850" border="1" cellpadding="4" cellspacing="0">
 	<tr>
-		<td><img src="/static/images/logobb.jpg" alt="Banco do Brasil" border="0"></td>
+		<td><img src="/static/images/logobradesco.jpg" alt="Bradesco" border="0"></td>
 		<td colspan="5"><strong><font size="+1">Recibo do sacado</font></strong></td>
 	</tr>
 	<tr>
@@ -51,7 +51,7 @@
 <!-- Boleto -->
 <table width="850" border="1" cellpadding="4" cellspacing="0">
 	<tr>
-		<td><img src="/static/images/logobb.jpg" alt="Banco do Brasil" border="0"></td>
+		<td><img src="/static/images/logobradesco.jpg" alt="Bradesco" border="0"></td>
 		<td align="center" valign="bottom"><strong><font size="+1">[% banco_num %]</font></strong></td>
 		<td colspan="4" align="right" valign="bottom"><strong>[% linha_digitavel %]</strong></td>
 	</tr>

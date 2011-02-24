@@ -402,6 +402,8 @@ sub novo : Local {
 	my $cliente = {id_grupo => 3};
 	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
 	$c->stash->{situacoes} = [$c->model('RG3WifiDB::UsuariosSituacao')->all];
+	$c->stash->{bancos} = [$c->model('RG3WifiDB::Bancos')->all];
+	$c->stash->{estados} = [$c->model('RG3WifiDB::Estados')->all];
 	$c->stash->{acao} = 'novo';
 	$c->stash->{cliente} = $cliente unless ($c->stash->{cliente});
 	$c->stash->{template} = 'cadastro/novo.tt2';
@@ -441,14 +443,18 @@ sub cadastro_do : Local {
 		uid				=> $p->{uid}									|| -1,
 		id_grupo		=> 3,
 		id_situacao		=> 1,
+		id_banco		=> $p->{id_banco}								|| undef,
 		nao_bloqueia	=> $p->{nao_bloqueia}							|| 0,
 		nome			=> $p->{nome}									|| undef,
 		doc				=> $p->{doc}									|| undef,
 		data_nascimento	=> &EasyCat::data2sql($p->{data_nascimento})	|| undef,
 		endereco		=> $p->{endereco}								|| undef,
 		bairro			=> $p->{bairro}									|| undef,
+		cidade			=> $p->{cidade}									|| undef,
+		id_estado		=> $p->{id_estado}								|| undef,
 		cep				=> $p->{cep}									|| undef,
 		telefone		=> $p->{telefone}								|| undef,
+		email			=> $p->{email}									|| undef,
 		observacao		=> $p->{observacao}								|| undef,
 		kit_proprio		=> $p->{kit_proprio}							|| 0,
 		cabo			=> $p->{cabo}									|| undef,
@@ -466,7 +472,7 @@ sub cadastro_do : Local {
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$dados,
-		{required => [qw(nome doc data_nascimento endereco bairro cep telefone cabo valor_instalacao valor_mensalidade vencimento)]}
+		{required => [qw(nome doc data_nascimento endereco bairro cidade id_estado cep telefone cabo valor_instalacao valor_mensalidade vencimento id_banco)]}
 	);
 	
 	if (!$val->success()) {
@@ -613,6 +619,8 @@ sub editar : Local {
 	$c->stash->{planos} = [$c->model('RG3WifiDB::Planos')->all];
 	$c->stash->{grupos} = [$c->model('RG3WifiDB::Grupos')->all];
 	$c->stash->{situacoes} = [$c->model('RG3WifiDB::UsuariosSituacao')->all];
+	$c->stash->{bancos} = [$c->model('RG3WifiDB::Bancos')->all];
+	$c->stash->{estados} = [$c->model('RG3WifiDB::Estados')->all];
 	$c->stash->{acao} = 'editar';
 	$c->stash->{template} = 'cadastro/novo.tt2';
 }
@@ -1448,6 +1456,18 @@ sub liquidacao_massa_do : Local {
 	$c->forward('lista/');
 }
 
+=head2 seleciona_banco
+
+Seleciona um banco para a emissão do boleto.
+
+=cut
+
+sub seleciona_banco : Local {
+	my ($self, $c, $id_fatura) = @_;
+	$c->stash->{id_fatura} = $id_fatura;
+	$c->stash->{template} = 'cadastro/seleciona_banco.tt2';
+}
+
 =head2 emitir_boleto
 
 Emite um boleto referente a uma fatura específica.
@@ -1466,9 +1486,23 @@ sub emitir_boleto : Local {
 	my $dt_fatura = DateTime::Format::MySQL->parse_date($fatura->data_vencimento);
 	my $fator_vencimento = $dt_fatura->delta_days($dt_base);
 	
-	# Gera os dados do código de barras específicos do Banco do Brasil
+	# Outros parâmetros comum a todos os bancos
 	my $moeda = 9;	# Código da moeda para R$
-	my $nosso_numero = '280376' . sprintf('%05d', $fatura->id);
+	
+	## De acordo com o banco selecionado, devemos gerar o nosso número devido
+	# Banco do Brasil
+	my $nosso_numero = undef;
+	if ($banco->numero == 1) {
+		my $convenio = '280376';	# Convênio do Banco do Brasil
+		$nosso_numero = $convenio . sprintf('%05d', $fatura->id);
+	}
+	
+	# Bradesco
+	elsif ($banco->numero == 237) {
+		$nosso_numero = sprintf('%011d', $fatura->id);
+	}
+	
+	# Gera os dados do código de barras
 	my $campo_livre = &campo_livre($banco->numero, $nosso_numero, $banco->ag, $banco->cc);
 	my $codigo = sprintf('%03s%d%04d%011.2f%025s',
 		$banco->numero,
@@ -1502,7 +1536,7 @@ sub campo_livre : Private {
 	my ($banco, $nosso_numero, $ag, $cc) = @_;
 	
 	if ($banco == 1) {
-		return sprintf('%011d%04d%08d%02d', $nosso_numero, $ag, $cc, 18);
+		return sprintf('%011d%04d%08d%02d', $nosso_numero, $ag, $cc, 18);	# Carteira 18
 	} elsif ($banco == 237) {
 		return sprintf('%04d%02d%011d%07d%1d', $ag, 9, $nosso_numero, $cc, 0);
 	} else {

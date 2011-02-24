@@ -1,0 +1,12 @@
+[% PROCESS site/macros %]
+
+<h2>Emissão de boleto</h2>
+
+<p>Escolha um banco para a emissão do boleto:</p>
+
+<table border="0" cellpadding="10" cellspacing="10">
+	<tr>
+		<td align="center"><a href="[% Catalyst.uri_for('emitir_boleto/') _ id_fatura _ '/1' %]"><img src="/static/images/logobradesco.jpg" alt="Bradesco" border="0"></a></td>
+		<td align="center"><a href="[% Catalyst.uri_for('emitir_boleto/') _ id_fatura _ '/2' %]"><img src="/static/images/logobb.jpg" alt="Banco do Brasil" border="0"></a></td>
+	</tr>
+</table>

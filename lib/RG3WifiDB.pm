@@ -40,6 +40,7 @@ __PACKAGE__->load_classes({
 		Faturas
 		FaturasSituacao
 		Bancos
+		Estados
 		radacct
 		radcheck
 		radreply
