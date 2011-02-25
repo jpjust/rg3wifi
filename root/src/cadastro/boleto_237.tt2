@@ -1,5 +1,9 @@
 [% PROCESS site/macros %]
 
+<h2 class="dontprint">Fatura RG3.Net</h2>
+
+<div class="mypage">
+
 <!-- Recibo do sacado -->
 <table width="850" border="1" cellpadding="4" cellspacing="0">
 	<tr>
@@ -29,20 +33,21 @@
 		<td align="right"><strong>[% nosso_numero %]</strong></td>
 	</tr>
 	<tr>
-		<td colspan="6" height="200" valign="top">Mensagem<br><br>
-		<strong>[% fatura.descricao %]</strong>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td colspan="5" valign="top">
+		<td colspan="6" valign="top" style="padding-left: 125; ">
 			Sacado<br>
 			<strong>[% fatura.cliente.nome %]<br>
 			[% fatura.cliente.endereco %], [% fatura.cliente.bairro %]<br>
 			CEP: [% fatura.cliente.cep %] - [% fatura.cliente.cidade %] - [% fatura.cliente.estado.nome %]</strong>
 		</td>
 	</tr>
+	<tr>
+		<td colspan="6" height="100" valign="top">Mensagem<br><br>
+		<strong>[% fatura.descricao %]</strong>
+	</tr>
 </table>
 
+<br>
+<br>
 <br>
 <br>
 <br>
@@ -138,3 +143,7 @@
 <p><img src="[% Catalyst.uri_for('/cadastro/codigo_barras/') _ codigo_barras %]"></p>
 
 <hr>
+
+<!-- (Opcional) Coloque propagandas ou avisos aqui! -->
+
+</div>
