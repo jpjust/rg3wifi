@@ -1,0 +1,19 @@
+[% PROCESS site/macros %]
+
+<h2 class="dontprint">Processamento de arquivo de retorno</h2>
+
+<p>Use o formulário abaixo para selecionar e enviar o arquivo de retorno que deseja processar.</p>
+
+<form action="[% Catalyst.uri_for('upload_retorno') %]" method="POST" enctype="multipart/form-data">
+
+<p>Banco:
+<select name="num_banco">
+	[% FOREACH banco IN bancos %]
+	<option value="[% banco.numero %]">[% banco.nome %]</option>
+	[% END %]
+</select>
+</p>
+
+<input type="file" name="arquivo">
+<input type="submit" value="Enviar">
+</form>

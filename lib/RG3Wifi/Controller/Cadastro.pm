@@ -1666,6 +1666,133 @@ sub lista_faturas_abertas : Local {
 
 }
 
+=head2 enviar_retorno
+
+Exibe um formuláro para envio de arquivo de retorno.
+
+=cut
+
+sub enviar_retorno : Local {
+	my ($self, $c) = @_;
+	$c->stash->{bancos} = [$c->model('RG3WifiDB::Bancos')->all];
+	$c->stash->{template} = 'cadastro/upload_retorno.tt2';
+}
+
+=head2 upload_retorno
+
+Recebe o arquivo de retorno e faz o processamento.
+
+=cut
+
+sub upload_retorno : Local {
+	my ($self, $c) = @_;
+	
+	my $upload = $c->request->uploads->{arquivo};	# Obtém o arquivo de upload
+	my $fh = $upload->fh;							# Obtém um file handler do arquivo
+	
+	# De acordo com o banco, o layout do arquivo difere
+	my $p = $c->request->params;
+	if ($p->{num_banco} == 1) {
+		&processa_retorno_bb(@_, $fh);
+	} elsif ($p->{num_banco} == 237) {
+		&processa_retorno_bradesco(@_, $fh);
+	} else {
+		$c->stash->{error_msg} = 'Você indicou um banco desconhecido.';
+		$c->stash->{template} = 'error.tt2';
+	}
+}
+
+=head2 processa_retorno_bb
+
+Processa um arquivo de retorno do Banco do Brasil.
+
+=cut
+
+sub processa_retorno_bb : Local {
+	my ($self, $c, $fh) = @_;
+	
+	while (<$fh>) {
+		print $_;
+	}
+}
+
+=head2 processa_retorno_bradesco
+
+Processa um arquivo de retorno do Bradesco.
+
+=cut
+
+sub processa_retorno_bradesco : Local {
+	my ($self, $c, $fh) = @_;
+	
+	# Obtém o cabeçalho
+	my $cabeca = $fh->getline;
+	chop($cabeca);
+	
+	# Verifica se o arquivo está com o cabeçalho correto
+	my $inicio = substr($cabeca, 0, 26);
+	if ($inicio ne '02RETORNO01COBRANCA       ') {
+		$c->stash->{error_msg} = 'O arquivo enviado não corresponde a um arquivo de retorno do Bradesco.';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
+	# Obtém dados do cabeçalho
+	my $empresa = substr($cabeca, 46, 30);
+	my $data_arquivo = substr($cabeca, 94, 2) . '/' . substr($cabeca, 96, 2) . '/' . substr($cabeca, 98, 2);
+	my $data_credito = substr($cabeca, 379, 2) . '/' . substr($cabeca, 381, 2) . '/' . substr($cabeca, 383, 2);
+	
+	# Lê cada entrada do arquivo
+	my @boletos;
+	while (<$fh>) {
+		chop($_);
+		my $tipo = abs(substr($_, 0, 1));
+		
+		# Boleto
+		if ($tipo == 1) {
+			my $nosso_numero = abs(substr($_, 70, 11)); # O último dígito é retirado, pois é DV
+			my $fatura = $c->model('RG3WifiDB::Faturas')->find({id => $nosso_numero});
+			my $boleto = {
+				nosso_numero => $nosso_numero,
+				data_pagamento => substr($_, 110, 2) . '/' . substr($_, 112, 2) . '/' . substr($_, 114, 2),
+				banco_cob => substr($_, 165, 3),
+				ag_cob => substr($_, 168, 5),
+				valor_pago => abs(substr($_, 253, 13)) / 100,
+				data_credito => substr($_, 295, 2) . '/' . substr($_, 297, 2) . '/' . substr($_, 299, 2),
+				fatura => $fatura,
+			};
+			push(@boletos, $boleto);
+			
+			# Liquida a fatura (se o boleto corresponder a alguma fatura do nosso sistema)
+			if ($fatura) {
+				my $nova_fatura = {
+					id => $fatura->id,
+					valor_pago => $boleto->{valor_pago},
+					data_liquidacao => &EasyCat::data2sql($boleto->{data_pagamento}),
+					id_situacao => 2,
+				};
+				
+				# Faz as devidas inserções no banco de dados
+				eval {
+					$c->model('RG3WifiDB::Faturas')->update_or_create($nova_fatura);
+				};
+				
+				if ($@) {
+					$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $@;
+					$c->stash->{template} = 'error.tt2';
+					return;
+				}
+			}
+		}
+	}
+	
+	$c->stash->{empresa} = $empresa;
+	$c->stash->{data_arquivo} = $data_arquivo;
+	$c->stash->{data_credito} = $data_credito;
+	$c->stash->{boletos} = [@boletos];
+	$c->stash->{template} = 'cadastro/processa_retorno.tt2';
+}
+
 =head1 AUTHOR
 
 Joao Paulo Just,,,

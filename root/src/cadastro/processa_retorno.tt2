@@ -1,0 +1,27 @@
+[% PROCESS site/macros %]
+
+<h2 class="dontprint">Processamento de arquivo de retorno</h2>
+
+<p>Empresa: [% empresa %]<br>
+Data do arquivo: [% data_arquivo %]<br>
+Data do crédito: [% data_credito %]</p>
+
+<table width="100%" border="1">
+	<tr>
+		<th>Cliente/Fatura</th>
+		<th>Vencimento</th>
+		<th>Valor</th>
+		<th>Data do pagamento</th>
+		<th>Valor pago</th>
+	</tr>
+	
+	[% FOREACH boleto IN boletos %]
+	<tr>
+		<td>[% boleto.fatura.cliente.nome %]<br>[% boleto.fatura.descricao %]</td>
+		<td>[% data2normal(boleto.fatura.data_vencimento) %]</td>
+		<td>[% moeda(boleto.fatura.valor) %]</td>
+		<td>[% boleto.data_pagamento %]</td>
+		<td>[% moeda(boleto.valor_pago) %]</td>
+	</tr>
+	[% END %]
+</table>
