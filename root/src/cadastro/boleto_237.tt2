@@ -1,7 +1,5 @@
 [% PROCESS site/macros %]
 
-<h2>Fatura RG3.Net</h2>
-
 <!-- Recibo do sacado -->
 <table width="850" border="1" cellpadding="4" cellspacing="0">
 	<tr>
@@ -15,7 +13,7 @@
 	</tr>
 	<tr>
 		<td colspan="4"><strong>RG3.Net Comércio e Serviços Ltda.</strong></td>
-		<td align="right"><strong>[% data2normal(fatura.data_vencimento) %]</strong></td>
+		<td align="center"><strong>[% data2normal(fatura.data_vencimento) %]</strong></td>
 		<td align="right"><strong>[% moeda(fatura.valor) %]</strong></td>
 	</tr>
 	<tr>
@@ -31,19 +29,22 @@
 		<td align="right"><strong>[% nosso_numero %]</strong></td>
 	</tr>
 	<tr>
-		<td colspan="6" valign="top">
-			Sacado<br>
-			<strong>[% fatura.cliente.nome %]<br>
-			[% fatura.cliente.endereco %]<br>
-			CEP: [% fatura.cliente.cep %] - [% fatura.cliente.cidade %] - [% fatura.cliente.estado.nome %]</strong>
-		</td>
-	</tr>
-	<tr>
 		<td colspan="6" height="200" valign="top">Mensagem<br><br>
 		<strong>[% fatura.descricao %]</strong>
 	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td colspan="5" valign="top">
+			Sacado<br>
+			<strong>[% fatura.cliente.nome %]<br>
+			[% fatura.cliente.endereco %], [% fatura.cliente.bairro %]<br>
+			CEP: [% fatura.cliente.cep %] - [% fatura.cliente.cidade %] - [% fatura.cliente.estado.nome %]</strong>
+		</td>
+	</tr>
 </table>
 
+<br>
+<br>
 <br>
 <hr>
 <br>
@@ -97,14 +98,18 @@
 	</tr>
 	<tr>
 		<td><strong>&nbsp;</strong></td>
-		<td align="center"><strong>18-019</strong></td>
+		<td align="center"><strong>[% carteira %]</strong></td>
 		<td align="center"><strong>R$</strong></td>
 		<td align="center"><strong>[% fatura.valor %]</strong></td>
 		<td align="center"><strong>[% moeda(fatura.valor) %]</strong></td>
 		<td align="right"><strong>[% moeda(fatura.valor) %]</strong></td>
 	</tr>
 	<tr>
-		<td colspan="5" rowspan="3" valign="top">Instruções</td>
+		<td colspan="5" rowspan="3" valign="top">
+			Instruções<br>
+			<strong>- Multa de [% moeda(multa) %] após o vencimento.<br>
+			- Juros de [% moeda(juros) %] para cada dia após o vencimento.</strong>
+		</td>
 		<td>(-) Desconto/abatimento</td>
 	</tr>
 	<tr>
@@ -117,7 +122,7 @@
 		<td colspan="5" rowspan="3" valign="top">
 			Sacado<br>
 			<strong>[% fatura.cliente.nome %]<br>
-			[% fatura.cliente.endereco %]<br>
+			[% fatura.cliente.endereco %], [% fatura.cliente.bairro %]<br>
 			CEP: [% fatura.cliente.cep %] - [% fatura.cliente.cidade %] - [% fatura.cliente.estado.nome %]</strong>
 		</td>
 		<td>&nbsp;</td>
@@ -131,3 +136,5 @@
 </table>
 
 <p><img src="[% Catalyst.uri_for('/cadastro/codigo_barras/') _ codigo_barras %]"></p>
+
+<hr>

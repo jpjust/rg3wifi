@@ -1486,20 +1486,24 @@ sub emitir_boleto : Local {
 	my $dt_fatura = DateTime::Format::MySQL->parse_date($fatura->data_vencimento);
 	my $fator_vencimento = $dt_fatura->delta_days($dt_base);
 	
-	# Outros parâmetros comum a todos os bancos
-	my $moeda = 9;	# Código da moeda para R$
+	# Outros parâmetros comum a todos os bancos (PARAMETRIZAR TODOS!)
+	my $moeda = 9;		# Código da moeda para R$
+	my $multa = 0.02;	# 2% de multa
+	my $juros = 0.01;	# 1% de juros ao mês
 	
-	## De acordo com o banco selecionado, devemos gerar o nosso número devido
+	## De acordo com o banco selecionado, devemos gerar o nosso número devido (PARAMETRIZAR TODOS!)
 	# Banco do Brasil
-	my $nosso_numero = undef;
+	my ($carteira, $nosso_numero) = undef;
 	if ($banco->numero == 1) {
 		my $convenio = '280376';	# Convênio do Banco do Brasil
 		$nosso_numero = $convenio . sprintf('%05d', $fatura->id);
+		$carteira = '18-019';
 	}
 	
 	# Bradesco
 	elsif ($banco->numero == 237) {
 		$nosso_numero = sprintf('%011d', $fatura->id);
+		$carteira = '18-019';
 	}
 	
 	# Gera os dados do código de barras
@@ -1518,8 +1522,11 @@ sub emitir_boleto : Local {
 	
 	# Exibe o boleto
 	$c->stash->{banco} = $banco;
+	$c->stash->{multa} = sprintf('%.2f', $fatura->valor * $multa);
+	$c->stash->{juros} = sprintf('%.2f', $fatura->valor * $juros / 30);
 	$c->stash->{banco_num} = sprintf('%03d-%1d', $banco->numero, &modulo11($banco->numero));
 	$c->stash->{fatura} = $fatura;
+	$c->stash->{carteira} = $carteira;
 	$c->stash->{nosso_numero} = $nosso_numero;
 	$c->stash->{codigo_barras} = $codigo;
 	$c->stash->{linha_digitavel} = &linha_digitavel($banco->numero, $moeda, $campo_livre, $fator_vencimento->delta_days, $fatura->valor, $dac);
@@ -1535,10 +1542,19 @@ Gera o campo livre do banco.
 sub campo_livre : Private {
 	my ($banco, $nosso_numero, $ag, $cc) = @_;
 	
+	# NOTA: Foi utilizado %s para o nosso número do Banco do Brasil, pois
+	# o %d estava estourando para -1 no Linux, quando o nosso número era
+	# muito grande.
+	
+	# Banco do Brasil
 	if ($banco == 1) {
-		return sprintf('%011d%04d%08d%02d', $nosso_numero, $ag, $cc, 18);	# Carteira 18
+		return sprintf('%s%04d%08d%02d', $nosso_numero, $ag, $cc, 18);	# Carteira 18 (PARAMETRIZAR!)
+		
+	# Bradesco
 	} elsif ($banco == 237) {
 		return sprintf('%04d%02d%011d%07d%1d', $ag, 9, $nosso_numero, $cc, 0);
+		
+	# Banco desconhecido
 	} else {
 		return '';
 	}
@@ -1585,9 +1601,10 @@ Exibe o código de barras de um determinado número.
 
 sub codigo_barras : Local {
 	my ($self, $c, $codigo) = @_;
-	print "Content-type: image/png\n\n";
+	$c->response->content_type('image/png');
 	binmode STDOUT;
-	print STDOUT GD::Barcode::ITF->new($codigo)->plot(NoText => 1, Height => 55)->png;
+	$c->response->write(GD::Barcode::ITF->new($codigo)->plot(NoText => 1, Height => 55)->png);
+	$c->response->redirect('');
 }
 
 =head2 lista_inadimplentes

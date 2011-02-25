@@ -163,12 +163,17 @@ img {
 }
 
 @media print {
+	body {
+		margin: 0px;
+		padding: 0px; 
+	}
+
 	a {
 		display: none;
 	}
 	
 	td {
-		font-size: 8pt;
+		font-size: 10pt;
 	}
 	
 	h1.p_cadastro {
