@@ -1,3 +1,10 @@
+- Juntar os arquivos de boletos em um só e parametrizar
+  informações dos bancos
+- Fazer o processamento de retorno verificar se a agência
+  e a conta no arquivo de retorno bate com as informações
+  do banco no banco de dados, para evitar a entrada de um
+  retorno de outra empresa.
+  
 - Colocar mensagens de erro quando CPF/CNPJ
   estiverem incorretos ou quando algum campo único já
   existir (ex.: login já cadastrado).

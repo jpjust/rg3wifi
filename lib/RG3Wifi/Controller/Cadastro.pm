@@ -1275,6 +1275,14 @@ sub nova_fatura_do : Local {
 		return;
 	}
 	
+	# Apenas faturas na situação "Aberto" (1) podem ser alteradas
+	my $fatura_antiga = $c->model('RG3WifiDB::Faturas')->find($fatura->{id});
+	if ($fatura_antiga && $fatura_antiga->id_situacao > 1) {
+		$c->stash->{error_msg} = 'Essa fatura já não pode mais ser alterada.';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
 	# Faz as devidas inserções no banco de dados
 	eval {
 		# Gera fatura e atualiza a inadimplencia
@@ -1324,13 +1332,13 @@ sub liquidar_fatura_do : Local {
 		id				=> $p->{id}										|| undef,
 		data_liquidacao	=> &EasyCat::data2sql($p->{data_liquidacao})	|| undef,
 		valor_pago		=> $p->{valor_pago}								|| undef,
-		id_situacao		=> 2,
+		id_situacao		=> 4,
 	};
 	
 	# Valida formulário
 	my $val = Data::FormValidator->check(
 		$fatura,
-		{required => [qw(id)]}
+		{required => [qw(id data_liquidacao valor_pago)]}
 	);
 	
 	if (!$val->success()) {
@@ -1340,13 +1348,14 @@ sub liquidar_fatura_do : Local {
 		return;
 	}
 	
-	# Verifica se está liquidada
-	if ($fatura->{valor_pago} == 0) {
-		$fatura->{id_situacao} = 1;
-		$fatura->{data_liquidacao} = undef;
-		$fatura->{valor_pago} = undef;
+	# Apenas faturas na situação "Impresso" (2) podem ser liquidadas
+	my $fatura_antiga = $c->model('RG3WifiDB::Faturas')->find($fatura->{id});
+	if ($fatura_antiga->id_situacao > 2) {
+		$c->stash->{error_msg} = 'Essa fatura já foi liquidada.';
+		$c->stash->{template} = 'error.tt2';
+		return;
 	}
-
+	
 	# Faz as devidas inserções no banco de dados
 	eval {
 		# Liquida fatura
@@ -1376,6 +1385,14 @@ Exclui uma fatura.
 sub excluir_fatura : Local {
 	my ($self, $c, $id) = @_;
 	my $fatura = $c->model('RG3WifiDB::Faturas')->search({id => $id})->first;
+	
+	# Apenas faturas na situação "Aberto" (1) podem ser excluídas
+	if ($fatura->id_situacao > 1) {
+		$c->stash->{error_msg} = 'Essa fatura já não pode mais ser excluída.';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
 	$fatura->delete();
 	$c->stash->{status_msg} = 'Fatura excluída com sucesso.';
 
@@ -1519,6 +1536,9 @@ sub emitir_boleto : Local {
 	# Calcula o módulo 11
 	my $dac = &modulo11($codigo);
 	$codigo = substr($codigo, 0, 4) . $dac . substr($codigo, 4);
+	
+	# Atualiza a fatura para a situação "Impresso" (2)
+	$fatura->update({id_situacao => 2}) if ($fatura->id_situacao == 1);
 	
 	# Exibe o boleto
 	$c->stash->{banco} = $banco;
@@ -1711,9 +1731,72 @@ Processa um arquivo de retorno do Banco do Brasil.
 sub processa_retorno_bb : Local {
 	my ($self, $c, $fh) = @_;
 	
-	while (<$fh>) {
-		print $_;
+	# Obtém o cabeçalho
+	my $cabeca = $fh->getline;
+	chop($cabeca);
+	
+	# Verifica se o arquivo está com o cabeçalho correto
+	my $inicio = substr($cabeca, 0, 17);
+	if ($inicio ne '00100000         ') {
+		$c->stash->{error_msg} = 'O arquivo enviado não corresponde a um arquivo de retorno do Banco do Brasil.';
+		$c->stash->{template} = 'error.tt2';
+		return;
 	}
+	
+	# Obtém dados do cabeçalho
+	my $empresa = substr($cabeca, 72, 30);
+	my $data_arquivo = substr($cabeca, 143, 2) . '/' . substr($cabeca, 145, 2) . '/' . substr($cabeca, 147, 4);
+	my $data_credito = '(Não disponível)';
+	
+	# Lê cada entrada do arquivo (no caso do BB, cada boleto tem duas linhas de informações)
+	my @boletos;
+	while (<$fh>) {
+		chop($_);
+		my $tipo = abs(substr($_, 7, 1));
+		
+		# Boleto
+		if ($tipo == 3) {
+			my $nosso_numero = abs(substr($_, 43, 5)); # Retira-se os 6 primeiros dígitos (convênio) e o último (DV) (PARAMETRIZAR!)
+			my $fatura = $c->model('RG3WifiDB::Faturas')->find({id => $nosso_numero});
+			my $banco_cob = substr($_, 96, 3);
+			my $ag_cob = substr($_, 99, 5);
+			
+			# No caso do BB, precisamos agora andar pra próxima linha
+			$_ = $fh->getline;
+			chop($_);
+			
+			my $boleto = {
+				nosso_numero => $nosso_numero,
+				data_pagamento => substr($_, 137, 2) . '/' . substr($_, 139, 2) . '/' . substr($_, 141, 4),
+				banco_cob => $banco_cob,
+				ag_cob => $ag_cob,
+				valor_pago => abs(substr($_, 79, 13)) / 100,
+				data_credito => substr($_, 145, 2) . '/' . substr($_, 147, 2) . '/' . substr($_, 149, 4),
+				fatura => $fatura,
+			};
+			push(@boletos, $boleto);
+			
+			# Liquida a fatura (se o boleto corresponder a alguma fatura do nosso sistema)
+			if ($fatura) {
+				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento});
+				
+				if ($err) {
+					$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $err;
+					$c->stash->{template} = 'error.tt2';
+					return;
+				}
+				
+				# Após alterar a liquidação, verifica se ainda existem faturas em aberto
+				&atualiza_inadimplencia($c, $fatura->cliente->uid);
+			}
+		}
+	}
+	
+	$c->stash->{empresa} = $empresa;
+	$c->stash->{data_arquivo} = $data_arquivo;
+	$c->stash->{data_credito} = $data_credito;
+	$c->stash->{boletos} = [@boletos];
+	$c->stash->{template} = 'cadastro/processa_retorno.tt2';
 }
 
 =head2 processa_retorno_bradesco
@@ -1765,23 +1848,16 @@ sub processa_retorno_bradesco : Local {
 			
 			# Liquida a fatura (se o boleto corresponder a alguma fatura do nosso sistema)
 			if ($fatura) {
-				my $nova_fatura = {
-					id => $fatura->id,
-					valor_pago => $boleto->{valor_pago},
-					data_liquidacao => &EasyCat::data2sql($boleto->{data_pagamento}),
-					id_situacao => 2,
-				};
+				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento});
 				
-				# Faz as devidas inserções no banco de dados
-				eval {
-					$c->model('RG3WifiDB::Faturas')->update_or_create($nova_fatura);
-				};
-				
-				if ($@) {
-					$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $@;
+				if ($err) {
+					$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $err;
 					$c->stash->{template} = 'error.tt2';
 					return;
 				}
+				
+				# Após alterar a liquidação, verifica se ainda existem faturas em aberto
+				&atualiza_inadimplencia($c, $fatura->cliente->uid);
 			}
 		}
 	}
@@ -1791,6 +1867,56 @@ sub processa_retorno_bradesco : Local {
 	$c->stash->{data_credito} = $data_credito;
 	$c->stash->{boletos} = [@boletos];
 	$c->stash->{template} = 'cadastro/processa_retorno.tt2';
+}
+
+=head2 liquida_fatura2
+
+Liquida uma fatura através de passagem de parâmetros.
+Retorna nulo caso sucesso, ou a mensagem de erro caso tenha havido uma falha.
+
+=cut
+
+sub liquida_fatura2 : Private {
+	my ($self, $c, $id, $valor_pago, $data_pagamento) = @_;
+	
+	my $nova_fatura = {
+		id => $id,
+		valor_pago => $valor_pago,
+		data_liquidacao => &EasyCat::data2sql($data_pagamento),
+		id_situacao => 4,
+	};
+	
+	# Faz as devidas inserções no banco de dados
+	eval {
+		$c->model('RG3WifiDB::Faturas')->update_or_create($nova_fatura);
+	};
+	
+	return $@;
+}
+
+=head2 baixar_fatura_do
+
+Baixa uma fatura, sem precisar ter sido liquidada.
+
+=cut
+
+sub baixar_fatura_do : Local {
+	my ($self, $c, $id) = @_;
+
+	# Apenas faturas na situação "Impresso" (2) podem ser baixadas
+	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id);
+	if ($fatura->id_situacao > 2) {
+		$c->stash->{error_msg} = 'Essa fatura não pode mais receber baixa.';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+
+	# Baixa a fatura e verifica se ainda há inadimplência neste cliente
+	$fatura->update({id_situacao => 3});
+	&atualiza_inadimplencia($c, $fatura->cliente->uid);
+	
+	$c->stash->{status_msg} = 'A fatura recebeu baixa com sucesso.';
+	$c->forward('editar/' . $fatura->cliente->id_cliente);
 }
 
 =head1 AUTHOR

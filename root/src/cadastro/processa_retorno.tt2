@@ -17,7 +17,7 @@ Data do crédito: [% data_credito %]</p>
 	
 	[% FOREACH boleto IN boletos %]
 	<tr>
-		<td>[% boleto.fatura.cliente.nome %]<br>[% boleto.fatura.descricao %]</td>
+		<td><strong>[% boleto.fatura.cliente.nome %]</strong> - [% boleto.fatura.descricao %]</td>
 		<td>[% data2normal(boleto.fatura.data_vencimento) %]</td>
 		<td>[% moeda(boleto.fatura.valor) %]</td>
 		<td>[% boleto.data_pagamento %]</td>

@@ -225,7 +225,7 @@
 	[% FOREACH fatura IN cliente.faturas %]
 	
 	[% # Cores da lista, de acordo com o status %]
-	[% IF fatura.id_situacao == 1 %]
+	[% IF fatura.id_situacao <= 2 %]
 		[% bgcolor = '#ffaaaa' %]
 	[% ELSE %]
 		[% bgcolor = '#ffffff' %]
@@ -240,9 +240,10 @@
 		<td>[% moeda(fatura.valor_pago) %]</td>
 		<td nowrap>
 			<a href="[% Catalyst.uri_for('seleciona_banco/') _ fatura.id %]"><img src="/static/images/printer.png" align="top">Emitir boleto</a>
-			<br><a href="[% Catalyst.uri_for('editar_fatura/') _ fatura.id %]"><img src="/static/images/table_edit.png" align="top">Alterar dados</a>
-			<br><a href="[% Catalyst.uri_for('liquidar_fatura/') _ fatura.id %]"><img src="/static/images/money.png" align="top">Alterar liquidação</a>
-			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir essa fatura?', '[% Catalyst.uri_for('excluir_fatura/') _ fatura.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
+			[% IF fatura.id_situacao <= 1 %]<br><a href="[% Catalyst.uri_for('editar_fatura/') _ fatura.id %]"><img src="/static/images/table_edit.png" align="top">Alterar dados</a>[% END %]
+			[% IF fatura.id_situacao <= 2 %]<br><a href="[% Catalyst.uri_for('baixar_fatura_do/') _ fatura.id %]"><img src="/static/images/bullet_arrow_down.png" align="top">Baixar</a>[% END %]
+			[% IF fatura.id_situacao <= 2 %]<br><a href="[% Catalyst.uri_for('liquidar_fatura/') _ fatura.id %]"><img src="/static/images/money.png" align="top">Liquidar</a>[% END %]
+			[% IF fatura.id_situacao <= 1 %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir essa fatura?', '[% Catalyst.uri_for('excluir_fatura/') _ fatura.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 	</tr>
 	[% END %]
