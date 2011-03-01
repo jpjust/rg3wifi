@@ -2,6 +2,6 @@
 
 <h2>Geração de planilha</h2>
 
-<p><a href="javascript:document.history(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+<p><a href="javascript:history.go(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
 <textarea rows="20" cols="100">[% saida %]</textarea>

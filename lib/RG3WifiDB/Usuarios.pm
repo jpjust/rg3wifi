@@ -26,6 +26,7 @@ __PACKAGE__->resultset_attributes({order_by => 'nome', rows => 10});
 __PACKAGE__->belongs_to(grupo => 'RG3WifiDB::Grupos', 'id_grupo');
 __PACKAGE__->belongs_to(situacao => 'RG3WifiDB::UsuariosSituacao', 'id_situacao');
 __PACKAGE__->belongs_to(estado => 'RG3WifiDB::Estados', 'id_estado');
+__PACKAGE__->belongs_to(banco => 'RG3WifiDB::Bancos', 'id_banco');
 
 # has_many():
 #   args:

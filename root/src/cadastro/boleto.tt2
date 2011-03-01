@@ -1,0 +1,153 @@
+[% PROCESS site/macros %]
+
+<div class="dontprint"><p><strong>Total de boletos: [% boletos.size %]</strong></p></div> 
+
+[% FOREACH boleto IN boletos %]
+
+<div class="mypage">
+
+<!-- Recibo do sacado -->
+<table width="850" border="1" cellpadding="4" cellspacing="0">
+	<tr>
+		<td><img src="[% '/static/images/banco_' _ boleto.banco.numero _ '.jpg' %]" alt="[% boleto.banco.nome %]" border="0"></td>
+		<td colspan="5"><strong><font size="+1">Recibo do sacado</font></strong></td>
+	</tr>
+	<tr>
+		<td colspan="4">Cedente</td>
+		<td>Vencimento</td>
+		<td>Valor do documento</td>
+	</tr>
+	<tr>
+		<td colspan="4"><strong>RG3.Net Comércio e Serviços Ltda.</strong></td>
+		<td align="center"><strong>[% data2normal(boleto.fatura.data_vencimento) %]</strong></td>
+		<td align="right"><strong>[% moeda(boleto.fatura.valor) %]</strong></td>
+	</tr>
+	<tr>
+		<td>Data do documento</td>
+		<td colspan="3">Agência/Conta cedente</td>
+		<td>Número do documento</td>
+		<td>Nosso número</td>
+	</tr>
+	<tr>
+		<td><strong>[% data2normal(boleto.fatura.data_lancamento) %]</strong></td>
+		<td colspan="3" align="center"><strong>[% boleto.banco.ag %]-[% boleto.banco.ag_dv %]/[% boleto.banco.cc %]-[% boleto.banco.cc_dv %]</strong></td>
+		<td align="center"><strong>[% boleto.fatura.id %]</strong></td>
+		<td align="right"><strong>[% boleto.nosso_numero %]</strong></td>
+	</tr>
+	<tr>
+		<td colspan="6" valign="top" style="padding-left: 125; ">
+			Sacado<br>
+			<strong>[% boleto.fatura.cliente.nome %]<br>
+			[% boleto.fatura.cliente.endereco %], [% boleto.fatura.cliente.bairro %]<br>
+			CEP: [% boleto.fatura.cliente.cep %] - [% boleto.fatura.cliente.cidade %] - [% boleto.fatura.cliente.estado.nome %]</strong>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="6" height="100" valign="top">Mensagem<br><br>
+		<strong>[% boleto.fatura.descricao %]</strong></td>
+	</tr>
+</table>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<hr>
+<br>
+
+<!-- Boleto -->
+<table width="850" border="1" cellpadding="4" cellspacing="0">
+	<tr>
+		<td><img src="[% '/static/images/banco_' _ boleto.banco.numero _ '.jpg' %]" alt="[% boleto.banco.nome %]" border="0"></td>
+		<td align="center" valign="bottom"><strong><font size="+1">[% boleto.banco_num %]</font></strong></td>
+		<td colspan="4" align="right" valign="bottom"><strong>[% boleto.linha_digitavel %]</strong></td>
+	</tr>
+	<tr>
+		<td colspan="5">Local de pagamento</td>
+		<td>Vencimento</td>
+	</tr>
+	<tr>
+		<td colspan="5"><strong>Pagável em qualquer banco até o vencimento</strong></td>
+		<td align="right"><strong>[% data2normal(boleto.fatura.data_vencimento) %]</strong></td>
+	</tr>
+	<tr>
+		<td colspan="5">Cedente</td>
+		<td>Agência/Conta cedente</td>
+	</tr>
+	<tr>
+		<td colspan="5"><strong>RG3.Net Comércio e Serviços Ltda.</strong></td>
+		<td align="right"><strong>[% boleto.banco.ag %]-[% boleto.banco.ag_dv %]/[% boleto.banco.cc %]-[% boleto.banco.cc_dv %]</strong></td>
+	</tr>
+	<tr>
+		<td>Data do documento</td>
+		<td>Número do documento</td>
+		<td>Espécie</td>
+		<td>Aceite</td>
+		<td>Data de processamento</td>
+		<td>Nosso número</td>
+	</tr>
+	<tr>
+		<td><strong>[% data2normal(boleto.fatura.data_lancamento) %]</strong></td>
+		<td align="center"><strong>[% boleto.fatura.id %]</strong></td>
+		<td align="center"><strong>DM</strong></td>
+		<td align="center"><strong>N</strong></td>
+		<td align="center"><strong>[% data2normal(boleto.fatura.data_lancamento) %]</strong></td>
+		<td align="right"><strong>[% boleto.nosso_numero %]</strong></td>
+	</tr>
+	<tr>
+		<td>Uso do banco</td>
+		<td>Carteira</td>
+		<td>Espécie</td>
+		<td>Quantidade</td>
+		<td>Valor</td>
+		<td>(=) Valor do documento</td>
+	</tr>
+	<tr>
+		<td><strong>&nbsp;</strong></td>
+		<td align="center"><strong>[% boleto.banco.carteira %]</strong></td>
+		<td align="center"><strong>R$</strong></td>
+		<td align="center"><strong>[% boleto.fatura.valor %]</strong></td>
+		<td align="center"><strong>[% moeda(boleto.fatura.valor) %]</strong></td>
+		<td align="right"><strong>[% moeda(boleto.fatura.valor) %]</strong></td>
+	</tr>
+	<tr>
+		<td colspan="5" rowspan="3" valign="top">
+			Instruções<br>
+			<strong>- Multa de [% moeda(boleto.multa) %] após o vencimento.<br>
+			- Juros de [% moeda(boleto.juros) %] para cada dia após o vencimento.</strong>
+		</td>
+		<td>(-) Desconto/abatimento</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>(+) Mora/multa</td>
+	</tr>
+	<tr>
+		<td colspan="5" rowspan="3" valign="top">
+			Sacado<br>
+			<strong>[% boleto.fatura.cliente.nome %]<br>
+			[% boleto.fatura.cliente.endereco %], [% boleto.fatura.cliente.bairro %]<br>
+			CEP: [% boleto.fatura.cliente.cep %] - [% boleto.fatura.cliente.cidade %] - [% boleto.fatura.cliente.estado.nome %]</strong>
+		</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>(=) Valor cobrado</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+</table>
+
+<p><img src="[% Catalyst.uri_for('/cadastro/codigo_barras_img/') _ boleto.codigo_barras %]"></p>
+
+<hr>
+
+<!-- (Opcional) Coloque propagandas ou avisos aqui! -->
+
+</div>
+
+[% END %]

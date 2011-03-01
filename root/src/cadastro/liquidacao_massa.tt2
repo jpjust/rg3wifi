@@ -2,7 +2,7 @@
 
 <h2>Liquidação de faturas</h2>
 
-<p><a href="javascript:document.history(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+<p><a href="javascript:history.go(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
 <p>Informa as datas de início e fim para listar apenas as faturas que vencem nesse período.</p>
 

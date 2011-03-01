@@ -2,7 +2,7 @@
 
 <h2>Alteração de senha</h2>
 
-<p><a href="javascript:document.history(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar</a></p>
+<p><a href="javascript:history.go(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar</a></p>
 
 <p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
 

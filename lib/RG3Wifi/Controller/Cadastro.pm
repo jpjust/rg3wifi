@@ -117,7 +117,7 @@ sub verifica_inadimplencia : Private {
 	my $datasql = &EasyCat::data2sql($data_limite[3] . '/' . abs($data_limite[4] + 1) . '/' . $data_limite[5]);
 	
 	# Retorna a lista de faturas em aberto
-	return $c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, data_vencimento => {'<', $datasql}, id_situacao => 1});
+	return $c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, data_vencimento => {'<', $datasql}, id_situacao => {'<=', 2}});
 }
 
 =head2 atualiza_inadimplencia
@@ -854,14 +854,12 @@ sub gerar_boletos : Local {
 
 =head2 gerar_boletos_do
 
-Gera os boletos de todos os clientes ativos para o OBBPlus.
+Gera os boletos de todas as faturas do intervalo de tempo selecionado.
 
 =cut
 
 sub gerar_boletos_do : Local {
 	my ($self, $c) = @_;
-	
-	my $saida = undef;
 	
 	# Parâmetros
 	my $p = $c->request->params;
@@ -875,60 +873,25 @@ sub gerar_boletos_do : Local {
 	if (!$val->success()) {
 		$c->stash->{val} = $val;
 		$c->stash->{p} = $p;
-		#$c->forward($p->{acao} . '/' . $p->{uid});
+		$c->stash->{template} = 'cadastro/gerar_boletos.tt2';
 		return;
 	}
 	
-	# Gera a linha de boleto para cada cliente
-	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({id_situacao => 1})) {
-		# Remove formatação do CPF, CNPJ, data e mensalidade
-		my $doc = $cliente->doc;
-		$doc =~ s/\.//g;
-		$doc =~ s/\-//g;
-		$doc =~ s/\///g;
-		
-		my (@data) = localtime();
-		my $data_atual = abs($data[5] + 1900) . sprintf("%02s", $data[4]) . sprintf("%02s", $data[3]);
-		my $data_venc = abs($data[5] + 1900) . sprintf("%02s", $p->{mes}) . sprintf("%02s", $cliente->vencimento);
-		
-		# Deve incluir as casas decimais
-		my $mensalidade = sprintf("%.2f", $cliente->valor_mensalidade);
-		$mensalidade =~ s/\.//g;
-		$mensalidade =~ s/\,//g;
-		
-		# Inclui na variável
-		$saida .= sprintf("%-10.10s%-11.11s%-15.15s%-15.15s%-1.1s%-2.2s%-1.1s%-3.3s%-25.25s%-80.80s%-80.80s%-80.80s%-80.80s%-8.8s%-8.8s%-8.8s%-8.8s%-17.17s%-17.17s%-6.6s%-6.6s%-6.6s%-6.6s%-6.6s%-40.40s%-45.45s\n",
-			'NULL',									# Número do título
-			' ',									# Nosso número
-			$doc,									# Código do sacado (15)
-			' ',									# Código do sacador avalista
-			'E',									# Local de impressão
-			'01',									# Espécie
-			'0',									# Aceite do título
-			'0',									# Prazo protesto
-			' ',									# Número controle participante
-			'Referente ao uso no mês ' . abs($p->{mes} - 1) . ' de ' . $p->{ano},
-													# Mensagem 1
-			' ',									# Mensagem 2
-			' ',									# Mensagem 3
-			' ',									# Mensagem 4
-			$data_venc,								# Data de vencimento
-			' ',									# Data do desconto
-			$data_atual,							# Data do documento
-			$data_atual,							# Data do processamento
-			$mensalidade,							# Valor do titulo (sem vírgula)
-			'0',									# Valor do abatimento
-			'0',									# Percentual bonificação
-			'0',									# Percentual desconto
-			'0',									# Percentual IOF
-			'1000',									# Percentual mora mes (1 %)
-			'2000',									# Percentual multa (2 %)
-			$cliente->nome,							# Nome do sacado
-			' ');									# Nome do sacador avalista
-	}
+	# Busca as faturas
+	my @faturas = $c->model('RG3WifiDB::Faturas')->search({
+		data_vencimento => {-between => [$p->{ano} . '-' . $p->{mes} . '-01', $p->{ano} . '-' . $p->{mes} . '-31']}
+	});
 	
-	$c->stash->{saida} = $saida;
-	$c->stash->{template} = 'cadastro/exportacao.tt2';
+	# Para cada fatura, gera o boleto
+	my @boletos;
+	foreach my $fatura (@faturas) {
+		my $boleto = &emitir_boleto($self, $c, $fatura->id, $fatura->cliente->id_banco);
+		push(@boletos, $boleto);
+	}
+
+	# Exibe os boletos na tela
+	$c->stash->{boletos} = [@boletos];
+	$c->stash->{template} = 'cadastro/boleto.tt2';
 }
 
 =head2 gerar_planilha_do
@@ -1178,7 +1141,15 @@ sub gerar_faturas_do : Local {
 		# Alguns valores
 		my $vencimento = &EasyCat::data2sql($cliente->vencimento . '/' . $p->{mes} . '/' . $p->{ano});
 		my (@data_atual) = localtime();
-		my $descricao = 'Referente ao uso no mês ' . abs($p->{mes} - 1) . "/$p->{ano}";
+		
+		my $ano_uso = $p->{ano};
+		my $mes_uso = abs($p->{mes} - 1);
+		if ($mes_uso == 0) {
+			$mes_uso = 12;
+			$ano_uso--;
+		}
+		
+		my $descricao = "Referente ao uso no mês $mes_uso/$ano_uso";
 		
 		# Primeiro verifica se já existe uma fatura para este cliente neste mês
 		my $busca = $c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, data_vencimento => $vencimento})->first;
@@ -1196,7 +1167,7 @@ sub gerar_faturas_do : Local {
 			# Faz as devidas inserções no banco de dados
 			eval {
 				# Cria nova fatura
-				$c->model('RG3WifiDB::Faturas')->update_or_create($fatura);
+				$c->model('RG3WifiDB::Faturas')->create($fatura);
 				$i++;
 			};
 			
@@ -1491,66 +1462,94 @@ Emite um boleto referente a uma fatura específica.
 
 =cut
 
-sub emitir_boleto : Local {
+sub emitir_boleto : Private {
 	my ($self, $c, $id_fatura, $id_banco) = @_;
 	
 	# Obtém a fatura e o banco
 	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id_fatura);
 	my $banco = $c->model('RG3WifiDB::Bancos')->find($id_banco);
 	
-	# Datas
-	my $dt_base = DateTime->new(year => 1997, month => 10, day => 7);
-	my $dt_fatura = DateTime::Format::MySQL->parse_date($fatura->data_vencimento);
-	my $fator_vencimento = $dt_fatura->delta_days($dt_base);
+	# Fator de vencimento
+	my $fator_vencimento = &fator_vencimento($fatura->data_vencimento);
 	
 	# Outros parâmetros comum a todos os bancos (PARAMETRIZAR TODOS!)
 	my $moeda = 9;		# Código da moeda para R$
 	my $multa = 0.02;	# 2% de multa
 	my $juros = 0.01;	# 1% de juros ao mês
 	
-	## De acordo com o banco selecionado, devemos gerar o nosso número devido (PARAMETRIZAR TODOS!)
+	# Nosso número
+	my $nosso_numero = &nosso_numero($banco, $fatura->id);
+
+	# Gera os dados do código de barras
+	my $campo_livre = &campo_livre($banco, $nosso_numero);
+	my ($codigo_barras, $dac) = &codigo_barras($banco, $fatura, $nosso_numero, $fator_vencimento, $campo_livre);
+	my $linha_digitavel = &linha_digitavel($banco->numero, $campo_livre, $fator_vencimento, $fatura->valor, $dac);
+	
+	# Atualiza a fatura para a situação "Impresso" (2)
+	$fatura->update({id_situacao => 2}) if ($fatura->id_situacao == 1);
+
+	# Monta a hash do boleto
+	my $boleto = {
+		fatura => $fatura,
+		banco => $banco,
+		banco_num => sprintf('%03d-%1d', $banco->numero, &modulo11($banco->numero)),
+		nosso_numero => $nosso_numero,
+		codigo_barras => $codigo_barras,
+		linha_digitavel => $linha_digitavel,
+		multa => sprintf('%.2f', $fatura->valor * $multa),
+		juros => sprintf('%.2f', $fatura->valor * $juros / 30),
+	};
+	
+	return $boleto;
+}
+
+=head2 imprime_boleto
+
+Imprime (exibe na tela) um boleto de acordo com a fatura e o banco selecionado.
+
+=cut
+
+sub imprime_boleto : Local {
+	my ($self, $c, $id_fatura, $id_banco) = @_;
+	my $boleto = &emitir_boleto($self, $c, $id_fatura, $id_banco);
+	$c->stash->{boletos} = [$boleto];
+	$c->stash->{template} = 'cadastro/boleto.tt2';
+}
+
+=head2 fator_vencimento
+
+Retorna o fator de vencimento para uma determinada data.
+
+=cut
+
+sub fator_vencimento : Private {
+	my ($data_sql) = @_;
+	my $dt_base = DateTime->new(year => 1997, month => 10, day => 7);
+	my $dt_fatura = DateTime::Format::MySQL->parse_date($data_sql);
+	return $dt_fatura->delta_days($dt_base)->delta_days;
+}
+
+=head2 nosso_numero
+
+Gera o nosso número de acordo com o banco.
+
+=cut
+
+sub nosso_numero : Private {
+	my ($banco, $id_fatura) = @_;
+
 	# Banco do Brasil
-	my ($carteira, $nosso_numero) = undef;
+	my $nosso_numero;
 	if ($banco->numero == 1) {
-		my $convenio = '280376';	# Convênio do Banco do Brasil
-		$nosso_numero = $convenio . sprintf('%05d', $fatura->id);
-		$carteira = '18-019';
+		$nosso_numero = $banco->convenio . sprintf('%05d', $id_fatura);
 	}
 	
 	# Bradesco
 	elsif ($banco->numero == 237) {
-		$nosso_numero = sprintf('%011d', $fatura->id);
-		$carteira = '18-019';
+		$nosso_numero = sprintf('%011d', $id_fatura);
 	}
 	
-	# Gera os dados do código de barras
-	my $campo_livre = &campo_livre($banco->numero, $nosso_numero, $banco->ag, $banco->cc);
-	my $codigo = sprintf('%03s%d%04d%011.2f%025s',
-		$banco->numero,
-		$moeda,
-		$fator_vencimento->delta_days,
-		$fatura->valor,
-		$campo_livre);
-	$codigo =~ s/\.//;
-	
-	# Calcula o módulo 11
-	my $dac = &modulo11($codigo);
-	$codigo = substr($codigo, 0, 4) . $dac . substr($codigo, 4);
-	
-	# Atualiza a fatura para a situação "Impresso" (2)
-	$fatura->update({id_situacao => 2}) if ($fatura->id_situacao == 1);
-	
-	# Exibe o boleto
-	$c->stash->{banco} = $banco;
-	$c->stash->{multa} = sprintf('%.2f', $fatura->valor * $multa);
-	$c->stash->{juros} = sprintf('%.2f', $fatura->valor * $juros / 30);
-	$c->stash->{banco_num} = sprintf('%03d-%1d', $banco->numero, &modulo11($banco->numero));
-	$c->stash->{fatura} = $fatura;
-	$c->stash->{carteira} = $carteira;
-	$c->stash->{nosso_numero} = $nosso_numero;
-	$c->stash->{codigo_barras} = $codigo;
-	$c->stash->{linha_digitavel} = &linha_digitavel($banco->numero, $moeda, $campo_livre, $fator_vencimento->delta_days, $fatura->valor, $dac);
-	$c->stash->{template} = 'cadastro/boleto_'. sprintf('%03d', $banco->numero) . '.tt2';
+	return $nosso_numero;
 }
 
 =head2 campo_livre
@@ -1560,24 +1559,49 @@ Gera o campo livre do banco.
 =cut
 
 sub campo_livre : Private {
-	my ($banco, $nosso_numero, $ag, $cc) = @_;
+	my ($banco, $nosso_numero) = @_;
 	
 	# NOTA: Foi utilizado %s para o nosso número do Banco do Brasil, pois
 	# o %d estava estourando para -1 no Linux, quando o nosso número era
 	# muito grande.
 	
 	# Banco do Brasil
-	if ($banco == 1) {
-		return sprintf('%s%04d%08d%02d', $nosso_numero, $ag, $cc, 18);	# Carteira 18 (PARAMETRIZAR!)
+	if ($banco->numero == 1) {
+		return sprintf('%s%04d%08d%02d', $nosso_numero, $banco->ag, $banco->cc, $banco->carteira);
 		
 	# Bradesco
-	} elsif ($banco == 237) {
-		return sprintf('%04d%02d%011d%07d%1d', $ag, 9, $nosso_numero, $cc, 0);
+	} elsif ($banco->numero == 237) {
+		return sprintf('%04d%02d%011d%07d%1d', $banco->ag, $banco->carteira, $nosso_numero, $banco->cc, 0);
 		
 	# Banco desconhecido
 	} else {
 		return '';
 	}
+}
+
+=head2 codigo_barras
+
+Gera o código de barras a partir dos dados do boleto.
+
+=cut
+
+sub codigo_barras : Private {
+	my ($banco, $fatura, $nosso_numero, $fator_vencimento, $campo_livre) = @_;
+	
+	my $moeda = 9; # Código para Real (R$)
+	my $codigo = sprintf('%03s%d%04d%011.2f%025s',
+		$banco->numero,
+		$moeda,
+		$fator_vencimento,
+		$fatura->valor,
+		$campo_livre);
+	$codigo =~ s/\.//;
+
+	# Calcula o módulo 11
+	my $dac = &modulo11($codigo);
+	$codigo = substr($codigo, 0, 4) . $dac . substr($codigo, 4);
+	
+	return ($codigo, $dac);
 }
 
 =head2 linha_digitavel
@@ -1587,7 +1611,9 @@ Gera a linha digitável de um boleto.
 =cut
 
 sub linha_digitavel : Private {
-	my ($banco, $moeda, $campo_livre, $fator_vencimento, $valor, $dac) = @_;
+	my ($banco, $campo_livre, $fator_vencimento, $valor, $dac) = @_;
+	
+	my $moeda = 9; # Real (R$)
 	
 	# Gera os campos
 	my $campo1 = sprintf('%03s%d%s', $banco, $moeda, substr($campo_livre, 0, 5));
@@ -1619,7 +1645,7 @@ Exibe o código de barras de um determinado número.
 
 =cut
 
-sub codigo_barras : Local {
+sub codigo_barras_img : Local {
 	my ($self, $c, $codigo) = @_;
 	$c->response->content_type('image/png');
 	binmode STDOUT;
