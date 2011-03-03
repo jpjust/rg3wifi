@@ -1148,6 +1148,7 @@ sub gerar_faturas_do : Local {
 			$mes_uso = 12;
 			$ano_uso--;
 		}
+		$mes_uso = sprintf("%02d", $mes_uso);
 		
 		my $descricao = "Referente ao uso no mês $mes_uso/$ano_uso";
 		
@@ -1401,7 +1402,7 @@ sub liquidacao_massa_lista : Local {
 	# Filtro por data de vencimento
 	$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({data_vencimento => {
 		-between => [&EasyCat::data2sql($p->{inicio}), &EasyCat::data2sql($p->{fim})]
-	}, 'me.id_situacao' => 1}, {join => 'cliente', order_by => 'cliente.nome ASC' })];
+	}, 'me.id_situacao' => {'<=', 2}}, {join => 'cliente', order_by => 'cliente.nome ASC' })];
 
 	# Pra facilitar, a data de pagamento já será preenchida com a data de ontem
 	my $ontem = DateTime->now()->subtract(days => 1)->dmy('/');
@@ -1428,7 +1429,7 @@ sub liquidacao_massa_do : Local {
 			my $fatura = $c->model('RG3WifiDB::Faturas')->search({id => $p->{"fatura_$i"}})->first;
 			if ($fatura && $p->{"data_pagamento_$i"} && $p->{"valor_pago_$i"}) {
 				$fatura->update({
-					id_situacao => 2,
+					id_situacao => 4,
 					data_liquidacao => &EasyCat::data2sql($p->{"data_pagamento_$i"}),
 					valor_pago => $p->{"valor_pago_$i"},
 				});
@@ -1804,7 +1805,7 @@ sub processa_retorno_bb : Local {
 			
 			# Liquida a fatura (se o boleto corresponder a alguma fatura do nosso sistema)
 			if ($fatura) {
-				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento});
+				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento}, $boleto->banco_cob, $boleto->ag_cob);
 				
 				if ($err) {
 					$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $err;
@@ -1874,7 +1875,7 @@ sub processa_retorno_bradesco : Local {
 			
 			# Liquida a fatura (se o boleto corresponder a alguma fatura do nosso sistema)
 			if ($fatura) {
-				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento});
+				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento}, $boleto->banco_cob, $boleto->ag_cob);
 				
 				if ($err) {
 					$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $err;
@@ -1903,13 +1904,15 @@ Retorna nulo caso sucesso, ou a mensagem de erro caso tenha havido uma falha.
 =cut
 
 sub liquida_fatura2 : Private {
-	my ($self, $c, $id, $valor_pago, $data_pagamento) = @_;
+	my ($self, $c, $id, $valor_pago, $data_pagamento, $banco_cob, $ag_cob) = @_;
 	
 	my $nova_fatura = {
-		id => $id,
-		valor_pago => $valor_pago,
-		data_liquidacao => &EasyCat::data2sql($data_pagamento),
-		id_situacao => 4,
+		id				=> $id,
+		valor_pago		=> $valor_pago,
+		data_liquidacao	=> &EasyCat::data2sql($data_pagamento),
+		banco_cob		=> $banco_cob,
+		ag_cob			=> $ag_cob,
+		id_situacao		=> 4,
 	};
 	
 	# Faz as devidas inserções no banco de dados

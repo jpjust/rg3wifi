@@ -7,7 +7,7 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
 __PACKAGE__->table('rg3_faturas');
 # Set columns in table
-__PACKAGE__->add_columns(qw/id id_cliente id_situacao data_lancamento data_vencimento data_liquidacao descricao valor valor_pago/);
+__PACKAGE__->add_columns(qw/id id_cliente id_situacao data_lancamento data_vencimento data_liquidacao descricao valor valor_pago banco_cob ag_cob/);
 # Set the primary key for the table
 __PACKAGE__->set_primary_key(qw/id/);
 
