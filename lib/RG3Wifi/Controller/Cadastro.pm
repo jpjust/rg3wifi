@@ -1702,7 +1702,7 @@ sub lista_faturas_abertas : Local {
 	my ($self, $c) = @_;
 	my @devedores;
 
-	foreach my $fatura ($c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => 1},
+	foreach my $fatura ($c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => {'<=', 2}},
 		{join => 'cliente', order_by => 'cliente.nome ASC'})) {
 		
 		push(@devedores, $fatura->cliente);
