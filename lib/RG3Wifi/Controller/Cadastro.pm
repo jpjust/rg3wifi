@@ -1805,7 +1805,7 @@ sub processa_retorno_bb : Local {
 			
 			# Liquida a fatura (se o boleto corresponder a alguma fatura do nosso sistema)
 			if ($fatura) {
-				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento}, $boleto->banco_cob, $boleto->ag_cob);
+				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento}, $boleto->{banco_cob}, $boleto->{ag_cob});
 				
 				if ($err) {
 					$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $err;
@@ -1849,8 +1849,8 @@ sub processa_retorno_bradesco : Local {
 	
 	# Obtém dados do cabeçalho
 	my $empresa = substr($cabeca, 46, 30);
-	my $data_arquivo = substr($cabeca, 94, 2) . '/' . substr($cabeca, 96, 2) . '/' . substr($cabeca, 98, 2);
-	my $data_credito = substr($cabeca, 379, 2) . '/' . substr($cabeca, 381, 2) . '/' . substr($cabeca, 383, 2);
+	my $data_arquivo = substr($cabeca, 94, 2) . '/' . substr($cabeca, 96, 2) . '/' . abs(substr($cabeca, 98, 2) + 2000);
+	my $data_credito = substr($cabeca, 379, 2) . '/' . substr($cabeca, 381, 2) . '/' . abs(substr($cabeca, 383, 2) + 2000);
 	
 	# Lê cada entrada do arquivo
 	my @boletos;
@@ -1864,18 +1864,18 @@ sub processa_retorno_bradesco : Local {
 			my $fatura = $c->model('RG3WifiDB::Faturas')->find({id => $nosso_numero});
 			my $boleto = {
 				nosso_numero => $nosso_numero,
-				data_pagamento => substr($_, 110, 2) . '/' . substr($_, 112, 2) . '/' . substr($_, 114, 2),
+				data_pagamento => substr($_, 110, 2) . '/' . substr($_, 112, 2) . '/' . abs(substr($_, 114, 2) + 2000),
 				banco_cob => substr($_, 165, 3),
 				ag_cob => substr($_, 168, 5),
 				valor_pago => abs(substr($_, 253, 13)) / 100,
-				data_credito => substr($_, 295, 2) . '/' . substr($_, 297, 2) . '/' . substr($_, 299, 2),
+				data_credito => substr($_, 295, 2) . '/' . substr($_, 297, 2) . '/' . abs(substr($_, 299, 2) + 2000),
 				fatura => $fatura,
 			};
 			push(@boletos, $boleto);
 			
 			# Liquida a fatura (se o boleto corresponder a alguma fatura do nosso sistema)
 			if ($fatura) {
-				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento}, $boleto->banco_cob, $boleto->ag_cob);
+				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento}, $boleto->{banco_cob}, $boleto->{ag_cob});
 				
 				if ($err) {
 					$c->stash->{error_msg} = 'Erro ao liquidar fatura: ' . $err;
