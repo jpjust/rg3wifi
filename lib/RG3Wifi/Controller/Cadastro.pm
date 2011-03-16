@@ -1480,10 +1480,10 @@ sub emitir_boleto : Private {
 	# Nosso número
 	my $nosso_numero = &nosso_numero($banco, $fatura->id);
 	
-	# Se for solicitado boleto atualizado, calcula juros e multas (apenas se já estiver vencido)
+	# Se for solicitado boleto atualizado, calcula juros e multas (apenas se já estiver vencido e em aberto)
 	my $dt_hoje = DateTime->today;
 	my $dt_fatura = DateTime::Format::MySQL->parse_date($fatura->data_vencimento);
-	if ($atualizado && $dt_hoje->subtract_datetime($dt_fatura)->delta_days > 0) {
+	if ($atualizado && $fatura->id_situacao <= 2 && $dt_hoje->subtract_datetime($dt_fatura)->delta_days > 0) {
 		# Calcula a diferença de dias
 		my $dt_diff = $dt_hoje->delta_days($dt_fatura)->delta_days;
 		
