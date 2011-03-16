@@ -6,7 +6,7 @@
 
 <table border="0" cellpadding="10" cellspacing="10">
 	<tr>
-		<td align="center"><a href="[% Catalyst.uri_for('imprime_boleto/') _ id_fatura _ '/1' %]"><img src="/static/images/banco_237.jpg" alt="Bradesco" border="0"></a></td>
-		<td align="center"><a href="[% Catalyst.uri_for('imprime_boleto/') _ id_fatura _ '/2' %]"><img src="/static/images/banco_1.jpg" alt="Banco do Brasil" border="0"></a></td>
+		<td align="center"><a href="[% Catalyst.uri_for('imprime_boleto/') _ id_fatura _ '/1/1' %]"><img src="/static/images/banco_237.jpg" alt="Bradesco" border="0"></a></td>
+		<td align="center"><a href="[% Catalyst.uri_for('imprime_boleto/') _ id_fatura _ '/2/1' %]"><img src="/static/images/banco_1.jpg" alt="Banco do Brasil" border="0"></a></td>
 	</tr>
 </table>

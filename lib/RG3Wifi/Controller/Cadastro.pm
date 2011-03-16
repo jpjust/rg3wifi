@@ -1464,22 +1464,42 @@ Emite um boleto referente a uma fatura específica.
 =cut
 
 sub emitir_boleto : Private {
-	my ($self, $c, $id_fatura, $id_banco) = @_;
+	my ($self, $c, $id_fatura, $id_banco, $atualizado) = @_;
 	
 	# Obtém a fatura e o banco
 	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id_fatura);
 	my $banco = $c->model('RG3WifiDB::Bancos')->find($id_banco);
 	
-	# Fator de vencimento
-	my $fator_vencimento = &fator_vencimento($fatura->data_vencimento);
-	
 	# Outros parâmetros comum a todos os bancos (PARAMETRIZAR TODOS!)
-	my $moeda = 9;		# Código da moeda para R$
-	my $multa = 0.02;	# 2% de multa
-	my $juros = 0.01;	# 1% de juros ao mês
+	my $moeda = 9;			# Código da moeda para R$
+	my $tx_multa = 0.02;	# 2% de multa
+	my $tx_juros = 0.01;	# 1% de juros ao mês
+	my $multa = sprintf('%.2f', $fatura->valor * $tx_multa);
+	my $juros = sprintf('%.2f', $fatura->valor * $tx_juros / 30);
 	
 	# Nosso número
 	my $nosso_numero = &nosso_numero($banco, $fatura->id);
+	
+	# Se for solicitado boleto atualizado, calcula juros e multas (apenas se já estiver vencido)
+	my $dt_hoje = DateTime->today;
+	my $dt_fatura = DateTime::Format::MySQL->parse_date($fatura->data_vencimento);
+	if ($atualizado && $dt_hoje->subtract_datetime($dt_fatura)->delta_days > 0) {
+		# Calcula a diferença de dias
+		my $dt_diff = $dt_hoje->delta_days($dt_fatura)->delta_days;
+		
+		# Calcula a multa e insere na fatura
+		my $multa_total = $multa + ($juros * $dt_diff);
+		$fatura->set_columns({
+			valor => $fatura->valor + $multa_total,
+			data_vencimento => DateTime->today->ymd('-'),
+		});
+		
+		# Adiciona informação de boleto atualizado
+		$c->stash->{atualizado} = 1;
+	}
+
+	# Fator de vencimento
+	my $fator_vencimento = &fator_vencimento($fatura->data_vencimento);
 
 	# Gera os dados do código de barras
 	my $campo_livre = &campo_livre($banco, $nosso_numero);
@@ -1497,8 +1517,8 @@ sub emitir_boleto : Private {
 		nosso_numero => $nosso_numero,
 		codigo_barras => $codigo_barras,
 		linha_digitavel => $linha_digitavel,
-		multa => sprintf('%.2f', $fatura->valor * $multa),
-		juros => sprintf('%.2f', $fatura->valor * $juros / 30),
+		multa => $multa,
+		juros => $juros,
 	};
 	
 	return $boleto;
@@ -1511,8 +1531,8 @@ Imprime (exibe na tela) um boleto de acordo com a fatura e o banco selecionado.
 =cut
 
 sub imprime_boleto : Local {
-	my ($self, $c, $id_fatura, $id_banco) = @_;
-	my $boleto = &emitir_boleto($self, $c, $id_fatura, $id_banco);
+	my ($self, $c, $id_fatura, $id_banco, $atualizado) = @_;
+	my $boleto = &emitir_boleto($self, $c, $id_fatura, $id_banco, $atualizado);
 	$c->stash->{boletos} = [$boleto];
 	$c->stash->{template} = 'cadastro/boleto.tt2';
 }
