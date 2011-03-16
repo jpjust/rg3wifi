@@ -27,8 +27,6 @@ use Catalyst qw/
 	Session
 	Session::Store::FastMmap
 	Session::State::Cookie
-	
-	DateTime
 	/;
 
 our $VERSION = '0.31';

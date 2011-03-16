@@ -1,18 +1,20 @@
 [% PROCESS site/macros %]
 
+<div class="dontprint">
+
 [% IF boletos.size > 1 %]
-<div class="dontprint"><p><strong>Total de boletos: [% boletos.size %]</strong></p></div> 
+<p><strong>Total de boletos: [% boletos.size %]</strong></p> 
 [% END %]
 
 [% FOREACH boleto IN boletos %]
-
-<div class="mypage">
 
 [% IF atualizado %]
 <p><strong>ATENÇÃO:</strong> Esta fatura está vencida e o boleto foi gerado com a data de hoje, com multa e juros incluídos.
 <a href="[% Catalyst.uri_for('imprime_boleto/') _ boleto.fatura.id _ '/' _ boleto.banco.id _ '/0' %]">Clique aqui</a>
 caso queira imprimir o boleto original vencido.</p>
 [% END %]
+
+</div>
 
 <!-- Recibo do sacado -->
 <table width="850" border="1" cellpadding="4" cellspacing="0">
@@ -156,6 +158,10 @@ caso queira imprimir o boleto original vencido.</p>
 
 <!-- (Opcional) Coloque propagandas ou avisos aqui! -->
 
+[% IF boletos.size > 1 %]
+<div class="mypage">
+<br>
 </div>
+[% END %]
 
 [% END %]
