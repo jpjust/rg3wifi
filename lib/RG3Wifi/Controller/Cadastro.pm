@@ -1968,6 +1968,25 @@ sub baixar_fatura_do : Local {
 	$c->forward('editar/' . $fatura->cliente->id_cliente);
 }
 
+=head2 detalhar_fatura
+
+Exibe os detalhes de uma fatura liquidada ou baixada.
+
+=cut
+
+sub detalhar_fatura : Local {
+	my ($self, $c, $id) = @_;
+	
+	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id);
+	if ($fatura) {
+		$c->stash->{fatura} = $fatura;
+		$c->stash->{template} = 'cadastro/detalhar_fatura.tt2';
+	} else {
+		$c->stash->{error_msg} = 'Fatura não encontrada!';
+		$c->stash->{template} = 'error.tt2';
+	}	
+}
+
 =head1 AUTHOR
 
 Joao Paulo Just,,,

@@ -1,0 +1,58 @@
+[% PROCESS site/macros %]
+
+<h2>Detalhes da fatura</h2>
+
+<p><a href="javascript:history.go(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<table>
+	<tr>
+		<th colspan="2">Dados da cobrança</th>
+	</tr>
+
+	<tr>
+		<td>Cliente:</td>
+		<td>[% fatura.cliente.nome %]</td>
+	</tr>
+	<tr>
+		<td>Vencimento:</td>
+		<td>[% data2normal(fatura.data_vencimento) %]</td>
+	</tr>
+	<tr>
+		<td>Valor:</td>
+		<td>[% moeda(fatura.valor) %]</td>
+	</tr>
+	<tr>
+		<td>Descrição:</td>
+		<td>[% fatura.descricao %]</td>
+	</tr>
+	<tr>
+		<td>Situação:</td>
+		<td>[% fatura.situacao.nome %]</td>
+	</tr>
+
+	[% IF fatura.id_situacao > 2 %]
+
+	<tr>
+		<th colspan="2">Dados do pagamento</th>
+	</tr>
+
+	<tr>
+		<td>Data de pagamento:</td>
+		<td>[% data2normal(fatura.data_liquidacao) %]</td>
+	</tr>
+	<tr>
+		<td>Valor pago:</td>
+		<td>[% moeda(fatura.valor_pago) %]</td>
+	</tr>
+	<tr>
+		<td>Banco cobrador:</td>
+		<td>[% fatura.banco_cob %]</td>
+	</tr>
+	<tr>
+		<td>Agência cobradora:</td>
+		<td>[% fatura.ag_cob %]</td>
+	</tr>
+	
+	[% END %]
+	
+</table>

@@ -239,7 +239,12 @@
 		<td>[% data2normal(fatura.data_liquidacao) %]</td>
 		<td>[% moeda(fatura.valor_pago) %]</td>
 		<td nowrap>
-			<a href="[% Catalyst.uri_for('seleciona_banco/') _ fatura.id %]"><img src="/static/images/printer.png" align="top">Emitir boleto</a>
+			[% IF fatura.id_situacao <= 2 %]
+				<a href="[% Catalyst.uri_for('seleciona_banco/') _ fatura.id %]"><img src="/static/images/printer.png" align="top">Emitir boleto</a>
+			[% ELSE %]
+				<a href="[% Catalyst.uri_for('detalhar_fatura/') _ fatura.id %]"><img src="/static/images/table.png" align="top">Detalhes</a>
+			[% END %]
+			
 			[% IF fatura.id_situacao <= 1 %]<br><a href="[% Catalyst.uri_for('editar_fatura/') _ fatura.id %]"><img src="/static/images/table_edit.png" align="top">Alterar dados</a>[% END %]
 			[% IF fatura.id_situacao <= 2 %]<br><a href="[% Catalyst.uri_for('baixar_fatura_do/') _ fatura.id %]"><img src="/static/images/bullet_arrow_down.png" align="top">Baixar</a>[% END %]
 			[% IF fatura.id_situacao <= 2 %]<br><a href="[% Catalyst.uri_for('liquidar_fatura/') _ fatura.id %]"><img src="/static/images/money.png" align="top">Liquidar</a>[% END %]
