@@ -23,7 +23,8 @@ __PACKAGE__->resultset_attributes({order_by => 'data_vencimento'});
 #     1) Name of relationship, DBIC will create accessor with this name
 #     2) Name of the model class referenced by this relationship
 #     3) Column name in *this* table
-__PACKAGE__->belongs_to(cliente		=> 'RG3WifiDB::Usuarios',			'id_cliente');
-__PACKAGE__->belongs_to(situacao	=> 'RG3WifiDB::FaturasSituacao',	'id_situacao');
+__PACKAGE__->belongs_to(cliente			=> 'RG3WifiDB::Usuarios',			'id_cliente');
+__PACKAGE__->belongs_to(situacao		=> 'RG3WifiDB::FaturasSituacao',	'id_situacao');
+__PACKAGE__->belongs_to(banco_cobrador	=> 'RG3WifiDB::BancosLista',		'banco_cob');
 
 1;

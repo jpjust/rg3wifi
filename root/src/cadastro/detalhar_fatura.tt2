@@ -46,7 +46,7 @@
 	</tr>
 	<tr>
 		<td>Banco cobrador:</td>
-		<td>[% fatura.banco_cob %]</td>
+		<td>[% fatura.banco_cobrador.numero %] - [% fatura.banco_cobrador.nome %]</td>
 	</tr>
 	<tr>
 		<td>Agência cobradora:</td>
