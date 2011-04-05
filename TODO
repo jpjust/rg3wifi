@@ -1,3 +1,8 @@
+- Ao processar o retorno, deve desbloquear o cliente
+- Criar campo "Próxima mensalidade" para especificarmos
+  o valor da próxima mensalidade
+- Imprimir boletos em ordem alfabética
+
 - Juntar os arquivos de boletos em um só e parametrizar
   informações dos bancos
 - Fazer o processamento de retorno verificar se a agência
