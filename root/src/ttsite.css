@@ -165,28 +165,30 @@ img {
 @media print {
 	body {
 		margin: 0px;
-		padding: 0px; 
+		padding: 0px;
 	}
 
-	a {
-		display: none;
+	td {
+		font-size: 8pt;
 	}
 	
-	td {
+	th {
+		font-size: 8pt;
+	}
+	
+	h1 {
+		font-size: 14pt;
+	}
+
+	h2 {
+		font-size: 12pt;
+	}
+	
+	h3 {
 		font-size: 10pt;
 	}
 	
-	h1.p_cadastro {
-		color: #000000;
-		font-size: 18pt;
-	}
-
-	h2.p_cadastro {
-		color: #000000;
-		font-size: 16pt;
-	}
-	
-	td.p_cadastro {
+	td.boleto {
 		font-size: 10pt;
 	}
 

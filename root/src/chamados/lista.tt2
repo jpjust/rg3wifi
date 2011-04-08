@@ -2,7 +2,7 @@
 
 <h2>Lista de chamados</h2>
 
-<div>
+<div class="dontprint">
 <span align="left">
 	<a href="[% Catalyst.uri_for('novo') %]"><img src="/static/images/add.png" align="top">Abrir novo chamado</a>
 </span>
@@ -25,7 +25,7 @@
 
 <div class="mytextbox" style="display: none;" id="box_[% tipo.nome %]">
 
-<p><a href="[% Catalyst.uri_for('lista_p/') _ tipo.id _ '/' _ estado_atual %]"><img src="/static/images/printer.png" align="top">Imprimir esta lista</a></p>
+<p class="dontprint"><a href="[% Catalyst.uri_for('lista_p/') _ tipo.id _ '/' _ estado_atual %]"><img src="/static/images/printer.png" align="top">Imprimir esta lista</a></p>
 
 <table width="100%">
 	<tr>
@@ -33,7 +33,7 @@
 		<th>Endereço</th>
 		<th>Data/agendamento</th>
 		<th>Motivo</th>
-		<th>Ações</th>
+		<th class="dontprint">Ações</th>
 	</tr>
 	
 	[% FOREACH chamado IN tipo.chamados %]
@@ -58,7 +58,7 @@
 		<td>[% chamado.endereco %]</td>
 		<td>[% data2normal(chamado.data_chamado) %]</td>
 		<td>[% chamado.motivo %]</td>
-		<td nowrap>
+		<td nowrap class="dontprint">
 			[% IF estado_atual == 1 %]
 			<a href="[% Catalyst.uri_for('editar/') _ chamado.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
 			<a href="[% Catalyst.uri_for('finalizar/') _ chamado.id %]"><img src="/static/images/accept.png" align="top">Finalizar</a>

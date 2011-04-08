@@ -2,6 +2,9 @@
 - Criar campo "Próxima mensalidade" para especificarmos
   o valor da próxima mensalidade
 - Imprimir boletos em ordem alfabética
+- Remover número de páginas da impressão de boletos
+- Verificar pagamentos divergentes (a menos ou a mais que o
+  correto) e corrigir automaticamente na próxima fatura
 
 - Juntar os arquivos de boletos em um só e parametrizar
   informações dos bancos
@@ -20,12 +23,4 @@
 - Mostrar no relatório de uso a velocidade que foi usada
   em cada conexão. Além disso, guardar na auditoria
   a data que a velocidade foi alterada.
-- Verificar um método melhor de listar chamados, pois
-  pode acabar ficando pesado.
-
-- Falta ver como vai ficar o saldo inicial e final de cada
-  dia do caixa da loja. Uma idéia é, calcular o saldo
-  final automaticamente com base no movimento e replicar
-  os dados desse saldo final (inclusive valor em cédulas,
-  moedas e cheques) para uma linha do próximo dia na
-  tabela, nos campos de saldo inicial deste dia seguinte.
+- Paginar os chamados fechados.
