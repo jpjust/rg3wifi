@@ -440,27 +440,28 @@ sub cadastro_do : Local {
 	
 	# Efetua o cadastro
 	my $dados = {
-		uid				=> $p->{uid}									|| -1,
-		id_grupo		=> 3,
-		id_situacao		=> 1,
-		id_banco		=> $p->{id_banco}								|| undef,
-		nao_bloqueia	=> $p->{nao_bloqueia}							|| 0,
-		nome			=> $p->{nome}									|| undef,
-		doc				=> $p->{doc}									|| undef,
-		data_nascimento	=> &EasyCat::data2sql($p->{data_nascimento})	|| undef,
-		endereco		=> $p->{endereco}								|| undef,
-		bairro			=> $p->{bairro}									|| undef,
-		cidade			=> $p->{cidade}									|| undef,
-		id_estado		=> $p->{id_estado}								|| undef,
-		cep				=> $p->{cep}									|| undef,
-		telefone		=> $p->{telefone}								|| undef,
-		email			=> $p->{email}									|| undef,
-		observacao		=> $p->{observacao}								|| undef,
-		kit_proprio		=> $p->{kit_proprio}							|| 0,
-		cabo			=> $p->{cabo}									|| undef,
-		valor_instalacao => $p->{valor_instalacao}						|| undef,
-		valor_mensalidade => $p->{valor_mensalidade}					|| undef,
-		vencimento		=> $p->{vencimento}								|| undef,
+		uid						=> $p->{uid}									|| -1,
+		id_grupo				=> 3,
+		id_situacao				=> 1,
+		id_banco				=> $p->{id_banco}								|| undef,
+		nao_bloqueia			=> $p->{nao_bloqueia}							|| 0,
+		nome					=> $p->{nome}									|| undef,
+		doc						=> $p->{doc}									|| undef,
+		data_nascimento			=> &EasyCat::data2sql($p->{data_nascimento})	|| undef,
+		endereco				=> $p->{endereco}								|| undef,
+		bairro					=> $p->{bairro}									|| undef,
+		cidade					=> $p->{cidade}									|| undef,
+		id_estado				=> $p->{id_estado}								|| undef,
+		cep						=> $p->{cep}									|| undef,
+		telefone				=> $p->{telefone}								|| undef,
+		email					=> $p->{email}									|| undef,
+		observacao				=> $p->{observacao}								|| undef,
+		kit_proprio				=> $p->{kit_proprio}							|| 0,
+		cabo					=> $p->{cabo}									|| undef,
+		valor_instalacao		=> $p->{valor_instalacao}						|| undef,
+		valor_mensalidade		=> $p->{valor_mensalidade}						|| undef,
+		valor_mensalidade_prox	=> $p->{valor_mensalidade_prox}					|| undef,
+		vencimento				=> $p->{vencimento}								|| undef,
 	};
 	
 	# O usuário admin pode escolher o grupo e a situação
@@ -722,7 +723,7 @@ Desbloqueia um cliente.
 
 =cut
 
-sub desbloqueio : Private {
+sub desbloqueia : Private {
 	my ($c, $cliente) = @_;
 	$cliente->update({bloqueado => 0});
 	&radius_user_update($c, $cliente);
@@ -1167,12 +1168,21 @@ sub gerar_faturas_do : Local {
 		my $busca = $c->model('RG3WifiDB::Faturas')->search({id_cliente => $cliente->uid, data_vencimento => $vencimento})->first;
 		
 		if (!$busca) {
+			# Verifica se existe uma "próxima mensalidade"
+			my $valor_fatura;
+			if (abs($cliente->valor_mensalidade_prox) > 0) {
+				$valor_fatura = $cliente->valor_mensalidade_prox;
+				$cliente->update({valor_mensalidade_prox => undef});
+			} else {
+				$valor_fatura = $cliente->valor_mensalidade;
+			}
+			
 			my $fatura = {
 				id_cliente		=> $cliente->uid,
 				data_lancamento	=> &EasyCat::data2sql($data_atual[3] . '/' . abs($data_atual[4] + 1) . '/' . $data_atual[5]),
 				data_vencimento	=> $vencimento,
 				descricao		=> $descricao,
-				valor			=> $cliente->valor_mensalidade,
+				valor			=> $valor_fatura,
 				id_situacao		=> 1,
 			};
 			

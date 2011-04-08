@@ -1,8 +1,8 @@
-- Criar campo "Próxima mensalidade" para especificarmos
-  o valor da próxima mensalidade
 - Verificar pagamentos divergentes (a menos ou a mais que o
   correto) e corrigir automaticamente na próxima fatura
 
+- Alguns campos do cadastro não deveriam estar disponíveis
+  para os operadores (ex.: mensalidade)
 - Juntar os arquivos de boletos em um só e parametrizar
   informações dos bancos
 - Fazer o processamento de retorno verificar se a agência

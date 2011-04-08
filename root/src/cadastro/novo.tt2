@@ -131,6 +131,10 @@
 		<td>R$ <input type="text" name="valor_mensalidade" size="10" value="[% cliente.valor_mensalidade %]" [% IF val.missing('valor_mensalidade') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>
 	<tr>
+		<td>Próxima mensalidade:</td>
+		<td>R$ <input type="text" name="valor_mensalidade_prox" size="10" value="[% cliente.valor_mensalidade_prox %]"></td>
+	</tr>
+	<tr>
 		<td>Data de vencimento:</td>
 		<td><input type="text" name="vencimento" size="4" value="[% cliente.vencimento %]" [% IF val.missing('vencimento') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
 	</tr>

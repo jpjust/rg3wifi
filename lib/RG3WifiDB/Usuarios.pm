@@ -7,7 +7,7 @@ __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
 __PACKAGE__->table('rg3_usuarios');
 # Set columns in table
-__PACKAGE__->add_columns(qw/uid id_grupo id_situacao id_banco data_adesao bloqueado nao_bloqueia inadimplente nome doc data_nascimento telefone endereco bairro cidade id_estado cep observacao email kit_proprio cabo valor_instalacao valor_mensalidade vencimento/);
+__PACKAGE__->add_columns(qw/uid id_grupo id_situacao id_banco data_adesao bloqueado nao_bloqueia inadimplente nome doc data_nascimento telefone endereco bairro cidade id_estado cep observacao email kit_proprio cabo valor_instalacao valor_mensalidade valor_mensalidade_prox vencimento/);
 # Set the primary key for the table
 __PACKAGE__->set_primary_key(qw/uid/);
 
