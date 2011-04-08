@@ -1,7 +1,5 @@
-- Ao processar o retorno, deve desbloquear o cliente
 - Criar campo "Próxima mensalidade" para especificarmos
   o valor da próxima mensalidade
-- Imprimir boletos em ordem alfabética
 - Verificar pagamentos divergentes (a menos ou a mais que o
   correto) e corrigir automaticamente na próxima fatura
 

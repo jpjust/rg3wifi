@@ -891,7 +891,7 @@ sub gerar_boletos_do : Local {
 	# Busca as faturas
 	my @faturas = $c->model('RG3WifiDB::Faturas')->search({
 		data_vencimento => {-between => [$p->{ano} . '-' . $p->{mes} . '-01', $p->{ano} . '-' . $p->{mes} . '-31']}
-	});
+	}, {join => 'cliente', order_by => 'cliente.nome'});
 	
 	# Para cada fatura, gera o boleto
 	my @boletos;
