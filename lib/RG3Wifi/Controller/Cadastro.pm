@@ -711,10 +711,21 @@ Retira o cliente da lista de bloqueio.
 sub bloqueio_undo : Local {
 	my ($self, $c, $uid) = @_;
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
-	$cliente->update({bloqueado => 0});
-	&radius_user_update($c, $cliente);
+	&desbloqueia($c, $cliente);
 	$c->stash->{status_msg} = 'O cliente foi removido da lista de bloqueio.';
 	$c->forward('lista', ['1']);
+}
+
+=head2 desbloqueia
+
+Desbloqueia um cliente.
+
+=cut
+
+sub desbloqueio : Private {
+	my ($c, $cliente) = @_;
+	$cliente->update({bloqueado => 0});
+	&radius_user_update($c, $cliente);
 }
 
 =head2 derrubar_pppoe_do
@@ -1823,7 +1834,7 @@ sub processa_retorno_bb : Local {
 			};
 			push(@boletos, $boleto);
 			
-			# Liquida a fatura (se o boleto corresponder a alguma fatura do nosso sistema)
+			# Liquida a fatura e desbloqueia o cliente (se o boleto corresponder a alguma fatura do nosso sistema)
 			if ($fatura) {
 				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento}, $boleto->{banco_cob}, $boleto->{ag_cob});
 				
@@ -1832,6 +1843,9 @@ sub processa_retorno_bb : Local {
 					$c->stash->{template} = 'error.tt2';
 					return;
 				}
+				
+				# Desbloqueia
+				&desbloqueia($c, $fatura->cliente);
 				
 				# Após alterar a liquidação, verifica se ainda existem faturas em aberto
 				&atualiza_inadimplencia($c, $fatura->cliente->uid);
@@ -1893,7 +1907,7 @@ sub processa_retorno_bradesco : Local {
 			};
 			push(@boletos, $boleto);
 			
-			# Liquida a fatura (se o boleto corresponder a alguma fatura do nosso sistema)
+			# Liquida a fatura e desbloqueia o cliente (se o boleto corresponder a alguma fatura do nosso sistema)
 			if ($fatura) {
 				my $err = &liquida_fatura2($self, $c, $fatura->id, $boleto->{valor_pago}, $boleto->{data_pagamento}, $boleto->{banco_cob}, $boleto->{ag_cob});
 				
@@ -1902,6 +1916,9 @@ sub processa_retorno_bradesco : Local {
 					$c->stash->{template} = 'error.tt2';
 					return;
 				}
+				
+				# Desbloqueia
+				&desbloqueia($c, $fatura->cliente);
 				
 				# Após alterar a liquidação, verifica se ainda existem faturas em aberto
 				&atualiza_inadimplencia($c, $fatura->cliente->uid);

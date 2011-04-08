@@ -2,7 +2,6 @@
 - Criar campo "Próxima mensalidade" para especificarmos
   o valor da próxima mensalidade
 - Imprimir boletos em ordem alfabética
-- Remover número de páginas da impressão de boletos
 - Verificar pagamentos divergentes (a menos ou a mais que o
   correto) e corrigir automaticamente na próxima fatura
 
