@@ -1500,6 +1500,11 @@ sub emitir_boleto : Private {
 	
 	# Nosso número
 	my $nosso_numero = &nosso_numero($banco, $fatura->id);
+
+	# Atualiza a fatura para a situação "Impresso" (2) (deve ser feito antes de atualizar o boleto com
+	# multas e juros, pois caso seja feito depois, o novo valor com multas e juros vai ficar salvo no
+	# banco de dados)
+	$fatura->update({id_situacao => 2}) if ($fatura->id_situacao == 1);
 	
 	# Se for solicitado boleto atualizado, calcula juros e multas (apenas se já estiver vencido e em aberto)
 	my $dt_hoje = DateTime->today;
@@ -1527,9 +1532,6 @@ sub emitir_boleto : Private {
 	my ($codigo_barras, $dac) = &codigo_barras($banco, $fatura, $nosso_numero, $fator_vencimento, $campo_livre);
 	my $linha_digitavel = &linha_digitavel($banco->numero, $campo_livre, $fator_vencimento, $fatura->valor, $dac);
 	
-	# Atualiza a fatura para a situação "Impresso" (2)
-	$fatura->update({id_situacao => 2}) if ($fatura->id_situacao == 1);
-
 	# Monta a hash do boleto
 	my $boleto = {
 		fatura => $fatura,
