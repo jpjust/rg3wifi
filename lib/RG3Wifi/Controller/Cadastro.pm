@@ -204,12 +204,19 @@ sub user_add : Private {
 		Value		=> $pool,
 	});
 	
-	# Tabela radreply
+	# Tabela radreply (plano e Mikrotik-Rate-Limit)
 	$c->model('RG3WifiDB::radreply')->create({
 		UserName	=> $conta->login,
 		Attribute	=> 'Plano',
 		op			=> '=',
 		Value		=> $conta->id_plano,
+	});
+
+	$c->model('RG3WifiDB::radreply')->create({
+		UserName	=> $conta->login,
+		Attribute	=> 'Mikrotik-Rate-Limit',
+		op			=> '=',
+		Value		=> $conta->plano->MikrotikRateLimit,
 	});
 	
 	if ($conta->ip) {
@@ -262,7 +269,7 @@ sub remake_users : Local {
 	$c->model('RG3WifiDB::radusergroup')->delete_all();
 	
 	# Popula as tabelas
-	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->all) {
+	foreach my $cliente ($c->model('RG3WifiDB::Usuarios')->search({}, {rows => undef})) {
 		&radius_user_update($c, $cliente);		
 	}
 	
