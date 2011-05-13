@@ -263,6 +263,11 @@ Refaz a lista de usuários o PPPoE.
 sub remake_users : Local {
 	my ($self, $c) = @_;
 	
+	# Função desativada temporariamente
+	$c->stash->{error_msg} = 'Esta função foi desativada temporariamente.';
+	$c->forward('lista');
+	return;
+	
 	# Limpa os dados atuais
 	$c->model('RG3WifiDB::radcheck')->delete_all();
 	$c->model('RG3WifiDB::radreply')->delete_all();
@@ -1412,6 +1417,12 @@ Exibe uma lista com as faturas em aberto para liquidação em massa.
 
 sub liquidacao_massa : Local {
 	my ($self, $c) = @_;
+	
+	# Função desativada temporariamente
+	$c->stash->{error_msg} = 'Esta função foi desativada temporariamente.';
+	$c->forward('lista');
+	return;
+	
 	$c->stash->{template} = 'cadastro/liquidacao_massa.tt2';
 }
 
@@ -1423,6 +1434,11 @@ Exibe a lista para liquidação em massa.
 
 sub liquidacao_massa_lista : Local {
 	my ($self, $c) = @_;
+	
+	# Função desativada temporariamente
+	$c->stash->{error_msg} = 'Esta função foi desativada temporariamente.';
+	$c->forward('lista');
+	return;
 	
 	# Parâmetros
 	my $p = $c->request->params;
@@ -1446,6 +1462,11 @@ Efetua a liquidação em massa.
 
 sub liquidacao_massa_do : Local {
 	my ($self, $c) = @_;
+	
+	# Função desativada temporariamente
+	$c->stash->{error_msg} = 'Esta função foi desativada temporariamente.';
+	$c->forward('lista');
+	return;
 	
 	# Parâmetros
 	my $p = $c->request->params;
