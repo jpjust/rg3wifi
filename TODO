@@ -1,3 +1,9 @@
+- Criar o grupo "cobrança", somente ele poderá ter acesso
+  às configurações de mensalidade, vencimento e faturas.
+  Os operadores terão acesso apenas ao cadastro, chamados
+  e rádios. Nos boletos, somente o admin poderá dar baixa,
+  o grupo cobrança só poderá liquidar e imprimir boletos.
+- Criar um relatório de boletos semelhante ao do OBB Plus.
 - Verificar pagamentos divergentes (a menos ou a mais que o
   correto) e corrigir automaticamente na próxima fatura
 

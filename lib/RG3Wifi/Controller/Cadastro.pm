@@ -1361,6 +1361,13 @@ sub liquidar_fatura_do : Local {
 		return;
 	}
 	
+	# As faturas não podem ser liquidadas com valores menores
+	if ($p->{valor_pago} < $fatura_antiga->valor) {
+		$c->stash->{error_msg} = 'O valor pago deve ser igual ou superior ao valor da fatura.';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
 	# Faz as devidas inserções no banco de dados
 	eval {
 		# Liquida fatura
@@ -2018,11 +2025,11 @@ sub baixar_fatura_do : Local {
 	}
 
 	# Baixa a fatura e verifica se ainda há inadimplência neste cliente
-	$fatura->update({id_situacao => 3});
+	$fatura->update({id_situacao => 3, data_liquidacao => DateTime->now()->ymd('-')});
 	&atualiza_inadimplencia($c, $fatura->cliente->uid);
 	
 	$c->stash->{status_msg} = 'A fatura recebeu baixa com sucesso.';
-	$c->forward('editar/' . $fatura->cliente->id_cliente);
+	$c->forward('lista');
 }
 
 =head2 detalhar_fatura
