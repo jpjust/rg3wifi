@@ -158,6 +158,15 @@ caso queira imprimir o boleto original vencido.</p>
 
 <!-- (Opcional) Coloque propagandas ou avisos aqui! -->
 
+<h2>Conheça nossos planos de Internet e navegue mais rápido!</h2>
+
+<p><img src="http://portal.rg3.net/images/stories/btn_512kbps.png" alt="512 kbps">&nbsp;&nbsp;&nbsp;
+<img src="http://portal.rg3.net/images/stories/btn_768kbps.png" alt="768 kbps">&nbsp;&nbsp;&nbsp;
+<img src="http://portal.rg3.net/images/stories/btn_1mbps.png" alt="1 Mbps">&nbsp;&nbsp;&nbsp;
+<img src="http://portal.rg3.net/images/stories/btn_2mbps.png" alt="2 Mbps"></p>
+
+<p><strong>Ligue para nosso escritório no telefone (75) 3624-8601 e solicite um orçamento!</strong></p>
+
 [% IF boletos.size > 1 %]
 <div class="mypage">
 <br>
