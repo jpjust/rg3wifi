@@ -1,3 +1,5 @@
+- Quando o cliente pagar atrasado sem a multa, calcular
+  automaticamente para o próximo boleto.
 - Criar o grupo "cobrança", somente ele poderá ter acesso
   às configurações de mensalidade, vencimento e faturas.
   Os operadores terão acesso apenas ao cadastro, chamados
