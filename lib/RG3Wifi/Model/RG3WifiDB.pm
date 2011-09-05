@@ -10,7 +10,6 @@ __PACKAGE__->config(
         'radius',
         'cdpepc26',
         { AutoCommit => 1 },
-        
     ],
 );
 
