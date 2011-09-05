@@ -179,6 +179,8 @@ Adiciona/atualiza um usuário na configuração do PPPoE.
 sub user_add : Private {
 	my ($c, $uid) = @_;
 	
+	# Nesse método, podemos modularizar algumas coisas
+	
 	if (@_ < 2) { return 1; }
 
 	&user_del($c, $uid);
@@ -217,6 +219,20 @@ sub user_add : Private {
 		Attribute	=> 'Mikrotik-Rate-Limit',
 		op			=> '=',
 		Value		=> $conta->plano->MikrotikRateLimit,
+	});
+	
+	# mpd-limit em radreply
+	$c->model('RG3WifiDB::radreply')->create({
+		UserName	=> $conta->login,
+		Attribute	=> 'mpd-limit',
+		op			=> '+=',
+		Value		=> $conta->plano->mpdlimitin,
+	});
+	$c->model('RG3WifiDB::radreply')->create({
+		UserName	=> $conta->login,
+		Attribute	=> 'mpd-limit',
+		op			=> '+=',
+		Value		=> $conta->plano->mpdlimitout,
 	});
 	
 	if ($conta->ip) {
