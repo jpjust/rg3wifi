@@ -1513,6 +1513,28 @@ sub seleciona_banco : Local {
 	$c->stash->{template} = 'cadastro/seleciona_banco.tt2';
 }
 
+=head2 calcula_multa
+
+Calcula a multa de uma fatura.
+
+=cut
+
+sub calcula_multa : Private {
+	my ($valor, $vencimento, $tx_multa, $tx_juros) = @_;
+	
+	# Calcula a diferença de dias
+	my $dt_hoje = DateTime->today;
+	my $dt_fatura = DateTime::Format::MySQL->parse_date($vencimento);
+	my $dt_diff = $dt_hoje->delta_days($dt_fatura)->delta_days;
+	
+	# Calcula a multa e insere na fatura
+	my $multa = sprintf('%.2f', $valor * $tx_multa);
+	my $juros = sprintf('%.2f', $valor * $tx_juros / 30);
+	my $multa_total = $multa + ($juros * $dt_diff);
+
+	return ($multa_total, $multa, $juros);
+}
+
 =head2 emitir_boleto
 
 Emite um boleto referente a uma fatura específica.
