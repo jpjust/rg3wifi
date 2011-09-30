@@ -1378,11 +1378,11 @@ sub liquidar_fatura_do : Local {
 	}
 	
 	# As faturas não podem ser liquidadas com valores menores
-	if ($p->{valor_pago} < $fatura_antiga->valor) {
-		$c->stash->{error_msg} = 'O valor pago deve ser igual ou superior ao valor da fatura.';
-		$c->stash->{template} = 'error.tt2';
-		return;
-	}
+	#if ($p->{valor_pago} < $fatura_antiga->valor) {
+	#	$c->stash->{error_msg} = 'O valor pago deve ser igual ou superior ao valor da fatura.';
+	#	$c->stash->{template} = 'error.tt2';
+	#	return;
+	#}
 	
 	# Faz as devidas inserções no banco de dados
 	eval {
