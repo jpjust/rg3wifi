@@ -1,3 +1,8 @@
+- Criar um campo no BD para data de abertura de chamado.
+  Assim, ninguém vai poder alterar a data de abertura. A
+  data que tem atualmente servirá como data de agendamento.
+- Quando o usuário escolher caixa da loja no Caixa, deve
+  exibir apenas um campo de data. 
 - Quando o cliente pagar atrasado sem a multa, calcular
   automaticamente para o próximo boleto.
 - Criar o grupo "cobrança", somente ele poderá ter acesso
