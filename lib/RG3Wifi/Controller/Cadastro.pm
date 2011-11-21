@@ -1351,6 +1351,7 @@ sub liquidar_fatura_do : Local {
 	# Efetua o cadastro
 	my $fatura = {
 		id				=> $p->{id}										|| undef,
+		id_usuario_resp => $c->user->cliente->uid						|| undef,
 		data_liquidacao	=> &EasyCat::data2sql($p->{data_liquidacao})	|| undef,
 		valor_pago		=> $p->{valor_pago}								|| undef,
 		id_situacao		=> 4,
@@ -2063,7 +2064,7 @@ sub baixar_fatura_do : Local {
 	}
 
 	# Baixa a fatura e verifica se ainda há inadimplência neste cliente
-	$fatura->update({id_situacao => 3, data_liquidacao => DateTime->now()->ymd('-')});
+	$fatura->update({id_situacao => 3, id_usuario_resp => $c->user->cliente->uid, data_liquidacao => DateTime->now()->ymd('-')});
 	&atualiza_inadimplencia($c, $fatura->cliente->uid);
 	
 	$c->stash->{status_msg} = 'A fatura recebeu baixa com sucesso.';

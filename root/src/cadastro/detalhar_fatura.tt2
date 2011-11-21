@@ -52,6 +52,10 @@
 		<td>Agência cobradora:</td>
 		<td>[% fatura.ag_cob %]</td>
 	</tr>
+	<tr>
+		<td>Liquidado/baixado por:</td>
+		<td>[% fatura.usuario_responsavel.nome %]</td>
+	</tr>
 	
 	[% END %]
 	

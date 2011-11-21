@@ -35,5 +35,6 @@ __PACKAGE__->belongs_to(banco => 'RG3WifiDB::Bancos', 'id_banco');
 #     3) Column name in *foreign* table
 __PACKAGE__->has_many(contas => 'RG3WifiDB::Contas', 'id_cliente');
 __PACKAGE__->has_many(faturas => 'RG3WifiDB::Faturas', 'id_cliente');
+__PACKAGE__->has_many(faturas_baixadas => 'RG3WifiDB::Faturas', 'id_usuario_resp');
 
 1;
