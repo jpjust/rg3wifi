@@ -54,7 +54,8 @@ caso queira imprimir o boleto original vencido.</p>
 	</tr>
 	<tr>
 		<td class="boleto" colspan="6" height="100" valign="top">Mensagem<br><br>
-		<strong>[% boleto.fatura.descricao %]</strong></td>
+		<strong>[% boleto.fatura.descricao %]<br>
+		Sujeito a bloqueio de acesso após 15 (quinze) dias corridos da data de vencimento.</strong></td>
 	</tr>
 </table>
 
