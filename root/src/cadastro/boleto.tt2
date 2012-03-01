@@ -170,6 +170,8 @@ caso queira imprimir o boleto original vencido.</p>
 
 <p><strong>Ligue para nosso escritório no telefone (75) 3624-8601 e solicite um orçamento!</strong></p>
 
+<p><h2>Suporte 24 horas: (75) 8814-6677</h2></p>
+
 [% IF boletos.size > 1 %]
 <div class="mypage">
 <br>
