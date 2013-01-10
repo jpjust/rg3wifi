@@ -1629,6 +1629,16 @@ Imprime (exibe na tela) um boleto de acordo com a fatura e o banco selecionado.
 
 sub imprime_boleto : Local {
 	my ($self, $c, $id_fatura, $id_banco, $atualizado) = @_;
+	
+	# Obtém a fatura e verifica se pertence a esse cliente
+	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id_fatura);
+	if ($fatura->id_cliente != $c->user->cliente->uid) {
+		$c->stash->{error_msg} = 'Esta fatura não lhe pertence!';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
+	# Obtém o boleto e exibe na tela
 	my $boleto = &emitir_boleto($self, $c, $id_fatura, $id_banco, $atualizado);
 	$c->stash->{boletos} = [$boleto];
 	$c->stash->{template} = 'cadastro/boleto.tt2';

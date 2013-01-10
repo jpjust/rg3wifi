@@ -29,7 +29,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 # Configure the application. 
 #
@@ -51,6 +51,12 @@ __PACKAGE__->setup;
 ##### Auditoria (geral)
 __PACKAGE__->allow_access_if("/auditoria",						[qw/admin/]);
 __PACKAGE__->deny_access("/auditoria");
+
+# Cadastro (segunda via de boleto para usuarios)
+__PACKAGE__->allow_access("/cadastro/seleciona_banco");
+__PACKAGE__->allow_access("/cadastro/imprime_boleto");
+__PACKAGE__->allow_access("/cadastro/codigo_barras_img");
+__PACKAGE__->allow_access("/cadastro/detalhar_fatura");
 
 ##### Cadastro (admin)
 __PACKAGE__->allow_access_if("/cadastro",						[qw/admin/]);

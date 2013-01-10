@@ -41,7 +41,12 @@
 
 <p>Para alteração de assinatura, endereço ou telefone, entre em contato com nosso escritório no telefone <strong>(75) 3624-8601</strong>.</p>
 
-<p><strong>Suporte 24 horas: (75) 8814-6677</strong></p>
+<p><strong>Suporte 24 horas:</strong></p>
+
+<p>Claro: (75) 8139-8702<br>
+Oi: (75) 8814-6677<br>
+TIM: (75) 9136-4449<br>
+Vivo: (75) 9870-6668</p>
 
 <!-- ################################################################# -->
 <td><img src="/static/images/vline.png" alt="vline"></td>
@@ -78,3 +83,50 @@
 </tr>
 </table>
 </div>
+
+<!-- FATURAS -->
+
+<h3>Faturas (detalhes e segunda via)</h3>
+
+<table width="100%">
+	<tr>
+		<th>Data de vencimento</th>
+		<th>Valor</th>
+		<th>Descrição</th>
+		<th>Situação</th>
+		<th>Data da liquidação/baixa</th>
+		<th>Valor pago</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH fatura IN cliente.faturas %]
+	
+	[% # Apenas faturas impressas e liquidadas/baixadas aparecem na lista %]
+	[% IF fatura.id_situacao < 2 %]
+		[% NEXT %]
+	[% END %]
+	
+	[% # Cores da lista, de acordo com o status %]
+	[% IF fatura.id_situacao <= 2 %]
+		[% bgcolor = '#ffaaaa' %]
+	[% ELSE %]
+		[% bgcolor = '#ffffff' %]
+	[% END %]
+
+	<tr class="lista" bgcolor="[% bgcolor %]">
+		<td>[% data2normal(fatura.data_vencimento) %]</td>
+		<td>[% moeda(fatura.valor) %]</td>
+		<td>[% fatura.descricao %]</td>
+		<td>[% fatura.situacao.nome %]</td>
+		<td>[% data2normal(fatura.data_liquidacao) %]</td>
+		<td>[% moeda(fatura.valor_pago) %]</td>
+		<td nowrap>
+			[% IF fatura.id_situacao <= 2 %]
+				<a href="[% Catalyst.uri_for('/cadastro/seleciona_banco/') _ fatura.id %]"><img src="/static/images/printer.png" align="top">Emitir boleto</a>
+			[% ELSE %]
+				<a href="[% Catalyst.uri_for('/cadastro/detalhar_fatura/') _ fatura.id %]"><img src="/static/images/table.png" align="top">Detalhes</a>
+			[% END %]
+		</td>
+	</tr>
+	[% END %]
+</table>
