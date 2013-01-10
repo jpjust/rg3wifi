@@ -56,6 +56,12 @@
 		<td>Liquidado/baixado por:</td>
 		<td>[% fatura.usuario_responsavel.nome %]</td>
 	</tr>
+	[% IF fatura.motivo_baixa %]
+	<tr>
+		<td>Motivo da baixa: </td>
+		<td>[% fatura.motivo_baixa %]</td>
+	</tr>
+	[% END %]
 	
 	[% END %]
 	

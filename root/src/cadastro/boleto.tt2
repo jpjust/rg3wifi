@@ -159,18 +159,21 @@ caso queira imprimir o boleto original vencido.</p>
 
 <!-- (Opcional) Coloque propagandas ou avisos aqui! -->
 
-<br><br><br>
+<!-- <br><br><br> -->
 
 <h2>Conheça nossos planos de Internet e navegue mais rápido!</h2>
 
-<p><img src="http://portal.rg3.net/images/stories/btn_512kbps.png" alt="512 kbps">&nbsp;&nbsp;&nbsp;
-<img src="http://portal.rg3.net/images/stories/btn_768kbps.png" alt="768 kbps">&nbsp;&nbsp;&nbsp;
-<img src="http://portal.rg3.net/images/stories/btn_1mbps.png" alt="1 Mbps">&nbsp;&nbsp;&nbsp;
-<img src="http://portal.rg3.net/images/stories/btn_2mbps.png" alt="2 Mbps"></p>
+<p><img src="http://portal.rg3.net/images/stories/btn_1mbps.png" alt="1 Mbps">&nbsp;&nbsp;&nbsp;
+<img src="http://portal.rg3.net/images/stories/btn_2mbps.png" alt="2 Mbps">&nbsp;&nbsp;&nbsp;
+<img src="http://portal.rg3.net/images/stories/btn_4mbps.png" alt="4 Mbps"></p>
 
 <p><strong>Ligue para nosso escritório no telefone (75) 3624-8601 e solicite um orçamento!</strong></p>
 
-<p><h2>Suporte 24 horas: (75) 8814-6677</h2></p>
+<p><strong>Suporte 24 horas:</strong>
+Claro: (75) 8139-8702 <strong>/</strong>
+Oi: (75) 8814-6677 <strong>/</strong>
+TIM: (75) 9136-4449 <strong>/</strong>
+Vivo: (75) 9870-6668</p>
 
 [% IF boletos.size > 1 %]
 <div class="mypage">

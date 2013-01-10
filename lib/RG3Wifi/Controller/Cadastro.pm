@@ -1379,11 +1379,11 @@ sub liquidar_fatura_do : Local {
 	}
 	
 	# As faturas não podem ser liquidadas com valores menores
-	#if ($p->{valor_pago} < $fatura_antiga->valor) {
-	#	$c->stash->{error_msg} = 'O valor pago deve ser igual ou superior ao valor da fatura.';
-	#	$c->stash->{template} = 'error.tt2';
-	#	return;
-	#}
+	if ($p->{valor_pago} < $fatura_antiga->valor) {
+		$c->stash->{error_msg} = 'O valor pago deve ser igual ou superior ao valor da fatura.';
+	    $c->stash->{template} = 'error.tt2';
+		return;
+	}
 	
 	# Faz as devidas inserções no banco de dados
 	eval {
@@ -2046,6 +2046,27 @@ sub liquida_fatura2 : Private {
 	return $@;
 }
 
+=head2 baixar_fatura
+
+Exibe a página para baixar uma fatura.
+
+=cut
+
+sub baixar_fatura : Local {
+	my ($self, $c, $id) = @_;
+
+	# Apenas faturas na situação "Impresso" (2) podem ser baixadas
+	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id);
+	if ($fatura->id_situacao > 2) {
+		$c->stash->{error_msg} = 'Essa fatura não pode mais receber baixa.';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+
+	$c->stash->{fatura} = $fatura;
+	$c->stash->{template} = 'cadastro/baixar_fatura.tt2';
+}
+
 =head2 baixar_fatura_do
 
 Baixa uma fatura, sem precisar ter sido liquidada.
@@ -2053,6 +2074,63 @@ Baixa uma fatura, sem precisar ter sido liquidada.
 =cut
 
 sub baixar_fatura_do : Local {
+	my ($self, $c, $situacao, $pagina) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Efetua o cadastro
+	my $fatura = {
+		id				=> $p->{id}										|| undef,
+		id_usuario_resp => $c->user->cliente->uid						|| undef,
+		data_liquidacao	=> &EasyCat::data2sql($p->{data_liquidacao})	|| undef,
+		motivo_baixa	=> $p->{motivo_baixa}							|| undef,
+		id_situacao		=> 3,
+	};
+	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$fatura,
+		{required => [qw(id data_liquidacao motivo_baixa)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{fatura} = $fatura;
+		$c->forward('liquidar_fatura');
+		return;
+	}
+	
+	# Apenas faturas na situação "Impresso" (2) podem ser baixadas
+	my $fatura_antiga = $c->model('RG3WifiDB::Faturas')->find($fatura->{id});
+	if ($fatura_antiga->id_situacao > 2) {
+		$c->stash->{error_msg} = 'Essa fatura já foi baixada.';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
+	# Faz as devidas inserções no banco de dados
+	eval {
+		# Baixa fatura
+		$c->model('RG3WifiDB::Faturas')->update_or_create($fatura);
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao baixar fatura: ' . $@;
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
+	# Após alterar a liquidação, verifica se ainda existem faturas em aberto
+	&atualiza_inadimplencia($c, $p->{id_cliente});
+
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Fatura baixada com sucesso.';
+	$c->forward('editar/' . $p->{id_cliente});
+}
+
+sub baixar_fatura_do_antigo : Local {
+	return;
 	my ($self, $c, $id) = @_;
 
 	# Apenas faturas na situação "Impresso" (2) podem ser baixadas
