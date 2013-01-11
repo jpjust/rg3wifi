@@ -11,7 +11,7 @@
 [% END %]
 
 [% IF fatura.id_situacao >= 2 %]
-	<p class="errorbos">ATENÇÃO: Essa fatura já foi impressa! Alterar seus dados poderá gerar inconsistência posteriormente.
+	<p class="errorbox">ATENÇÃO: Essa fatura já foi impressa! Alterar seus dados poderá gerar inconsistência de dados.
 	Certifique-se de que ela ainda não foi enviada ao cliente.</p>
 [% END %]
 
