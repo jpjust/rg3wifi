@@ -1,3 +1,6 @@
+- Relatorio dos pagamentos feitos na loja.
+- Criar uma forma de transferir o login de um usuário para
+  outro.
 - Criar um campo no BD para data de abertura de chamado.
   Assim, ninguém vai poder alterar a data de abertura. A
   data que tem atualmente servirá como data de agendamento.

@@ -13,7 +13,7 @@
    # define a data structure to hold sitewide data
    site = {
      title     => 'Central de Acesso RG3.Net',
-     copyright => '2007 - 2011 RG3.Net Comércio e Serviços Ltda.',
+     copyright => '2007 - 2013 RG3.Net Comércio e Serviços Ltda.',
    };
 
    # load up any other configuration items 

@@ -1632,7 +1632,14 @@ sub imprime_boleto : Local {
 	
 	# Obtém a fatura e verifica se pertence a esse cliente
 	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id_fatura);
-	if ($fatura->id_cliente != $c->user->cliente->uid) {
+	if (!$fatura){
+		$c->stash->{error_msg} = 'Fatura não encontrada!';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}	
+	
+	if ( ((!$c->check_user_roles('admin')) && (!$c->check_user_roles('operador')))
+	     && ($fatura->id_cliente != $c->user->cliente->uid) ) {
 		$c->stash->{error_msg} = 'Esta fatura não lhe pertence!';
 		$c->stash->{template} = 'error.tt2';
 		return;
@@ -2167,15 +2174,25 @@ Exibe os detalhes de uma fatura liquidada ou baixada.
 
 sub detalhar_fatura : Local {
 	my ($self, $c, $id) = @_;
-	
+
+	# Obtém a fatura e verifica se pertence a esse cliente
 	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id);
-	if ($fatura) {
-		$c->stash->{fatura} = $fatura;
-		$c->stash->{template} = 'cadastro/detalhar_fatura.tt2';
-	} else {
+	if (!$fatura){
 		$c->stash->{error_msg} = 'Fatura não encontrada!';
 		$c->stash->{template} = 'error.tt2';
+		return;
 	}	
+	
+	if ( ((!$c->check_user_roles('admin')) && (!$c->check_user_roles('operador')))
+	     && ($fatura->id_cliente != $c->user->cliente->uid) ) {
+		$c->stash->{error_msg} = 'Esta fatura não lhe pertence!';
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+
+	# Abre a fatura
+	$c->stash->{fatura} = $fatura;
+	$c->stash->{template} = 'cadastro/detalhar_fatura.tt2';
 }
 
 =head1 AUTHOR
