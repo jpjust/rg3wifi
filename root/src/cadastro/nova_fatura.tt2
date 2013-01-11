@@ -10,6 +10,11 @@
 	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
 [% END %]
 
+[% IF fatura.id_situacao >= 2 %]
+	<p class="errorbos">ATENÇÃO: Essa fatura já foi impressa! Alterar seus dados poderá gerar inconsistência posteriormente.
+	Certifique-se de que ela ainda não foi enviada ao cliente.</p>
+[% END %]
+
 <form action="[% Catalyst.uri_for('nova_fatura_do') %]" method="POST">
 <input type="hidden" name="id" value="[% fatura.id %]">
 <input type="hidden" name="id_cliente" value="[% fatura.id_cliente %]">

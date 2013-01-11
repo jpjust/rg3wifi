@@ -1298,7 +1298,7 @@ sub nova_fatura_do : Local {
 	
 	# Apenas faturas na situação "Aberto" (1) podem ser alteradas
 	my $fatura_antiga = $c->model('RG3WifiDB::Faturas')->find($fatura->{id});
-	if ($fatura_antiga && $fatura_antiga->id_situacao > 1) {
+	if (($fatura_antiga && $fatura_antiga->id_situacao > 1) && (!$c->check_user_roles('admin'))) {
 		$c->stash->{error_msg} = 'Essa fatura já não pode mais ser alterada.';
 		$c->stash->{template} = 'error.tt2';
 		return;
@@ -1379,7 +1379,7 @@ sub liquidar_fatura_do : Local {
 	}
 	
 	# As faturas não podem ser liquidadas com valores menores
-	if ($p->{valor_pago} < $fatura_antiga->valor) {
+	if (($p->{valor_pago} < $fatura_antiga->valor) && (!$c->check_user_roles('admin'))) {
 		$c->stash->{error_msg} = 'O valor pago deve ser igual ou superior ao valor da fatura.';
 	    $c->stash->{template} = 'error.tt2';
 		return;
