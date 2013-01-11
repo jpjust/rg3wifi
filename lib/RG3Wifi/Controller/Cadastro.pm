@@ -1415,6 +1415,9 @@ sub liquidar_fatura_do : Local {
 		return;
 	}
 	
+	# Insere o pagamento no caixa
+	&lancar_fatura_caixa($self, $c, $p->{id}, 0);
+	
 	# Após alterar a liquidação, verifica se ainda existem faturas em aberto
 	&atualiza_inadimplencia($c, $p->{id_cliente});
 
@@ -1422,6 +1425,48 @@ sub liquidar_fatura_do : Local {
 	$c->stash->{status_msg} = 'Fatura liquidada com sucesso.';
 	$c->forward('editar/' . $p->{id_cliente});
 }
+
+=head2 lancar_fatura_caixa
+
+Lança o pagamento de uma fatura no caixa.
+
+=cut
+
+sub lancar_fatura_caixa : Private {
+	my ($self, $c, $id_fatura, $id_banco) = @_;
+	
+	# Procura a fatura no banco
+	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id_fatura);
+	
+	if (!$fatura) {
+		$c->stash->{error_msg} = 'Fatura não encontrada.';
+		return;
+	}
+	
+	# Gera dados para registro no caixa
+	my $caixa = ({
+		id					=> -1,
+		id_categoria		=> 16,	# Recebimento
+		id_forma			=> 4,	# Boleto bancário
+		id_banco			=> $id_banco,
+		data				=> $fatura->data_liquidacao,
+		valor				=> $fatura->valor_pago,
+		credito				=> 1,
+		lancamento_futuro	=> 0,
+		descricao			=> $fatura->descricao,
+		favorecido			=> $fatura->cliente->nome,
+	});
+	
+	# Atualiza o banco de dados
+	eval {
+		$c->model('RG3WifiDB::Caixa')->update_or_create($caixa);
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao incluir lançamento no caixa: ' . $@;
+	}
+}
+
 
 =head2 excluir_fatura
 
@@ -1910,6 +1955,9 @@ Processa um arquivo de retorno do Banco do Brasil.
 sub processa_retorno_bb : Local {
 	my ($self, $c, $fh) = @_;
 	
+	# Obtém o banco
+	my $banco = $c->model('RG3WifiDB::Bancos')->search({numero => 1})->first;
+	
 	# Obtém o cabeçalho
 	my $cabeca = $fh->getline;
 	chop($cabeca);
@@ -1968,6 +2016,9 @@ sub processa_retorno_bb : Local {
 				# Desbloqueia
 				&desbloqueia($c, $fatura->cliente);
 				
+				# Insere o pagamento no caixa
+				&lancar_fatura_caixa($self, $c, $fatura->id, $banco->id);
+				
 				# Após alterar a liquidação, verifica se ainda existem faturas em aberto
 				&atualiza_inadimplencia($c, $fatura->cliente->uid);
 			}
@@ -1989,6 +2040,9 @@ Processa um arquivo de retorno do Bradesco.
 
 sub processa_retorno_bradesco : Local {
 	my ($self, $c, $fh) = @_;
+		
+	# Obtém o banco
+	my $banco = $c->model('RG3WifiDB::Bancos')->search({numero => 237})->first;
 	
 	# Obtém o cabeçalho
 	my $cabeca = $fh->getline;
@@ -2040,6 +2094,9 @@ sub processa_retorno_bradesco : Local {
 				
 				# Desbloqueia
 				&desbloqueia($c, $fatura->cliente);
+				
+				# Insere o pagamento no caixa
+				&lancar_fatura_caixa($self, $c, $fatura->id, $banco->id);
 				
 				# Após alterar a liquidação, verifica se ainda existem faturas em aberto
 				&atualiza_inadimplencia($c, $fatura->cliente->uid);
