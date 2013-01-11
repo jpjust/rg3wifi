@@ -1053,7 +1053,13 @@ sub chart_mensalidade : Local {
 		'sub_title' => 'Quantos usuarios pagam ate o valor X',
 		'png_border' => 1,
 	);
-	$grafico->cgi_png(\@dados);
+	
+	#$grafico->cgi_png(\@dados);
+	binmode STDOUT;
+	$c->response->write(	
+		$grafico->scalar_png(\@dados)
+	);
+	$c->response->redirect('');
 }
 
 =head2 chart_planos
@@ -1083,7 +1089,13 @@ sub chart_planos : Local {
 		'title' => 'Contas por planos de acesso',
 		'sub_title' => 'Quantas contas estao inseridas em cada plano de acesso',
 	);
-	$grafico->cgi_png(\@dados);
+	
+	#$grafico->cgi_png(\@dados);
+	binmode STDOUT;
+	$c->response->write(	
+		$grafico->scalar_png(\@dados)
+	);
+	$c->response->redirect('');
 }
 
 =head2 chart_instalacoes
@@ -1121,7 +1133,13 @@ sub chart_instalacoes : Local {
 		'include_zero' => 'true',
 		'precision' => 0,
 	);
-	$grafico->cgi_png(\@dados);	
+	
+	#$grafico->cgi_png(\@dados);
+	binmode STDOUT;
+	$c->response->write(	
+		$grafico->scalar_png(\@dados)
+	);
+	$c->response->redirect('');
 }
 
 =head2 busca

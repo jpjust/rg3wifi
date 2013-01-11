@@ -1,3 +1,5 @@
+- Ao liquidar um boleto (manualmente ou por retorno),
+  inserir no caixa.
 - Relatorio dos pagamentos feitos na loja.
 - Criar uma forma de transferir o login de um usuário para
   outro.

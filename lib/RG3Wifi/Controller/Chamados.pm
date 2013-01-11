@@ -229,7 +229,13 @@ sub chart_suporte : Local {
 		'include_zero' => 'true',
 		'precision' => 0,
 	);
-	$grafico->cgi_png(\@dados);	
+	
+	#$grafico->cgi_png(\@dados);
+	binmode STDOUT;
+	$c->response->write(	
+		$grafico->scalar_png(\@dados)
+	);
+	$c->response->redirect('');
 }
 
 =head1 AUTHOR
