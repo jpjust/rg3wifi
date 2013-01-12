@@ -398,6 +398,46 @@ sub filtro : Local {
 	$c->stash->{template} = 'cadastro/lista.tt2';
 }
 
+=head2 relatorio_faturas_do
+
+Gera um relatório de faturas de acordo com o filtro configurado.
+
+=cut
+
+sub relatorio_faturas_do : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	$c->stash->{p} = $p;
+	$c->stash->{situacoes} = [$c->model('RG3WifiDB::FaturasSituacao')->all];
+	$c->stash->{template} = 'cadastro/relatorio_faturas.tt2';
+
+	# Verifica se existem datas e situação
+	if (($p->{data1} eq '') || ($p->{data2} eq '') || ($p->{id_situacao} eq '')) {
+		$c->stash->{error_msg} = 'Todos os campos são obrigatórios.';
+		return;
+	}
+	
+	my $data1 = &EasyCat::data2sql($p->{data1});
+	my $data2 = &EasyCat::data2sql($p->{data2});
+	
+	# A data pode ser de processamento ou de pagamento/baixa
+	my $tipo_data = 'data_vencimento';
+	if ($p->{id_situacao} > 2) {
+		$tipo_data = 'data_liquidacao';
+	}
+	
+	# Obtém as faturas
+	$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({
+		$tipo_data => {
+			-between => [$data1, $data2]
+		},
+		id_situacao => $p->{id_situacao},
+	})];
+}
+
 =head2 imprimir
 
 Exibe os cadastros prontos para impressão.

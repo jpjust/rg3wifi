@@ -1,0 +1,95 @@
+[% PROCESS site/macros %]
+
+<h2>Relatório de faturas</h2>
+
+<form action="[% Catalyst.uri_for('/cadastro/relatorio_faturas_do') %]" method="POST">
+
+<!-- Período -->
+<p><strong>Data de vencimento, liquidação ou baixa:</strong> Entre
+<input type="text" name="data1" id="data1" size="10" value="[% p.data1 %]">
+<img src="/static/images/calendar.png" id="t_rec1" style="cursor: pointer;" alt="Calendário">
+<script type="text/javascript">
+	Calendar.setup(
+		{
+			inputField  : "data1",         // ID of the input field
+			ifFormat    : "%d/%m/%Y",      // the date format
+			button      : "t_rec1",		   // ID of the button
+			showsTime	: false
+		}
+	);
+</script>
+e
+<input type="text" name="data2" id="data2" size="10" value="[% p.data2 %]">
+<img src="/static/images/calendar.png" id="t_rec2" style="cursor: pointer;" alt="Calendário">
+<script type="text/javascript">
+	Calendar.setup(
+		{
+			inputField  : "data2",         // ID of the input field
+			ifFormat    : "%d/%m/%Y",      // the date format
+			button      : "t_rec2",		   // ID of the button
+			showsTime	: false
+		}
+	);
+</script>
+</p>
+
+<!-- Situação -->
+
+<p><strong>Situação:</strong>
+<select name="id_situacao">
+	[% FOREACH situacao IN situacoes %]
+	<option value="[% situacao.id %]" [% IF situacao.id == p.id_situacao %]selected[% END %]>[% situacao.nome %]</option>
+	[% END %]
+</select>
+</p>
+
+<p><input type="submit" value="Gerar relatório"></p>
+</form>
+
+[% IF faturas.size > 0 %]
+<h2>Resultados</h2>
+
+<p>Faturas listadas: [% faturas.size %]</p>
+
+[%
+	valor_total = 0
+	valor_pago_total = 0
+%]
+
+<table width="100%">
+	<tr>
+		<th>Cliente</th>
+		<th>Descrição</th>
+		<th>Data de vencimento</th>
+		<th>Data de liq./baixa</th>
+		<th>Valor</th>
+		<th>Valor pago</th>
+	</tr>
+	
+	[% FOREACH fatura IN faturas %]
+	[%
+		valor_total = valor_total + fatura.valor
+		valor_pago_total = valor_pago_total + fatura.valor_pago
+	%]
+	
+	<tr class="lista" [% IF fatura.valor_pago < fatura.valor %]bgcolor="#ffaaaa"[% END %]>
+		<td><a href="[% Catalyst.uri_for('editar/') _ fatura.cliente.id %]" target="_blank">[% fatura.cliente.nome %]</a></td>
+		<td>[% fatura.descricao %]</td>
+		<td nowrap>[% data2normal(fatura.data_vencimento) %]</td>
+		<td nowrap>[% data2normal(fatura.data_liquidacao) %]</td>
+		<td nowrap>[% moeda(fatura.valor) %]</td>
+		<td nowrap>[% moeda(fatura.valor_pago) %]</td>
+	</tr>
+	[% END %]
+	
+	<tr>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
+		<th nowrap>[% moeda(valor_total) %]</th>
+		<th nowrap>[% moeda(valor_pago_total) %]</th>
+	</tr>
+</table>
+
+[% END %]
