@@ -1,7 +1,6 @@
 - Configurações:
 	o Mensagem no final do boleto
 	o Mensagem na página inicial
-- Relatorio dos pagamentos feitos na loja.
 - Criar uma forma de transferir o login de um usuário para
   outro.
 - Criar um campo no BD para data de abertura de chamado.

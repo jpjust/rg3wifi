@@ -429,13 +429,23 @@ sub relatorio_faturas_do : Local {
 		$tipo_data = 'data_liquidacao';
 	}
 	
-	# Obtém as faturas
-	$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({
-		$tipo_data => {
-			-between => [$data1, $data2]
-		},
-		id_situacao => $p->{id_situacao},
-	})];
+	# Obtém apenas faturas recebidas na loja
+	if ($p->{sem_banco} == 1) {
+		$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({
+			$tipo_data => {
+				-between => [$data1, $data2]
+			},
+			id_situacao => $p->{id_situacao},
+			banco_cob => undef,
+		})];
+	} else {	# Obtém todas as faturas
+		$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({
+			$tipo_data => {
+				-between => [$data1, $data2]
+			},
+			id_situacao => $p->{id_situacao},
+		})];
+	}
 }
 
 =head2 imprimir

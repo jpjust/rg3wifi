@@ -41,6 +41,8 @@ e
 	<option value="[% situacao.id %]" [% IF situacao.id == p.id_situacao %]selected[% END %]>[% situacao.nome %]</option>
 	[% END %]
 </select>
+
+<input type="checkbox" name="sem_banco" value="1" [% IF p.sem_banco == 1 %]checked[% END %]>Para relatório de faturas liquidadas, exibir apenas as que foram recebidas na loja.
 </p>
 
 <p><input type="submit" value="Gerar relatório"></p>
