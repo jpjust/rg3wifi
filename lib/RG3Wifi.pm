@@ -78,6 +78,7 @@ __PACKAGE__->allow_access_if("/cadastro/novo",					[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/limpa_pppoe",			[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/limpa_pppoe1",			[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/derrubar_pppoe_do",		[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/relatorio_faturas_do",	[qw/operador/]);
 
 # Cadastro (outros)
 __PACKAGE__->deny_access("/cadastro");
