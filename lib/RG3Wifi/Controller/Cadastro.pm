@@ -1505,6 +1505,7 @@ sub lancar_fatura_caixa : Private {
 		lancamento_futuro	=> 0,
 		descricao			=> $fatura->descricao,
 		favorecido			=> $fatura->cliente->nome,
+		protegido			=> 1,
 	});
 	
 	# Atualiza o banco de dados
@@ -2165,6 +2166,7 @@ sub processa_retorno_bradesco : Local {
 
 Liquida uma fatura através de passagem de parâmetros.
 Retorna nulo caso sucesso, ou a mensagem de erro caso tenha havido uma falha.
+Não adiciona informações no caixa.
 
 =cut
 

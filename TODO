@@ -1,3 +1,7 @@
+- Relatório de boletos:
+	o Se forem abertos ou impressos, ordenar por data de processamento
+	o Se forem liquidados ou baixados, ordenar por data de liquidação/baixa
+	o Se forem baixados, exibir o motivo da baixa
 - Configurações:
 	o Mensagem no final do boleto
 	o Mensagem na página inicial

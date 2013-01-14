@@ -241,13 +241,13 @@ sub novo_do : Local {
 
 =head2 excluir
 
-Exclui um lançamento.
+Exclui um lançamento, desde que não seja protegido.
 
 =cut
 
 sub excluir : Local {
 	my ($self, $c, $id) = @_;
-	$c->model('RG3WifiDB::Caixa')->search({id => $id})->delete_all();
+	$c->model('RG3WifiDB::Caixa')->search({id => $id, protegido => 0})->delete_all();
 	$c->stash->{status_msg} = 'Lançamento excluído!';
 	$c->forward('lista');
 }
