@@ -423,7 +423,7 @@ sub relatorio_faturas_do : Local {
 	my $data1 = &EasyCat::data2sql($p->{data1});
 	my $data2 = &EasyCat::data2sql($p->{data2});
 	
-	# A data pode ser de processamento ou de pagamento/baixa
+	# A data pode ser de processamento ou de pagamento/baixa (a ordenação também)
 	my $tipo_data = 'data_vencimento';
 	if ($p->{id_situacao} > 2) {
 		$tipo_data = 'data_liquidacao';
@@ -437,14 +437,14 @@ sub relatorio_faturas_do : Local {
 			},
 			id_situacao => $p->{id_situacao},
 			banco_cob => undef,
-		})];
+		}, {order_by => $tipo_data})];
 	} else {	# Obtém todas as faturas
 		$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({
 			$tipo_data => {
 				-between => [$data1, $data2]
 			},
 			id_situacao => $p->{id_situacao},
-		})];
+		}, {order_by => $tipo_data})];
 	}
 }
 

@@ -65,7 +65,11 @@ e
 		<th>Data de vencimento</th>
 		<th>Data de liq./baixa</th>
 		<th>Valor</th>
-		<th>Valor pago</th>
+		[% IF p.id_situacao == 4 %]
+			<th>Valor pago</th>
+		[% ELSIF p.id_situacao == 3 %]
+			<th>Motivo da baixa</th>
+		[% END %]
 	</tr>
 	
 	[% FOREACH fatura IN faturas %]
@@ -80,7 +84,11 @@ e
 		<td nowrap>[% data2normal(fatura.data_vencimento) %]</td>
 		<td nowrap>[% data2normal(fatura.data_liquidacao) %]</td>
 		<td nowrap>[% moeda(fatura.valor) %]</td>
-		<td nowrap>[% moeda(fatura.valor_pago) %]</td>
+		[% IF p.id_situacao == 4 %]
+			<td nowrap>[% moeda(fatura.valor_pago) %]</td>
+		[% ELSIF p.id_situacao == 3 %]
+			<td>[% fatura.motivo_baixa %]</td>
+		[% END %]
 	</tr>
 	[% END %]
 	
@@ -90,7 +98,11 @@ e
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 		<th nowrap>[% moeda(valor_total) %]</th>
-		<th nowrap>[% moeda(valor_pago_total) %]</th>
+		[% IF p.id_situacao == 4 %]
+			<th nowrap>[% moeda(valor_pago_total) %]</th>
+		[% ELSE %]
+			<th>&nbsp;</th>
+		[% END %]
 	</tr>
 </table>
 

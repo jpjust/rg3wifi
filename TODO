@@ -1,7 +1,15 @@
-- Relatório de boletos:
-	o Se forem abertos ou impressos, ordenar por data de processamento
-	o Se forem liquidados ou baixados, ordenar por data de liquidação/baixa
-	o Se forem baixados, exibir o motivo da baixa
+- Política de suspensão:
+	o Criar uma tabela para suspensão, onde ficarão registrados o dia da
+	  solicitação, o dia de início e o dia do fim da suspensão.
+	o Pensar também numa forma do sistema suspender e remover a suspensão
+	  automaticamente com base nessas informações.
+	o O cliente só poderá ficar suspenso por no máximo um mês (implementar essa
+	  restrição via código).
+	o O cliente só poderá ficar suspenso uma vez a cada seis meses.
+	o Clientes que não solicitarem suspensão não poderão ter o boleto baixado.
+	o Clientes que usarem pelo menos 15 dias no mês e não tiverem solicitado a
+	  suspensão deverão pagar o valor completo. Quem usou menos de 15 dias
+	  poderá pagar o valor proporcional.
 - Configurações:
 	o Mensagem no final do boleto
 	o Mensagem na página inicial
