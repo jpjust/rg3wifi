@@ -819,7 +819,7 @@ sub derrubar_pppoe_do : Local {
 	
 	# Se a conexão ainda está ativa, derruba!
 	if ($conexao->AcctStopTime == undef) {
-		$c->response->redirect('http://just:zdraed@10.11.1.1:5006/cmd?link%20em0-' . $conexao->NASPortId . '&close');
+		$c->response->redirect('http://just:zdraed@177.39.200.66:5006/cmd?link%20em0-' . $conexao->NASPortId . '&close');
 	}
 
 	$c->stash->{error_msg} = 'Esta conexão não está ativa.';
