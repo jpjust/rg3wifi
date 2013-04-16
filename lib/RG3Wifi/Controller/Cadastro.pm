@@ -1798,6 +1798,11 @@ sub nosso_numero : Private {
 		$nosso_numero = sprintf('%011d', $id_fatura);
 	}
 	
+	# Banco do Nordeste
+	elsif ($banco->numero == 4) {
+		$nosso_numero = sprintf('%08d', $id_fatura);
+	}
+	
 	return $nosso_numero;
 }
 
@@ -1822,6 +1827,10 @@ sub campo_livre : Private {
 	} elsif ($banco->numero == 237) {
 		return sprintf('%04d%02d%011d%07d%1d', $banco->ag, $banco->carteira, $nosso_numero, $banco->cc, 0);
 		
+	# Banco do Nordeste
+	} elsif ($banco->numero == 4) {
+		return sprintf('%04d%07d%1d%08d%02d%03d', $banco->ag, $banco->cc, $banco->cc_dv, $nosso_numero, $banco->carteira, 0);
+	
 	# Banco desconhecido
 	} else {
 		return '';
