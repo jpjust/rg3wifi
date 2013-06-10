@@ -160,7 +160,7 @@
 		<td class="carne" width="20%" rowspan="2">&nbsp;</td>
 		<td class="carne" width="1" style="border-style: none; " rowspan="2">&nbsp;</td>
 
-		<td class="carne" colspan="5" rowspan="2"><img src="[% Catalyst.uri_for('/cadastro/codigo_barras_img/') _ boleto.codigo_barras %]"></td>
+		<td class="carne" colspan="5" rowspan="2" style="border-style: none; "><img src="[% Catalyst.uri_for('/cadastro/codigo_barras_img/') _ boleto.codigo_barras %]"></td>
 		
 		<td class="carne"><span style="font-size: smaller;">(=) Valor cobrado</td>
 	</tr>
