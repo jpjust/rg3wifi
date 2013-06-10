@@ -38,6 +38,16 @@ td {
 	font-size: 10pt;
 }
 
+td.boleto {
+	border-width: 1;
+	border-style: solid;
+}
+
+td.carne {
+	border-width: 1;
+	border-style: solid;
+}
+
 th {
 	font-size: 10pt;
 	background-color: #dddddd;
@@ -163,6 +173,11 @@ img {
 }
 
 @media print {
+	#content {
+		margin: 0px;
+		padding: 0px;
+	}
+
 	body {
 		margin: 0px;
 		padding: 0px;
@@ -190,6 +205,15 @@ img {
 	
 	td.boleto {
 		font-size: 10pt;
+		border-width: 1;
+		border-style: solid;
+	}
+
+	td.carne {
+		font-size: 8pt;
+		padding: 1;
+		border-width: 1;
+		border-style: solid;
 	}
 
 	.mypage {

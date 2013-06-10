@@ -1765,6 +1765,33 @@ sub imprime_boleto : Local {
 	$c->stash->{template} = 'cadastro/boleto.tt2';
 }
 
+=head2 imprime_carne
+
+Imprime (exibe na tela) os carnês em aberto de acordo com o cliente e o banco selecionado.
+
+=cut
+
+sub imprime_carne : Local {
+	my ($self, $c, $uid) = @_;
+
+	# Busca as faturas
+	my @faturas = $c->model('RG3WifiDB::Faturas')->search({
+		id_cliente  => $uid,
+		id_situacao => [1, 2],
+	});
+	
+	# Para cada fatura, gera o boleto
+	my @boletos;
+	foreach my $fatura (@faturas) {
+		my $boleto = &emitir_boleto($self, $c, $fatura->id, $fatura->cliente->id_banco);
+		push(@boletos, $boleto);
+	}
+
+	# Obtém os boletos e exibe na tela
+	$c->stash->{boletos} = [@boletos];
+	$c->stash->{template} = 'cadastro/carne.tt2';
+}
+
 =head2 fator_vencimento
 
 Retorna o fator de vencimento para uma determinada data.

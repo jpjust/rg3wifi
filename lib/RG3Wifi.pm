@@ -70,6 +70,7 @@ __PACKAGE__->allow_access_if("/cadastro/editar",				[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/editar_conta",			[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/filtro",				[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/imprimir",				[qw/operador/]);
+__PACKAGE__->allow_access_if("/cadastro/imprime_carne",			[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/index",					[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/lista",					[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/lista_p",				[qw/operador/]);

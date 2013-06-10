@@ -1,0 +1,184 @@
+[% PROCESS site/macros %]
+
+[% IF boletos.size > 1 %]
+<div class="dontprint">
+<p><strong>Total de boletos: [% boletos.size %]</strong></p> 
+</div>
+<div class="mypage">
+[% i = 0 %]
+
+[% END %]
+
+[% FOREACH boleto IN boletos %]
+
+[% i = i + 1 %]
+
+<table width="100%" border="0" cellpadding="4" cellspacing="0">
+<!-- Boleto -->
+	<tr>
+		<td class="carne" width="20%"><img src="[% '/static/images/banco_' _ boleto.banco.numero _ '.jpg' %]" width="100" alt="[% boleto.banco.nome %]" style="border-style: none; "></td>
+		<td class="carne" width="1" style="border-style: none; ">&nbsp;</td>
+	
+		<td class="carne"><img src="[% '/static/images/banco_' _ boleto.banco.numero _ '.jpg' %]" width="100" alt="[% boleto.banco.nome %]" style="border-style: none; "></td>
+		<td class="carne" align="center" valign="bottom"><strong>[% boleto.banco_num %]</strong></td>
+		<td class="carne" colspan="4" align="right" valign="bottom">[% boleto.linha_digitavel %]</td>
+	</tr>
+	<tr>
+		<td class="carne" width="20%">
+			<span style="font-size: smaller;">Vencimento</span><br>
+			[% data2normal(boleto.fatura.data_vencimento) %]
+		</td>
+		
+		<td class="carne" width="1" style="border-style: none; ">&nbsp;</td>
+
+		<td class="carne" colspan="5">
+			<span style="font-size: smaller;">Local de pagamento</span><br>
+			Pagável em qualquer banco até o vencimento
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Vencimento</span><br>
+			[% data2normal(boleto.fatura.data_vencimento) %]
+		</td>
+	</tr>
+	<tr>
+		<td class="carne" width="20%">
+			<span style="font-size: smaller;">Agência/Conta</span><br>
+			[% boleto.banco.ag %]-[% boleto.banco.ag_dv %]/[% boleto.banco.cc %]-[% boleto.banco.cc_dv %]
+		</td>
+		
+		<td class="carne" width="1" style="border-style: none; ">&nbsp;</td>
+
+		<td class="carne" colspan="5">
+			<span style="font-size: smaller;">Cedente</span><br>
+			RG3.Net Comércio e Serviços Ltda.
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Agência/Conta</span><br>
+			[% boleto.banco.ag %]-[% boleto.banco.ag_dv %]/[% boleto.banco.cc %]-[% boleto.banco.cc_dv %]
+		</td>
+	</tr>
+	<tr>
+		<td class="carne" width="20%">
+			<span style="font-size: smaller;">Nosso número</span><br>
+			[% boleto.nosso_numero %]
+		</td>
+		
+		<td class="carne" width="1" style="border-style: none; ">&nbsp;</td>
+
+		<td class="carne">
+			<span style="font-size: smaller;">Data do doc.</span><br>
+			[% data2normal(boleto.fatura.data_lancamento) %]
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Número</span><br>
+			[% boleto.fatura.id %]
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Espécie</span><br>
+			DM
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Aceite</span><br>
+			N
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Data de proc.</span><br>
+			[% data2normal(boleto.fatura.data_lancamento) %]
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Nosso número</span><br>
+			[% boleto.nosso_numero %]
+		</td>
+	</tr>
+	<tr>
+		<td class="carne" width="20%">
+			<span style="font-size: smaller;">(=) Valor</span><br>
+			[% moeda(boleto.fatura.valor) %]
+		</td>
+		<td class="carne" width="1" style="border-style: none; ">&nbsp;</td>
+
+		<td class="carne">
+			<span style="font-size: smaller;">Uso do banco</span><br>
+			&nbsp;
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Carteira</span><br>
+			[% boleto.banco.carteira %]
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Espécie</span><br>
+			R$
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Quantidade</span><br>
+			[% boleto.fatura.valor %]
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">Valor</span><br>
+			[% moeda(boleto.fatura.valor) %]
+		</td>
+		<td class="carne">
+			<span style="font-size: smaller;">(=) Valor doc.</span><br>
+			[% moeda(boleto.fatura.valor) %]
+		</td>
+	</tr>
+	<tr>
+		<td class="carne" width="20%" rowspan="2" valign="top">
+			&nbsp;
+		</td>
+		<td class="carne" width="1" style="border-style: none; " rowspan="2">&nbsp;</td>
+
+		<td class="carne" colspan="5" rowspan="2" valign="top">
+			<span style="font-size: smaller;">Instruções</span><br>
+			- Multa de [% moeda(boleto.multa) %] após o vencimento.<br>
+			- Juros de [% moeda(boleto.juros) %] para cada dia após o vencimento.
+		</td>
+		<td class="carne"><span style="font-size: smaller;">(-) Desconto</td>
+	</tr>
+	<tr>
+		<td class="carne"><span style="font-size: smaller;">&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="carne" width="20%" rowspan="2" valign="top">
+			<span style="font-size: smaller;">Sacado:</span><br>
+			[% boleto.fatura.cliente.nome %]
+		</td>
+		<td class="carne" width="1" rowspan="2" style="border-style: none; ">&nbsp;</td>
+	
+		<td class="carne" colspan="5" rowspan="2" valign="top">
+			<span style="font-size: smaller;">Sacado</span><br>
+			[% boleto.fatura.cliente.nome %]<br>
+			[% boleto.fatura.cliente.endereco %], [% boleto.fatura.cliente.bairro %]<br>
+			CEP: [% boleto.fatura.cliente.cep %] - [% boleto.fatura.cliente.cidade %] - [% boleto.fatura.cliente.estado.nome %]
+		</td>
+		<td class="carne"><span style="font-size: smaller;">(+) Mora/multa</td>
+	</tr>
+	<tr>
+		<td class="carne">&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="carne" width="20%" rowspan="2">&nbsp;</td>
+		<td class="carne" width="1" style="border-style: none; " rowspan="2">&nbsp;</td>
+
+		<td class="carne" colspan="5" rowspan="2"><img src="[% Catalyst.uri_for('/cadastro/codigo_barras_img/') _ boleto.codigo_barras %]"></td>
+		
+		<td class="carne"><span style="font-size: smaller;">(=) Valor cobrado</td>
+	</tr>
+	<tr>
+		<td class="carne">&nbsp;</td>
+	</tr>
+</table>
+
+[% IF i % 2 == 0 %]
+</div>
+<div class="mypage">
+[% i = 0 %]
+
+[% ELSE %]
+
+<!-- Separador de faturas (recorte aqui) -->
+<hr>
+
+[% END %]
+
+[% END %]

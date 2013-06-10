@@ -3,7 +3,8 @@
 <h2>Cadastro de cliente</h2>
 
 <p><a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a> ::
-<a href="[% Catalyst.uri_for('abrir_chamado/') _ cliente.uid %]"><img src="/static/images/telephone.png" align="top">Abrir chamado</a></p>
+<a href="[% Catalyst.uri_for('abrir_chamado/') _ cliente.uid %]"><img src="/static/images/telephone.png" align="top">Abrir chamado</a> ::
+<a href="[% Catalyst.uri_for('imprime_carne/') _ cliente.uid %]"><img src="/static/images/printer.png" align="top">Imprimir carnê</a></p>
 
 <p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
 
