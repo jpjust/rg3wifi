@@ -1984,15 +1984,18 @@ sub lista_faturas_abertas : Local {
 	# select distinct(rg3_usuarios.uid) from rg3_usuarios,rg3_faturas where rg3_faturas.data_vencimento < NOW() and rg3_faturas.id_situacao = 1 and rg3_faturas.id_cliente = rg3_usuarios.uid;
 	
 	my ($self, $c) = @_;
-	my @devedores;
-
-	foreach my $fatura ($c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => {'<=', 2}},
-		{join => 'cliente', order_by => 'cliente.nome ASC'})) {
-		
-		push(@devedores, $fatura->cliente);
-	}
+	#my @devedores;
+	#
+	#foreach my $fatura ($c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => {'<=', 2}},
+	#	{join => 'cliente', order_by => 'cliente.nome ASC'})) {
+	#	
+	#	push(@devedores, $fatura->cliente);
+	#}
 	
-	$c->stash->{devedores} = [@devedores];
+	#$c->stash->{devedores} = [@devedores];
+	
+	$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => {'<=', 2}},
+		{join => 'cliente', order_by => 'cliente.nome ASC'})];
 	$c->stash->{template} = 'cadastro/lista_devedores.tt2';
 
 }

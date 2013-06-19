@@ -1,28 +1,40 @@
 [% PROCESS site/macros %]
 
+[% total = 0 %]
+
 <h2>Clientes com faturas vencidas</h2>
 
 <p><a href="[% Catalyst.uri_for('lista/') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
 <p><strong>Cada cliente desta lista tem pelo menos uma fatura vencida, não necessariamente inadimplente (com 15 dias de atraso).</strong></p>
 
-<p>Clientes listados: [% devedores.size %]</p>
+<p>Clientes listados: [% faturas.size %]</p>
 
 <table width="100%">
 	<tr>
 		<th>Nome</th>
+		<th>Vencimento</th>
+		<th>Valor</th>
 		<th>Telefone</th>
 		<th>Ações</th>
 	</tr>
 	
-	[% FOREACH devedor IN devedores %]
+	[% FOREACH fatura IN faturas %]
+	[% total = total + fatura.valor %]
 	<tr class="lista">
-		<td>[% devedor.nome %]</td>
-		<td>[% devedor.telefone %]</td>
+		<td>[% fatura.cliente.nome %]</td>
+		<td>[% data2normal(fatura.data_vencimento) %]</td>
+		<td>[% moeda(fatura.valor) %]</td>
+		<td>[% fatura.cliente.telefone %]</td>
 		<td nowrap>
-			<a href="[% Catalyst.uri_for('editar/') _ devedor.uid %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+			<a href="[% Catalyst.uri_for('editar/') _ fatura.cliente.uid %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
 		</td>
 	</tr>
 	[% END %]
 	
+	<tr>
+		<td colspan="2"><strong>Total</strong></td>
+		<td><strong>[% moeda(total) %]</strong></td>
+		<td colspan="2">&nbsp;</td>
+	</tr>
 </table>
