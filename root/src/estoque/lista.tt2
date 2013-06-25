@@ -1,0 +1,88 @@
+[% PROCESS site/macros %]
+
+<h2>Últimas vendas</h2>
+
+<p><strong><a href="javascript:void(0)" onClick="javascript:showbox('box_filtros');"><img src="/static/images/find.png" align="top">Filtros</a></strong></p>
+<div class="mytextbox_green" style="display: none;" id="box_filtros">
+
+	<!-- Data da venda -->
+	<form action="[% Catalyst.uri_for('/vendas/filtro') %]" method="POST">
+	<input type="hidden" name="tipo" value="0">
+	<strong>Data da venda:</strong> Entre
+	
+	<input type="text" name="data1" id="data1" size="10">
+	<img src="/static/images/calendar.png" id="t_rec1" style="cursor: pointer;" alt="Calendário">
+	<script type="text/javascript">
+		Calendar.setup(
+			{
+				inputField  : "data1",         // ID of the input field
+				ifFormat    : "%d/%m/%Y",      // the date format
+				button      : "t_rec1",		   // ID of the button
+				showsTime	: false
+			}
+		);
+	</script>
+	e
+	<input type="text" name="data2" id="data2" size="10">
+	<img src="/static/images/calendar.png" id="t_rec2" style="cursor: pointer;" alt="Calendário">
+	<script type="text/javascript">
+		Calendar.setup(
+			{
+				inputField  : "data2",         // ID of the input field
+				ifFormat    : "%d/%m/%Y",      // the date format
+				button      : "t_rec2",		   // ID of the button
+				showsTime	: false
+			}
+		);
+	</script>
+	<input type="submit" value="Filtrar">
+	</form>
+	
+</div>
+
+<p>
+	<a href="[% Catalyst.uri_for('nova_venda') %]"><img src="/static/images/add.png" align="top">Nova venda</a>
+	:: <a href="[% Catalyst.uri_for('novo_produto') %]"><img src="/static/images/printer.png" align="top">Cadastrar produto</a>
+	:: <a href="[% Catalyst.uri_for('novo_fornecedor') %]"><img src="/static/images/server_connect.png" align="top">Cadastrar fornecedor</a>
+	:: <a href="[% Catalyst.uri_for('nova_unidade') %]"><img src="/static/images/server_connect.png" align="top">Cadastrar unidade</a>
+</p>
+
+<p>Vendas listadas: [% vendas.size %]</p>
+[% IF pagina %]
+	<p>Total de vendas: [% total %]</p>
+	
+	<p align="center">
+		[% paginacao(Catalyst.uri_for('/vendas/lista/') _ situacao _ '/', pagina, '', paginas) %]
+	</p>
+[% END %]
+
+<table width="100%">
+	<tr>
+		<th>Data</th>
+		<th>Vendedor</th>
+		<th>Cliente</th>
+		<th>Valor</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH venda IN vendas %]
+	
+	<tr class="lista" bgcolor="[% bgcolor %]">
+		<td>[% data2normal(venda.data) %]</td>
+		<td>[% venda.vendedor.nome %]</td>
+		<td>[% venda.cliente %]</td>
+		<td>&nbsp;</td>
+		<td nowrap>
+			<a href="[% Catalyst.uri_for('abrir/') _ venda.id %]"><img src="/static/images/table_edit.png" align="top">Detalhar</a>
+		</td>
+	</tr>
+	
+	[% END %]
+	
+</table>
+
+[% IF pagina %]
+	<p align="center">
+		[% paginacao(Catalyst.uri_for('/vendas/lista/') _ situacao _ '/', pagina, '', paginas) %]
+	</p>
+[% END %]

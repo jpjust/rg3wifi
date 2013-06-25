@@ -36,5 +36,6 @@ __PACKAGE__->belongs_to(banco => 'RG3WifiDB::Bancos', 'id_banco');
 __PACKAGE__->has_many(contas => 'RG3WifiDB::Contas', 'id_cliente');
 __PACKAGE__->has_many(faturas => 'RG3WifiDB::Faturas', 'id_cliente');
 __PACKAGE__->has_many(faturas_baixadas => 'RG3WifiDB::Faturas', 'id_usuario_resp');
+__PACKAGE__->has_many(vendas => 'RG3WifiDB::Vendas', 'id_vendedor');
 
 1;

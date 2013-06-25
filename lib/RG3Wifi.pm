@@ -102,6 +102,11 @@ __PACKAGE__->allow_access_if("/radios",							[qw/operador/]);
 # Rádios (outros)
 __PACKAGE__->deny_access("/radios");
 
+##### Vendas (geral)
+__PACKAGE__->allow_access_if("/vendas",							[qw/admin/]);
+__PACKAGE__->deny_access("/vendas");
+
+
 =head1 NAME
 
 RG3Wifi - Catalyst based application

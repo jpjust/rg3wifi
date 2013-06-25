@@ -1,0 +1,73 @@
+[% PROCESS site/macros %]
+
+<h2>Cadastro de fornecedor</h2>
+
+<p><a href="javascript:history.go(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
+
+[% IF val.has_missing() %]
+	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
+[% END %]
+
+<form action="[% Catalyst.uri_for('cadastro_fornecedor_do') %]" method="POST">
+<input type="hidden" name="id" value="[% fornecedor.id %]">
+
+<table>
+<tr>
+	<th colspan="2">Dados do fornecedor</th>
+</tr>
+
+	<tr>
+		<td>Razão social:</td>
+		<td><input type="text" name="nome" size="50" value="[% fornecedor.nome %]" [% IF val.missing('nome') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Contato:</td>
+		<td><input type="text" name="contato" size="50" value="[% fornecedor.contato %]" [% IF val.missing('contato') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>CPF/CNPJ:</td>
+		<td><input type="text" name="cnpj" size="20" value="[% fornecedor.cnpj %]" [% IF val.missing('cnpj') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Endereço:</td>
+		<td><input type="text" name="endereco" size="50" value="[% fornecedor.endereco %]" [% IF val.missing('endereco') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Bairro:</td>
+		<td><input type="text" name="bairro" size="30" value="[% fornecedor.bairro %]" [% IF val.missing('bairro') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Cidade:</td>
+		<td><input type="text" name="cidade" size="30" value="[% fornecedor.cidade %]" [% IF val.missing('cidade') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Estado:</td>
+		<td>
+			<select name="id_estado">
+				[% FOREACH estado IN estados %]
+				<option value="[% estado.id %]" [% IF fornecedor.id_estado == estado.id %]selected[% END %]>[% estado.nome %]</option>
+				[% END %]
+			</select>
+			<img src="/static/images/star.png">
+		</td>
+	</tr>
+	<tr>
+		<td>CEP:</td>
+		<td><input type="text" name="cep" size="10" value="[% fornecedor.cep %]" [% IF val.missing('cep') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>Telefone:</td>
+		<td><input type="text" name="telefone" size="10" value="[% fornecedor.telefone %]" [% IF val.missing('telefone') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+	</tr>
+	<tr>
+		<td>E-mail:</td>
+		<td><input type="text" name="email" size="30" value="[% fornecedor.email %]"></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="OK"></td>
+	</tr>
+</table>
+</form>
