@@ -1980,24 +1980,46 @@ Lista os clientes com faturas em aberto.
 =cut
 
 sub lista_faturas_abertas : Local {
-	# SQL:
-	# select distinct(rg3_usuarios.uid) from rg3_usuarios,rg3_faturas where rg3_faturas.data_vencimento < NOW() and rg3_faturas.id_situacao = 1 and rg3_faturas.id_cliente = rg3_usuarios.uid;
-	
 	my ($self, $c) = @_;
-	#my @devedores;
-	#
-	#foreach my $fatura ($c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => {'<=', 2}},
-	#	{join => 'cliente', order_by => 'cliente.nome ASC'})) {
-	#	
-	#	push(@devedores, $fatura->cliente);
-	#}
-	
-	#$c->stash->{devedores} = [@devedores];
-	
 	$c->stash->{faturas} = [$c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => {'<=', 2}},
 		{join => 'cliente', order_by => 'cliente.nome ASC'})];
 	$c->stash->{template} = 'cadastro/lista_devedores.tt2';
+}
 
+=head2 lista_telefones_devedores
+
+Lista os números de telefones dos clientes devedores (com faturas em aberto).
+
+=cut
+
+sub lista_telefones_devedores : Local {
+	my ($self, $c) = @_;
+	my @telefones;
+	
+	foreach my $fatura ($c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => {'<=', 2}},
+		{join => 'cliente', group_by => 'cliente.telefone'})) {
+		
+		my $telefone = $fatura->cliente->telefone;
+		next if (length($telefone) == 0);
+		
+		# Remove os caracteres especiais
+		$telefone =~ s/[()-\.\s]//g;
+		
+		# Adiciona DDD 75 aos números sem DDD
+		if (length($telefone) < 10) {
+			$telefone = '075' . $telefone;
+		}
+		
+		# Adiciona um 0 ao início do DDD
+		if (substr($telefone, 0, 1) ne '0') {
+			$telefone = '0' . $telefone;
+		}
+		
+		push(@telefones, $telefone);
+	}
+	
+	$c->stash->{telefones} = [@telefones];
+	$c->stash->{template} = 'cadastro/telefones_devedores.tt2';
 }
 
 =head2 enviar_retorno

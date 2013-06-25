@@ -1,0 +1,13 @@
+[% PROCESS site/macros %]
+
+<h2>Telefones de clientes com faturas em aberto</h2>
+
+<p><a href="[% Catalyst.uri_for('lista/') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+
+<p>Telefones listados: [% telefones.size %]</p>
+
+<p>
+[% FOREACH telefone IN telefones %]
+[% telefone %]<br>
+[% END %]
+</p>
