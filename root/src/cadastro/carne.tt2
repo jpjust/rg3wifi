@@ -169,16 +169,13 @@
 	</tr>
 </table>
 
-[% IF i % 2 == 0 %]
+[% IF i % 3 == 0 %]
 </div>
 <div class="mypage">
 [% i = 0 %]
-
-[% ELSE %]
+[% END %]
 
 <!-- Separador de faturas (recorte aqui) -->
 <hr>
-
-[% END %]
 
 [% END %]
