@@ -5,7 +5,7 @@ use base qw/DBIx::Class/;
 # Load required DBIC stuff
 __PACKAGE__->load_components(qw/PK::Auto Core/);
 # Set the table name
-__PACKAGE__->table('rg3_unidades');
+__PACKAGE__->table('rg3_produtos_unidades');
 # Set columns in table
 __PACKAGE__->add_columns(qw/id nome/);
 # Set the primary key for the table

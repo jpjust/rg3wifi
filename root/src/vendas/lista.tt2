@@ -42,9 +42,9 @@
 
 <p>
 	<a href="[% Catalyst.uri_for('nova_venda') %]"><img src="/static/images/add.png" align="top">Nova venda</a>
-	:: <a href="[% Catalyst.uri_for('novo_produto') %]"><img src="/static/images/printer.png" align="top">Cadastrar produto</a>
-	:: <a href="[% Catalyst.uri_for('novo_fornecedor') %]"><img src="/static/images/server_connect.png" align="top">Cadastrar fornecedor</a>
-	:: <a href="[% Catalyst.uri_for('nova_unidade') %]"><img src="/static/images/server_connect.png" align="top">Cadastrar unidade</a>
+	:: <a href="[% Catalyst.uri_for('lista_produto') %]"><img src="/static/images/bricks.png" align="top">Lista de produtos</a>
+	:: <a href="[% Catalyst.uri_for('lista_fornecedor') %]"><img src="/static/images/user.png" align="top">Lista de fornecedores</a>
+	:: <a href="[% Catalyst.uri_for('lista_produto_unidade') %]"><img src="/static/images/table.png" align="top">Tipos de unidades</a>
 </p>
 
 <p>Vendas listadas: [% vendas.size %]</p>

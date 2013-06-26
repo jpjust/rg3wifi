@@ -31,6 +31,6 @@ __PACKAGE__->belongs_to(unidade => 'RG3WifiDB::Unidades', 'id_unidade');
 #     1) Name of relationship, DBIC will create accessor with this name
 #     2) Name of the model class referenced by this relationship
 #     3) Column name in *foreign* table
-__PACKAGE__->has_many(venda_item => 'RG3WifiDB::VendaItem', 'id_produto');
+__PACKAGE__->has_many(venda_item => 'RG3WifiDB::VendasItem', 'id_produto');
 
 1;

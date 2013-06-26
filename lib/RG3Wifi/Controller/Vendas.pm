@@ -2,6 +2,8 @@ package RG3Wifi::Controller::Vendas;
 
 use Moose;
 use namespace::autoclean;
+use FindBin;
+use lib "$FindBin::Bin/../..";
 use EasyCat;
 use Data::FormValidator;
 
@@ -52,6 +54,19 @@ sub lista : Local {
     
 	$c->stash->{vendas} = [$c->model('RG3WifiDB::Vendas')->all];
 	$c->stash->{template} = 'vendas/lista.tt2';
+}
+
+=head2 lista_produto_unidade
+
+Lista os tipos de unidades.
+
+=cut
+
+sub lista_produto_unidade : Local {
+    my ($self, $c) = @_;
+    
+	$c->stash->{unidades} = [$c->model('RG3WifiDB::Unidades')->all];
+	$c->stash->{template} = 'vendas/lista_produto_unidade.tt2';
 }
 
 =head2 novo_produto_unidade
@@ -109,7 +124,21 @@ sub novo_produto_unidade_do : Local {
 	
 	# Exibe mensagem de conclusão
 	$c->stash->{status_msg} = 'Unidade incluída com sucesso.';
-	$c->forward('lista');
+	$c->forward('lista_produto_unidade');
+}
+
+=head2 excluir_produto_unidade
+
+Exclui um tipo de unidade.
+
+=cut
+
+sub excluir_produto_unidade : Local {
+	my ($self, $c, $id) = @_;
+	my $unidade = $c->model('RG3WifiDB::Unidades')->search({id => $id})->first;
+	$unidade->delete();
+	$c->stash->{status_msg} = 'Unidade excluída com sucesso.';
+	$c->forward('lista_produto_unidade');
 }
 
 

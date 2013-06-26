@@ -42,6 +42,11 @@ __PACKAGE__->load_classes({
 		Bancos
 		BancosLista
 		Estados
+		Vendas
+		Produtos
+		Fornecedores
+		VendasItem
+		Unidades
 		radacct
 		radcheck
 		radreply
