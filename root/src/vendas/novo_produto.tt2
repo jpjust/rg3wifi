@@ -10,7 +10,7 @@
 	<p class="errorbox">Alguns campos obrigatórios estão faltando.</p>
 [% END %]
 
-<form action="[% Catalyst.uri_for('cadastro_produto_do') %]" method="POST">
+<form action="[% Catalyst.uri_for('novo_produto_do') %]" method="POST">
 <input type="hidden" name="id" value="[% produto.id %]">
 
 <table>
@@ -20,7 +20,7 @@
 
 	<tr>
 		<td>Código de barras:</td>
-		<td><input type="text" name="codigo" size="10" value="[% produto.codigo %]" [% IF val.missing('codigo') %]class="missing"[% END %]><img src="/static/images/star.png"></td>
+		<td><input type="text" name="codigo" size="15" value="[% produto.codigo %]" [% IF val.missing('codigo') %]class="missing"[% END %] onkeydown="if (event.keyCode < 48 || event.keyCode > 58) return false;"><img src="/static/images/star.png"></td>
 	</tr>
 
 	<tr>

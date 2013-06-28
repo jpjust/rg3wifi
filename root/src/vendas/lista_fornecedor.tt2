@@ -1,0 +1,31 @@
+[% PROCESS site/macros %]
+
+<h2>Fornecedores</h2>
+
+<p>
+	<a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar às vendas</a>
+	:: <a href="[% Catalyst.uri_for('novo_fornecedor') %]"><img src="/static/images/add.png" align="top">Cadastrar fornecedor</a>
+</p>
+
+<p>Fornecedores listados: [% fornecedores.size %]</p>
+
+<table width="100%">
+	<tr>
+		<th>Nome</th>
+		<th>Contato</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH fornecedor IN fornecedores %]
+	
+	<tr class="lista">
+		<td>[% fornecedor.nome %]</td>
+		<td>[% fornecedor.contato %]</td>
+		<td nowrap>
+			<a href="[% Catalyst.uri_for('excluir_fornecedor/') _ fornecedor.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>
+		</td>
+	</tr>
+	
+	[% END %]
+	
+</table>

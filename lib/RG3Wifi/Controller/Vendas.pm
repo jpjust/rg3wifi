@@ -56,6 +56,8 @@ sub lista : Local {
 	$c->stash->{template} = 'vendas/lista.tt2';
 }
 
+##### UNIDADES #####
+
 =head2 lista_produto_unidade
 
 Lista os tipos de unidades.
@@ -141,6 +143,196 @@ sub excluir_produto_unidade : Local {
 	$c->forward('lista_produto_unidade');
 }
 
+##### FORNECEDORES #####
+
+=head2 lista_fornecedor
+
+Lista os fornecedores.
+
+=cut
+
+sub lista_fornecedor : Local {
+    my ($self, $c) = @_;
+    
+	$c->stash->{fornecedores} = [$c->model('RG3WifiDB::Fornecedores')->all];
+	$c->stash->{template} = 'vendas/lista_fornecedor.tt2';
+}
+
+=head2 novo_fornecedor
+
+Exibe a tela para cadastro de novo fornecedor.
+
+=cut
+
+sub novo_fornecedor : Local {
+    my ($self, $c) = @_;
+    $c->stash->{estados} = [$c->model('RG3WifiDB::Estados')->all];
+	$c->stash->{template} = 'vendas/novo_fornecedor.tt2';
+}
+
+=head2 novo_fornecedor_do
+
+Efetua a inclusão de um novo fornecedor.
+
+=cut
+
+sub novo_fornecedor_do : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Efetua o cadastro
+	my $dados = ({
+		id			=> $p->{id}			|| -1,
+		nome		=> $p->{nome}		|| undef,
+		contato		=> $p->{contato}	|| undef,
+		cnpj		=> $p->{cnpj}		|| undef,
+		endereco	=> $p->{endereco}	|| undef,
+		bairro		=> $p->{bairro}		|| undef,
+		cidade		=> $p->{cidade}		|| undef,
+		id_estado	=> $p->{id_estado}	|| undef,
+		cep			=> $p->{cep}		|| undef,
+		telefone	=> $p->{telefone}	|| undef,
+		email		=> $p->{email}		|| undef,
+	});
+	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$dados,
+		{required => [qw(nome contato cnpj endereco bairro cidade id_estado cep telefone)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{fornecedor} = $dados;
+		$c->forward('novo_fornecedor');
+		return;
+	}
+
+	# Atualiza o banco
+	eval {
+		$c->model('RG3WifiDB::Fornecedores')->update_or_create($dados);
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao incluir/editar fornecedor: ' . $@;
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Fornecedor incluído com sucesso.';
+	$c->forward('lista_fornecedor');
+}
+
+=head2 excluir_fornecedor
+
+Exclui um fornecedor.
+
+=cut
+
+sub excluir_fornecedor : Local {
+	my ($self, $c, $id) = @_;
+	my $fornecedor = $c->model('RG3WifiDB::Fornecedores')->search({id => $id})->first;
+	$fornecedor->delete();
+	$c->stash->{status_msg} = 'Fornecedor excluído com sucesso.';
+	$c->forward('lista_fornecedor');
+}
+
+##### PRODUTOS #####
+
+=head2 lista_produto
+
+Lista os produtos.
+
+=cut
+
+sub lista_produto : Local {
+    my ($self, $c) = @_;
+	$c->stash->{produtos} = [$c->model('RG3WifiDB::Produtos')->all];
+	$c->stash->{template} = 'vendas/lista_produto.tt2';
+}
+
+=head2 novo_produto
+
+Exibe a tela para cadastro de novo produto.
+
+=cut
+
+sub novo_produto : Local {
+    my ($self, $c) = @_;
+    $c->stash->{fornecedores} = [$c->model('RG3WifiDB::Fornecedores')->all];
+    $c->stash->{unidades} = [$c->model('RG3WifiDB::Unidades')->all];
+	$c->stash->{template} = 'vendas/novo_produto.tt2';
+}
+
+=head2 novo_produto_do
+
+Efetua a inclusão de um novo produto.
+
+=cut
+
+sub novo_produto_do : Local {
+	my ($self, $c) = @_;
+	
+	# Parâmetros
+	my $p = $c->request->params;
+	
+	# Efetua o cadastro
+	my $dados = ({
+		id				=> $p->{id}				|| -1,
+		codigo			=> $p->{codigo}			|| undef,
+		id_fornecedor	=> $p->{id_fornecedor}	|| undef,
+		descricao		=> $p->{descricao}		|| undef,
+		custo			=> $p->{custo}			|| undef,
+		valor			=> $p->{valor}			|| undef,
+		estoque			=> $p->{estoque}		|| undef,
+		id_unidade		=> $p->{id_unidade}		|| undef,
+	});
+	
+	# Valida formulário
+	my $val = Data::FormValidator->check(
+		$dados,
+		{required => [qw(codigo id_fornecedor descricao custo valor estoque)]}
+	);
+	
+	if (!$val->success()) {
+		$c->stash->{val} = $val;
+		$c->stash->{produto} = $dados;
+		$c->forward('novo_produto');
+		return;
+	}
+
+	# Atualiza o banco
+	eval {
+		$c->model('RG3WifiDB::Produtos')->update_or_create($dados);
+	};
+	
+	if ($@) {
+		$c->stash->{error_msg} = 'Erro ao incluir/editar produto: ' . $@;
+		$c->stash->{template} = 'error.tt2';
+		return;
+	}
+	
+	# Exibe mensagem de conclusão
+	$c->stash->{status_msg} = 'Produto incluído com sucesso.';
+	$c->forward('lista_produto');
+}
+
+=head2 excluir_produto
+
+Exclui um produto.
+
+=cut
+
+sub excluir_produto : Local {
+	my ($self, $c, $id) = @_;
+	my $produto = $c->model('RG3WifiDB::Produtos')->search({id => $id})->first;
+	$produto->delete();
+	$c->stash->{status_msg} = 'Produto excluído com sucesso.';
+	$c->forward('lista_produto');
+}
 
 =head1 AUTHOR
 

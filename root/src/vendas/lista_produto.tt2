@@ -1,0 +1,33 @@
+[% PROCESS site/macros %]
+
+<h2>Produtos</h2>
+
+<p>
+	<a href="[% Catalyst.uri_for('lista') %]"><img src="/static/images/arrow_left.png" align="top">Voltar às vendas</a>
+	:: <a href="[% Catalyst.uri_for('novo_produto') %]"><img src="/static/images/add.png" align="top">Cadastrar produto</a>
+</p>
+
+<p>Produtos listados: [% produtos.size %]</p>
+
+<table width="100%">
+	<tr>
+		<th>Nome</th>
+		<th>Estoque</th>
+		<th>Valor</th>
+		<th>Ações</th>
+	</tr>
+	
+	[% FOREACH produto IN produtos %]
+	
+	<tr class="lista">
+		<td>[% produto.descricao %]</td>
+		<td>[% produto.estoque %] [% produto.unidade.nome %]</td>
+		<td>[% moeda(produto.valor) %]</td>
+		<td nowrap>
+			<a href="[% Catalyst.uri_for('excluir_produto/') _ produto.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>
+		</td>
+	</tr>
+	
+	[% END %]
+	
+</table>
