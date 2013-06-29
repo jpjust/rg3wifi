@@ -2,7 +2,7 @@
 
 <h2>Cadastro de produto</h2>
 
-<p><a href="javascript:history.go(-1);"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
+<p><a href="[% Catalyst.uri_for('lista_produto') %]"><img src="/static/images/arrow_left.png" align="top">Voltar à lista</a></p>
 
 <p>Os campos com <img src="/static/images/star.png"> são obrigatórios.</p>
 
@@ -20,7 +20,7 @@
 
 	<tr>
 		<td>Código de barras:</td>
-		<td><input type="text" name="codigo" size="15" value="[% produto.codigo %]" [% IF val.missing('codigo') %]class="missing"[% END %] onkeydown="if (event.keyCode < 48 || event.keyCode > 58) return false;"><img src="/static/images/star.png"></td>
+		<td><input type="text" name="codigo" size="15" value="[% produto.codigo %]" [% IF val.missing('codigo') %]class="missing"[% END %] onkeydown="if (event.keyCode < 48 || event.keyCode > 58) { alert(event.keyCode); return false; }"><img src="/static/images/star.png"></td>
 	</tr>
 
 	<tr>
@@ -49,7 +49,7 @@
 	</tr>
 	<tr>
 		<td>Estoque inicial:</td>
-		<td><input type="text" name="estoque" size="5" value="[% produto.estoque %]" [% IF val.missing('estoque') %]class="missing"[% END %]><img src="/static/images/star.png">
+		<td><input type="text" name="estoque" size="5" value="[% produto.estoque %]" [% IF val.missing('estoque') %]class="missing"[% END %]>
 			<select name="id_unidade">
 				[% FOREACH unidade IN unidades %]
 				<option value="[% unidade.id %]" [% IF produto.id_unidade == unidade.id %]selected[% END %]>[% unidade.nome %]</option>

@@ -22,6 +22,7 @@
 		<td>[% fornecedor.nome %]</td>
 		<td>[% fornecedor.contato %]</td>
 		<td nowrap>
+			<a href="[% Catalyst.uri_for('editar_fornecedor/') _ fornecedor.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a><br>
 			<a href="[% Catalyst.uri_for('excluir_fornecedor/') _ fornecedor.id %]"><img src="/static/images/delete.png" align="top">Excluir</a>
 		</td>
 	</tr>

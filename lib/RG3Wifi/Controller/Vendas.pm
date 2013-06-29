@@ -82,6 +82,24 @@ sub novo_produto_unidade : Local {
 	$c->stash->{template} = 'vendas/novo_produto_unidade.tt2';
 }
 
+=head2 editar_produto_unidade
+
+Exibe a tela para editar tipo de unidade.
+
+=cut
+
+sub editar_produto_unidade : Local {
+    my ($self, $c, $id) = @_;
+    my $unidade = $c->model('RG3WifiDB::Unidades')->search({id => $id})->first;
+    if (!$unidade) {
+    	$c->stash->{error_msg} = 'Unidade de produto não localizada!';
+    	$c->forward('lista_produto_unidade');
+    } else {
+    	$c->stash->{unidade} = $unidade;
+		$c->forward('novo_produto_unidade');
+    }
+}
+
 =head2 novo_produto_unidade_do
 
 Efetua a inclusão de uma nova unidade de produto.
@@ -168,6 +186,24 @@ sub novo_fornecedor : Local {
     my ($self, $c) = @_;
     $c->stash->{estados} = [$c->model('RG3WifiDB::Estados')->all];
 	$c->stash->{template} = 'vendas/novo_fornecedor.tt2';
+}
+
+=head2 editar_fornecedor
+
+Exibe a tela para editar um fornecedor.
+
+=cut
+
+sub editar_fornecedor : Local {
+    my ($self, $c, $id) = @_;
+    my $fornecedor = $c->model('RG3WifiDB::Fornecedores')->search({id => $id})->first;
+    if (!$fornecedor) {
+    	$c->stash->{error_msg} = 'Fornecedor não localizado!';
+    	$c->forward('lista_fornecedor');
+    } else {
+    	$c->stash->{fornecedor} = $fornecedor;
+		$c->forward('novo_fornecedor');
+    }
 }
 
 =head2 novo_fornecedor_do
@@ -265,6 +301,24 @@ sub novo_produto : Local {
     $c->stash->{fornecedores} = [$c->model('RG3WifiDB::Fornecedores')->all];
     $c->stash->{unidades} = [$c->model('RG3WifiDB::Unidades')->all];
 	$c->stash->{template} = 'vendas/novo_produto.tt2';
+}
+
+=head2 editar_produto
+
+Exibe a tela para editar um produto.
+
+=cut
+
+sub editar_produto : Local {
+    my ($self, $c, $id) = @_;
+    my $produto = $c->model('RG3WifiDB::Produtos')->search({id => $id})->first;
+    if (!$produto) {
+    	$c->stash->{error_msg} = 'Produto não localizado!';
+    	$c->forward('lista_produto');
+    } else {
+    	$c->stash->{produto} = $produto;
+		$c->forward('novo_produto');
+    }
 }
 
 =head2 novo_produto_do
