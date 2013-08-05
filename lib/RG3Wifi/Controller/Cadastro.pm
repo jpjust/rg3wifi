@@ -1204,6 +1204,7 @@ sub busca : Local {
 	# Parâmetros
 	my $p = $c->request->params;
 	my $termo = $p->{termo};
+	$termo =~ s/\s/%/g;
 	#my $termo_ua = unac_string('utf-8', $termo);
 	my $termo_ua = $termo;
 	
@@ -1988,7 +1989,7 @@ sub lista_faturas_abertas : Local {
 
 =head2 lista_telefones_devedores
 
-Lista os números de telefones dos clientes devedores (com faturas em aberto).
+Lista os números de telefones dos clientes devedores (com faturas em aberto com pelo menos 5 dias de vencidas).
 
 =cut
 
@@ -1996,7 +1997,11 @@ sub lista_telefones_devedores : Local {
 	my ($self, $c) = @_;
 	my @telefones;
 	
-	foreach my $fatura ($c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', DateTime->now()->ymd('-')}, 'me.id_situacao' => {'<=', 2}},
+	# Gera um objeto de data com o dia de hoje - 5
+	my $dt = DateTime->now();
+	$dt->subtract(days => 5);
+	
+	foreach my $fatura ($c->model('RG3WifiDB::Faturas')->search({'me.data_vencimento' => {'<', $dt->ymd('-')}, 'me.id_situacao' => {'<=', 2}},
 		{join => 'cliente', group_by => 'cliente.telefone'})) {
 		
 		my $telefone = $fatura->cliente->telefone;
