@@ -547,6 +547,11 @@ sub cadastro_do : Local {
 		$dados->{id_grupo} = $p->{grupo};
 		$dados->{id_situacao} = $p->{situacao};
 	}
+
+	# O usuário caixa só pode escolher a situação
+	if ($c->check_any_user_role('caixa')) {
+		$dados->{id_situacao} = $p->{situacao};
+	}
 	
 	# Valida formulário
 	my $val = Data::FormValidator->check(
@@ -1753,8 +1758,7 @@ sub imprime_boleto : Local {
 		return;
 	}	
 	
-	if ( ((!$c->check_user_roles('admin')) && (!$c->check_user_roles('operador')))
-	     && ($fatura->id_cliente != $c->user->cliente->uid) ) {
+	if ( (!$c->check_user_roles(qw[admin operador caixa])) && ($fatura->id_cliente != $c->user->cliente->uid) ) {
 		$c->stash->{error_msg} = 'Esta fatura não lhe pertence!';
 		$c->stash->{template} = 'error.tt2';
 		return;
@@ -2376,8 +2380,7 @@ sub detalhar_fatura : Local {
 		return;
 	}	
 	
-	if ( ((!$c->check_user_roles('admin')) && (!$c->check_user_roles('operador')))
-	     && ($fatura->id_cliente != $c->user->cliente->uid) ) {
+	if ( (!$c->check_user_roles(qw[admin operador caixa])) && ($fatura->id_cliente != $c->user->cliente->uid) ) {
 		$c->stash->{error_msg} = 'Esta fatura não lhe pertence!';
 		$c->stash->{template} = 'error.tt2';
 		return;
