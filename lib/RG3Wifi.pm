@@ -29,7 +29,7 @@ use Catalyst qw/
 	Session::State::Cookie
 	/;
 
-our $VERSION = '0.33';
+our $VERSION = '0.34';
 
 # Configure the application. 
 #
@@ -79,18 +79,60 @@ __PACKAGE__->allow_access_if("/cadastro/novo",					[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/limpa_pppoe",			[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/limpa_pppoe1",			[qw/operador/]);
 __PACKAGE__->allow_access_if("/cadastro/derrubar_pppoe_do",		[qw/operador/]);
-__PACKAGE__->allow_access_if("/cadastro/relatorio_faturas_do",	[qw/operador/]);
+
+# Cadastro (caixa)
+__PACKAGE__->allow_access_if("/cadastro/abrir_chamado",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/busca",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/cadastro_conta_do",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/cadastro_do",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/editar",				[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/editar_conta",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/filtro",				[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/imprimir",				[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/imprime_carne",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/index",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/lista",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/lista_p",				[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/nova_conta",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/novo",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/limpa_pppoe",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/limpa_pppoe1",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/derrubar_pppoe_do",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/relatorio_faturas_do",	[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/nova_fatura",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/nova_fatura_do",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/seleciona_banco",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/imprime_boleto",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/liquidar_fatura",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/liquidar_fatura_do",	[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/baixar_fatura",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/baixar_fatura_do",		[qw/caixa/]);
 
 # Cadastro (outros)
 __PACKAGE__->deny_access("/cadastro");
 
-##### Caixa (geral)
+##### Caixa (admin)
 __PACKAGE__->allow_access_if("/caixa",							[qw/admin/]);
+
+# Caixa (caixa)
+__PACKAGE__->allow_access_if("/atualiza_saldo",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/chart_movimentacao",				[qw/caixa/]);
+__PACKAGE__->allow_access_if("/filtro",							[qw/caixa/]);
+__PACKAGE__->allow_access_if("/gera_lista",						[qw/caixa/]);
+__PACKAGE__->allow_access_if("/lista",							[qw/caixa/]);
+__PACKAGE__->allow_access_if("/lista_loja",						[qw/caixa/]);
+__PACKAGE__->allow_access_if("/novo",							[qw/caixa/]);
+__PACKAGE__->allow_access_if("/novo_do",						[qw/caixa/]);
+__PACKAGE__->allow_access_if("/saldo_anterior_do",				[qw/caixa/]);
+__PACKAGE__->allow_access_if("/saldo_atual_do",					[qw/caixa/]);
+
+# Caixa (outros)
 __PACKAGE__->deny_access("/caixa");
 
-##### Chamados (admin, operador)
+##### Chamados (admin, operador, caixa)
 __PACKAGE__->allow_access_if("/chamados",						[qw/admin/]);
 __PACKAGE__->allow_access_if("/chamados",						[qw/operador/]);
+__PACKAGE__->allow_access_if("/chamados",						[qw/caixa/]);
 
 # Chamados (outros)
 __PACKAGE__->deny_access("/chamados");

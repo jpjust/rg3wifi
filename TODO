@@ -1,3 +1,9 @@
+- Caixa:
+	o Excluir: apenas admin
+	o Editar: apenas admin
+	o Baixar fatura: apenas admin
+	o ATENÇÃO: Observar os métodos de novo_do, pois mesmo sem permissão
+	  para editar, o grupo caixa pode fazer uma injeção manual
 - Política de suspensão:
 	o Criar uma tabela para suspensão, onde ficarão registrados o dia da
 	  solicitação, o dia de início e o dia do fim da suspensão.
