@@ -1,9 +1,3 @@
-- Caixa:
-	o Excluir: apenas admin
-	o Editar: apenas admin
-	o Baixar fatura: apenas admin
-	o ATENÇÃO: Observar os métodos de novo_do, pois mesmo sem permissão
-	  para editar, o grupo caixa pode fazer uma injeção manual
 - Política de suspensão:
 	o Criar uma tabela para suspensão, onde ficarão registrados o dia da
 	  solicitação, o dia de início e o dia do fim da suspensão.
@@ -28,16 +22,8 @@
   exibir apenas um campo de data. 
 - Quando o cliente pagar atrasado sem a multa, calcular
   automaticamente para o próximo boleto.
-- Criar o grupo "cobrança", somente ele poderá ter acesso
-  às configurações de mensalidade, vencimento e faturas.
-  Os operadores terão acesso apenas ao cadastro, chamados
-  e rádios. Nos boletos, somente o admin poderá dar baixa,
-  o grupo cobrança só poderá liquidar e imprimir boletos.
-  Dados de caixa inseridos só poderão ser alterados pelo admin.
-- Criar um relatório de boletos semelhante ao do OBB Plus.
 - Verificar pagamentos divergentes (a menos ou a mais que o
   correto) e corrigir automaticamente na próxima fatura
-
 - Alguns campos do cadastro não deveriam estar disponíveis
   para os operadores (ex.: mensalidade)
 - Juntar os arquivos de boletos em um só e parametrizar
@@ -46,7 +32,6 @@
   e a conta no arquivo de retorno bate com as informações
   do banco no banco de dados, para evitar a entrada de um
   retorno de outra empresa.
-  
 - Colocar mensagens de erro quando CPF/CNPJ
   estiverem incorretos ou quando algum campo único já
   existir (ex.: login já cadastrado).

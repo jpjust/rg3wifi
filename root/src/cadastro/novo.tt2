@@ -98,7 +98,10 @@
 			<img src="/static/images/star.png">
 		</td>
 	</tr>
-		<tr>
+	[% END %]
+	
+	[% IF Catalyst.check_any_user_role('admin', 'caixa') %]
+	<tr>
 		<td>Situação:</td>
 		<td>
 			<select name="situacao">
@@ -205,7 +208,9 @@
 			[% END %]
 			
 			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja derrubar esta conexão?', '[% Catalyst.uri_for('derrubar_pppoe_do/') _ conta.login %]');"><img src="/static/images/disconnect.png" align="top">Derrubar</a>
-			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir a conta do usuário?', '[% Catalyst.uri_for('excluir_conta/') _ conta.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
+			[% IF Catalyst.check_any_user_role('admin') %]
+				<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir a conta do usuário?', '[% Catalyst.uri_for('excluir_conta/') _ conta.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
+			[% END %]
 		</td>
 	</tr>
 	[% END %]
@@ -251,9 +256,9 @@
 			[% END %]
 			
 			[% IF fatura.id_situacao <= 1 || Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('editar_fatura/') _ fatura.id %]"><img src="/static/images/table_edit.png" align="top">Alterar dados</a>[% END %]
-			[% IF fatura.id_situacao <= 2 %]<br><a href="[% Catalyst.uri_for('baixar_fatura/') _ fatura.id %]"><img src="/static/images/bullet_arrow_down.png" align="top">Baixar</a>[% END %]
+			[% IF fatura.id_situacao <= 2 || Catalyst.check_any_user_role('admin') %]<br><a href="[% Catalyst.uri_for('baixar_fatura/') _ fatura.id %]"><img src="/static/images/bullet_arrow_down.png" align="top">Baixar</a>[% END %]
 			[% IF fatura.id_situacao <= 2 %]<br><a href="[% Catalyst.uri_for('liquidar_fatura/') _ fatura.id %]"><img src="/static/images/money.png" align="top">Liquidar</a>[% END %]
-			[% IF fatura.id_situacao <= 1 %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir essa fatura?', '[% Catalyst.uri_for('excluir_fatura/') _ fatura.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
+			[% IF fatura.id_situacao <= 1 || Catalyst.check_any_user_role('admin') %]<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir essa fatura?', '[% Catalyst.uri_for('excluir_fatura/') _ fatura.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>[% END %]
 		</td>
 	</tr>
 	[% END %]

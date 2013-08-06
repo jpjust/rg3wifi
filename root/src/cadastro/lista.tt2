@@ -59,19 +59,20 @@
 	:: <a href="[% Catalyst.uri_for('limpa_pppoe') %]"><img src="/static/images/server_connect.png" align="top">Limpar conexões PPPoE</a>
 </p>
 
-[% IF Catalyst.check_any_user_role('admin') %]
+[% IF Catalyst.check_any_user_role('admin', 'caixa') %]
 <p>
 	<a href="[% Catalyst.uri_for('stats') %]"><img src="/static/images/report.png" align="top">Exibir estatísticas</a>
-	:: <a href="[% Catalyst.uri_for('bloqueio_automatico') %]"><img src="/static/images/disconnect.png" align="top">Bloquear inadimplentes</a>
 	:: <a href="[% Catalyst.uri_for('lista_inadimplentes') %]"><img src="/static/images/table_edit.png" align="top">Listar inadimplentes</a>
-	:: <a href="[% Catalyst.uri_for('relatorio_faturas_do') %]"><img src="/static/images/table_edit.png" align="top">Relatório de faturas</a>
+	:: <a href="[% Catalyst.uri_for('lista_faturas_abertas') %]"><img src="/static/images/table_edit.png" align="top">Faturas vencidas</a>
 </p>
+[% END %]
 
-<p>
+[% IF Catalyst.check_any_user_role('admin') %]
 	<a href="[% Catalyst.uri_for('gerar_faturas') %]"><img src="/static/images/database_refresh.png" align="top">Gerar faturas</a>
 	:: <a href="[% Catalyst.uri_for('gerar_boletos') %]"><img src="/static/images/printer.png" align="top">Emitir boletos</a>
 	:: <a href="[% Catalyst.uri_for('liquidacao_massa') %]"><img src="/static/images/money.png" align="top">Liquidar faturas</a>
-	:: <a href="[% Catalyst.uri_for('lista_faturas_abertas') %]"><img src="/static/images/table_edit.png" align="top">Faturas vencidas</a>
+	:: <a href="[% Catalyst.uri_for('bloqueio_automatico') %]"><img src="/static/images/disconnect.png" align="top">Bloquear inadimplentes</a>
+	:: <a href="[% Catalyst.uri_for('relatorio_faturas_do') %]"><img src="/static/images/table_edit.png" align="top">Relatório de faturas</a>
 	:: <a href="[% Catalyst.uri_for('enviar_retorno') %]"><img src="/static/images/server_connect.png" align="top">Processar retorno</a>
 </p>
 [% END %]
@@ -114,7 +115,9 @@
 			<a href="[% Catalyst.uri_for('editar/') _ cliente.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
 			[% IF Catalyst.check_any_user_role('admin') %]
 				<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir o usuário?', '[% Catalyst.uri_for('excluir/') _ cliente.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
-
+			[% END %]
+			
+			[% IF Catalyst.check_any_user_role('admin', 'caixa') %]
 				[% IF cliente.bloqueado == 0 %]
 					<br>
 					[% IF cliente.nao_bloqueia %]

@@ -59,7 +59,7 @@ sub logs : Local {
 	}
 	
 	# Verifica se essa conta pertence a esse usuário (apenas para usuários do grupo "cliente")
-	if ((!$c->check_any_user_role(qw/admin operador/)) && ($pppoe->id_cliente != $c->user->cliente->uid)) {
+	if ((!$c->check_any_user_role(qw/admin operador caixa/)) && ($pppoe->id_cliente != $c->user->cliente->uid)) {
 		$c->stash->{error_msg} = 'Sem permissão!';
 		$c->forward('index');
 		return;

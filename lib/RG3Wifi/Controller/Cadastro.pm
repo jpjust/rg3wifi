@@ -584,7 +584,7 @@ sub cadastro_do : Local {
 			}
 
 			# Verifica permissões
-			if (($cliente->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
+			if (($cliente->grupo->nome eq 'admin') && (!$c->check_any_user_role('admin'))) {
 				$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
 				$c->forward('lista');
 				return;
@@ -693,7 +693,7 @@ sub editar : Local {
 	my $cliente = $c->model('RG3WifiDB::Usuarios')->search({uid => $uid})->first;
 
 	# Verifica permissões
-	if (($cliente->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
+	if (($cliente->grupo->nome eq 'admin') && (!$c->check_any_user_role('admin'))) {
 		$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
 		$c->forward('lista');
 		return;
@@ -721,7 +721,7 @@ sub editar_conta : Local {
 	my $conta = $c->model('RG3WifiDB::Contas')->search({uid => $uid})->first;
 
 	# Verifica permissões
-	if (($conta->grupo->nome eq 'admin') && (!$c->check_user_roles('admin'))) {
+	if (($conta->grupo->nome eq 'admin') && (!$c->check_any_user_role('admin'))) {
 		$c->stash->{error_msg} = 'Você não tem permissão para editar um administrador!';
 		$c->forward('lista');
 		return;
@@ -1372,7 +1372,7 @@ sub nova_fatura_do : Local {
 	
 	# Apenas faturas na situação "Aberto" (1) podem ser alteradas
 	my $fatura_antiga = $c->model('RG3WifiDB::Faturas')->find($fatura->{id});
-	if (($fatura_antiga && $fatura_antiga->id_situacao > 1) && (!$c->check_user_roles('admin'))) {
+	if (($fatura_antiga && $fatura_antiga->id_situacao > 1) && (!$c->check_any_user_role('admin'))) {
 		$c->stash->{error_msg} = 'Essa fatura já não pode mais ser alterada.';
 		$c->stash->{template} = 'error.tt2';
 		return;
@@ -1453,7 +1453,7 @@ sub liquidar_fatura_do : Local {
 	}
 	
 	# As faturas não podem ser liquidadas com valores menores
-	if (($p->{valor_pago} < $fatura_antiga->valor) && (!$c->check_user_roles('admin'))) {
+	if (($p->{valor_pago} < $fatura_antiga->valor) && (!$c->check_any_user_role('admin'))) {
 		$c->stash->{error_msg} = 'O valor pago deve ser igual ou superior ao valor da fatura.';
 	    $c->stash->{template} = 'error.tt2';
 		return;
@@ -1758,7 +1758,7 @@ sub imprime_boleto : Local {
 		return;
 	}	
 	
-	if ( (!$c->check_user_roles(qw[admin operador caixa])) && ($fatura->id_cliente != $c->user->cliente->uid) ) {
+	if ( (!$c->check_any_user_role(qw[admin operador caixa])) && ($fatura->id_cliente != $c->user->cliente->uid) ) {
 		$c->stash->{error_msg} = 'Esta fatura não lhe pertence!';
 		$c->stash->{template} = 'error.tt2';
 		return;
@@ -2343,26 +2343,6 @@ sub baixar_fatura_do : Local {
 	$c->forward('editar/' . $p->{id_cliente});
 }
 
-sub baixar_fatura_do_antigo : Local {
-	return;
-	my ($self, $c, $id) = @_;
-
-	# Apenas faturas na situação "Impresso" (2) podem ser baixadas
-	my $fatura = $c->model('RG3WifiDB::Faturas')->find($id);
-	if ($fatura->id_situacao > 2) {
-		$c->stash->{error_msg} = 'Essa fatura não pode mais receber baixa.';
-		$c->stash->{template} = 'error.tt2';
-		return;
-	}
-
-	# Baixa a fatura e verifica se ainda há inadimplência neste cliente
-	$fatura->update({id_situacao => 3, id_usuario_resp => $c->user->cliente->uid, data_liquidacao => DateTime->now()->ymd('-')});
-	&atualiza_inadimplencia($c, $fatura->cliente->uid);
-	
-	$c->stash->{status_msg} = 'A fatura recebeu baixa com sucesso.';
-	$c->forward('lista');
-}
-
 =head2 detalhar_fatura
 
 Exibe os detalhes de uma fatura liquidada ou baixada.
@@ -2380,7 +2360,7 @@ sub detalhar_fatura : Local {
 		return;
 	}	
 	
-	if ( (!$c->check_user_roles(qw[admin operador caixa])) && ($fatura->id_cliente != $c->user->cliente->uid) ) {
+	if ( (!$c->check_any_user_role(qw[admin operador caixa])) && ($fatura->id_cliente != $c->user->cliente->uid) ) {
 		$c->stash->{error_msg} = 'Esta fatura não lhe pertence!';
 		$c->stash->{template} = 'error.tt2';
 		return;

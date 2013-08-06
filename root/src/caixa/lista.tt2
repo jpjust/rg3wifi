@@ -134,8 +134,10 @@ Período: [% data1 %] a [% data2 %]</p>
 			</font></strong>
 		</td>
 		<td nowrap>
-			<a href="[% Catalyst.uri_for('editar/') _ lancamento.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
-			<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir esse lançamento?', '[% Catalyst.uri_for('excluir/') _ lancamento.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
+			[% IF Catalyst.check_any_user_role('admin') %]
+				<a href="[% Catalyst.uri_for('editar/') _ lancamento.id %]"><img src="/static/images/table_edit.png" align="top">Editar</a>
+				<br><a href="javascript:void(0)" onClick="javascript:askuser('Tem certeza que deseja excluir esse lançamento?', '[% Catalyst.uri_for('excluir/') _ lancamento.id %]');"><img src="/static/images/delete.png" align="top">Excluir</a>
+			[% END %]
 		</td>
 	</tr>
 	[% END %]

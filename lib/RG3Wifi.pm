@@ -98,15 +98,22 @@ __PACKAGE__->allow_access_if("/cadastro/novo",					[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/limpa_pppoe",			[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/limpa_pppoe1",			[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/derrubar_pppoe_do",		[qw/caixa/]);
-__PACKAGE__->allow_access_if("/cadastro/relatorio_faturas_do",	[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/nova_fatura",			[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/nova_fatura_do",		[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/seleciona_banco",		[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/imprime_boleto",		[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/liquidar_fatura",		[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/liquidar_fatura_do",	[qw/caixa/]);
-__PACKAGE__->allow_access_if("/cadastro/baixar_fatura",			[qw/caixa/]);
-__PACKAGE__->allow_access_if("/cadastro/baixar_fatura_do",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/bloqueio_do",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/bloqueio_undo",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/bloqueio_pppoe_do",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/bloqueio_pppoe_undo",	[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/stats",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/lista_inadimplentes",	[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/lista_faturas_abertas",	[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/chart_instalacoes",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/chart_mensalidade",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/chart_planos",			[qw/caixa/]);
 
 # Cadastro (outros)
 __PACKAGE__->deny_access("/cadastro");
@@ -115,16 +122,18 @@ __PACKAGE__->deny_access("/cadastro");
 __PACKAGE__->allow_access_if("/caixa",							[qw/admin/]);
 
 # Caixa (caixa)
-__PACKAGE__->allow_access_if("/atualiza_saldo",					[qw/caixa/]);
-__PACKAGE__->allow_access_if("/chart_movimentacao",				[qw/caixa/]);
-__PACKAGE__->allow_access_if("/filtro",							[qw/caixa/]);
-__PACKAGE__->allow_access_if("/gera_lista",						[qw/caixa/]);
-__PACKAGE__->allow_access_if("/lista",							[qw/caixa/]);
-__PACKAGE__->allow_access_if("/lista_loja",						[qw/caixa/]);
-__PACKAGE__->allow_access_if("/novo",							[qw/caixa/]);
-__PACKAGE__->allow_access_if("/novo_do",						[qw/caixa/]);
-__PACKAGE__->allow_access_if("/saldo_anterior_do",				[qw/caixa/]);
-__PACKAGE__->allow_access_if("/saldo_atual_do",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/index",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/atualiza_saldo",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/chart_movimentacao",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/filtro",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/gera_lista",				[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/lista",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/lista_loja",				[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/novo",						[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/novo_do",					[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/saldo_anterior_do",		[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/saldo_atual_do",			[qw/caixa/]);
+__PACKAGE__->allow_access_if("/caixa/chart_movimentacao",		[qw/caixa/]);
 
 # Caixa (outros)
 __PACKAGE__->deny_access("/caixa");
@@ -137,16 +146,17 @@ __PACKAGE__->allow_access_if("/chamados",						[qw/caixa/]);
 # Chamados (outros)
 __PACKAGE__->deny_access("/chamados");
 
-###### Rádios (admin, operador)
+###### Rádios (admin, operador, caixa)
 __PACKAGE__->allow_access_if("/radios",							[qw/admin/]);
 __PACKAGE__->allow_access_if("/radios",							[qw/operador/]);
+__PACKAGE__->allow_access_if("/radios",							[qw/caixa/]);
 
 # Rádios (outros)
 __PACKAGE__->deny_access("/radios");
 
 ##### Vendas (geral)
-__PACKAGE__->allow_access_if("/vendas",							[qw/admin/]);
-__PACKAGE__->deny_access("/vendas");
+#__PACKAGE__->allow_access_if("/vendas",							[qw/admin/]);
+#__PACKAGE__->deny_access("/vendas");
 
 
 =head1 NAME
