@@ -111,6 +111,7 @@ __PACKAGE__->allow_access_if("/cadastro/bloqueio_pppoe_undo",	[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/stats",					[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/lista_inadimplentes",	[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/lista_faturas_abertas",	[qw/caixa/]);
+__PACKAGE__->allow_access_if("/cadastro/relatorio_faturas_do",	[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/chart_instalacoes",		[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/chart_mensalidade",		[qw/caixa/]);
 __PACKAGE__->allow_access_if("/cadastro/chart_planos",			[qw/caixa/]);
